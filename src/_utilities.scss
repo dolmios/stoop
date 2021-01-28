@@ -1,0 +1,293 @@
+.clear:after,
+.inner:after,
+.outer:after,
+.row:after {
+   content: "";
+   display: table;
+   clear: both;
+}
+
+.hidden,
+.visible-wide,
+.visible-desktop,
+.visible-laptop,
+.visible-phone,
+.visible-tablet {
+   display: none !important;
+   visibility: hidden !important;
+}
+
+@include phone {
+   .visible-phone {
+      display: block !important;
+      visibility: visible !important;
+   }
+
+   .hidden-phone {
+      display: none !important;
+   }
+}
+
+@include tablet-specific {
+   .visible-tablet {
+      display: block !important;
+      visibility: visible !important;
+   }
+
+   .hidden-tablet {
+      display: none !important;
+   }
+}
+
+@include laptop-specific {
+   .visible-laptop {
+      display: block !important;
+      visibility: visible !important;
+   }
+
+   .hidden-laptop {
+      display: none !important;
+   }
+}
+
+@include desktop {
+   .visible-desktop {
+      display: block !important;
+      visibility: visible !important;
+   }
+
+   .hidden-desktop {
+      display: none !important;
+   }
+}
+
+@include wide {
+   .visible-wide {
+      display: block !important;
+      visibility: visible !important;
+   }
+
+   .hidden-wide {
+      display: none !important;
+   }
+}
+
+.type-r {
+   text-align: right !important;
+}
+
+.type-c {
+   text-align: center !important;
+}
+
+.type-l {
+   text-align: left !important;
+}
+
+.type-j {
+   text-align: justify !important;
+}
+
+.type-i,
+.type-is {
+   display: inline-block !important;
+   margin-bottom: 0;
+}
+
+.type-is {
+   margin-right: $space--1;
+}
+
+@include phone {
+   .type-r-phone {
+      text-align: right !important;
+   }
+
+   .type-c-phone {
+      text-align: center !important;
+   }
+
+   .type-l-phone {
+      text-align: left !important;
+   }
+
+   .type-j-phone {
+      text-align: justify !important;
+   }
+
+   .type-i-phone,
+   .type-is-phone {
+      display: inline-block !important;
+   }
+
+   .type-is-phone {
+      margin-right: $space--1;
+   }
+}
+
+@include tablet-specific {
+   .type-r-tablet {
+      text-align: right !important;
+   }
+
+   .type-c-tablet {
+      text-align: center !important;
+   }
+
+   .type-l-tablet {
+      text-align: left !important;
+   }
+
+   .type-j-tablet {
+      text-align: justify !important;
+   }
+
+   .type-i-tablet,
+   .type-is-tablet {
+      display: inline-block !important;
+   }
+
+   .type-is-tablet {
+      margin-right: $space--1;
+   }
+}
+
+@include laptop-specific {
+   .type-r-laptop {
+      text-align: right !important;
+   }
+
+   .type-c-laptop {
+      text-align: center !important;
+   }
+
+   .type-l-laptop {
+      text-align: left !important;
+   }
+
+   .type-j-laptop {
+      text-align: justify !important;
+   }
+
+   .type-i-laptop,
+   .type-is-laptop {
+      display: inline-block !important;
+   }
+
+   .type-is-laptop {
+      margin-right: $space--1;
+   }
+}
+
+@include desktop {
+   .type-r-desktop {
+      text-align: right !important;
+   }
+
+   .type-c-desktop {
+      text-align: center !important;
+   }
+
+   .type-l-desktop {
+      text-align: left !important;
+   }
+
+   .type-j-desktop {
+      text-align: justify !important;
+   }
+
+   .type-i-desktop,
+   .type-is-desktop {
+      display: inline-block !important;
+   }
+
+   .type-is-desktop {
+      margin-right: $space--1;
+   }
+}
+
+@include wide {
+   .type-r-wide {
+      text-align: right !important;
+   }
+
+   .type-c-wide {
+      text-align: center !important;
+   }
+
+   .type-l-wide {
+      text-align: left !important;
+   }
+
+   .type-j-wide {
+      text-align: justify !important;
+   }
+
+   .type-i-wide,
+   .type-is-wide {
+      display: inline-block !important;
+   }
+
+   .type-is-wide {
+      margin-right: $space--1;
+   }
+}
+
+
+@include render-padding-top(0, 0);
+@include render-padding-top('1-h', ($space--1 / 2));
+@include render-padding-top(1, $space--1);
+@include render-padding-top(2, $space--2);
+@include render-padding-top(3, $space--3);
+@include render-padding-top(4, $space--4);
+@include render-padding-top(5, $space--5);
+
+@include phone {
+   @include render-padding-top-phone(0, 0);
+   @include render-padding-top-phone('1-h', ($space--1 / 2));
+   @include render-padding-top-phone(1, ($space--1 / 1.5));
+   @include render-padding-top-phone(2, ($space--2 / 1.5));
+   @include render-padding-top-phone(3, ($space--3 / 1.5));
+   @include render-padding-top-phone(4, ($space--4 / 1.5));
+   @include render-padding-top-phone(5, ($space--5 / 1.5));
+}
+
+@include tablet-specific {
+   @include render-padding-top-tablet(0, 0);
+   @include render-padding-top-tablet('1-h', ($space--1 / 2));
+   @include render-padding-top-tablet(1, ($space--1 / 1.25));
+   @include render-padding-top-tablet(2, ($space--2 / 1.25));
+   @include render-padding-top-tablet(3, ($space--3 / 1.25));
+   @include render-padding-top-tablet(4, ($space--4 / 1.25));
+   @include render-padding-top-tablet(5, ($space--5 / 1.25));
+}
+
+@include laptop {
+   @include render-padding-top-laptop(0, 0);
+   @include render-padding-top-laptop('1-h', ($space--1 / 2));
+   @include render-padding-top-laptop(1, $space--1);
+   @include render-padding-top-laptop(2, $space--2);
+   @include render-padding-top-laptop(3, $space--3);
+   @include render-padding-top-laptop(4, $space--4);
+   @include render-padding-top-laptop(5, $space--5);
+}
+
+@include desktop {
+   @include render-padding-top-desktop(0, 0);
+   @include render-padding-top-desktop('1-h', ($space--1 / 2));
+   @include render-padding-top-desktop(1, $space--1);
+   @include render-padding-top-desktop(2, $space--2);
+   @include render-padding-top-desktop(3, $space--3);
+   @include render-padding-top-desktop(4, $space--4);
+   @include render-padding-top-desktop(5, $space--5);
+}
+
+@include wide {
+   @include render-padding-top-wide(0, 0);
+   @include render-padding-top-wide('1-h', ($space--1 / 2));
+   @include render-padding-top-wide(1, $space--1);
+   @include render-padding-top-wide(2, $space--2);
+   @include render-padding-top-wide(3, $space--3);
+   @include render-padding-top-wide(4, $space--4);
+   @include render-padding-top-wide(5, $space--5);
+}

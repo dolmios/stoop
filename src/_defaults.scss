@@ -1,0 +1,37 @@
+/* typography */
+$type--parent: -apple-system,
+system-ui,
+BlinkMacSystemFont,
+sans-serif !default;
+$type--line-height: 1.6 !default;
+$type--baseline-size: 62.5% !default;
+$type--initial-size: 1.5rem !default;
+
+/* colors */
+$color--light: #fff !default;
+$color--dark: #000 !default;
+$color--link: rgb(19, 19, 19) !default;
+
+$set--transition: all 0.17s ease-in-out !default;
+
+/* sizes */
+/* padding */
+$space--1: 1rem !default;
+$space--2: 3rem !default;
+$space--3: 9rem !default;
+$space--4: 12rem !default;
+$space--5: 24rem !default;
+
+/* breakpoints (when) */
+$break--1: 53rem !default;
+$break--2: 74rem !default;
+$break--3: 95rem !default;
+$break--4: 130rem !default;
+
+/* widths */
+$width--phone: 95% !default;
+$width--tablet: 95% !default;
+$width--laptop: 128rem !default;
+$width--desktop: 150rem !default;
+$width--wide-a: 95% !default;
+$width--wide-b: 175rem !default;

@@ -1,0 +1,15 @@
+{
+  "name": "stoop",
+  "version": "1.0.0",
+  "description": "Foundational styling and varabies for static sites.",
+  "repository": "git@github.com:lowerandeast/stoop.git",
+  "author": "Lower & East",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "watch": "sass --watch --style=compressed src/app.scss public/app.css"
+  },
+  "dependencies": {
+    "sass": "^1.32.5"
+  }
+}
