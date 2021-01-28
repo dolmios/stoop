@@ -2,7 +2,7 @@
   "name": "stoop",
   "version": "1.0.0",
   "description": "Foundational styling and varabies for static sites.",
-  "repository": "git@github.com:lowerandeast/stoop.git",
+  "repository": "https://github.com:lowerandeast/stoop.git",
   "author": "Lower & East",
   "private": false,
   "license": "MIT",
