@@ -73,7 +73,7 @@ Done. Enjoy. 🍷
 | `.column` > then add size, eg `s-50` and add offset if needed, eg `o-25` | 📱 Column, default 100% width unless `s-` added. Percentage based sizes.  |
 | `.hidden` | 📱 Globally hide an element, or use on a screen size specific level.  |
 | `.hidden` | 📱 Shows a hidden element, probably on a screen size specific level.  |
-| `.type-r, .type-c, .type-l, .type-j` | 📱 Text align `right, center, left, justify` respectively. 📱 |
+| `.type-r, .type-c, .type-l, .type-j` | 📱 Text align `right, center, left, justify` respectively. |
 | `.type-i, .type-is` | 📱 Inline text positioning, with `.type-is` including horizontal padding (is = inline spaced). |
 | `.p-t-{size}` eg `.p-t-3` | 📱 Add padding at an element level. |
 
