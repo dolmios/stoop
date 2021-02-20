@@ -234,60 +234,60 @@
 }
 
 
-@include render-padding-top(0, 0);
-@include render-padding-top('1-h', ($space--1 / 2));
-@include render-padding-top(1, $space--1);
-@include render-padding-top(2, $space--2);
-@include render-padding-top(3, $space--3);
-@include render-padding-top(4, $space--4);
-@include render-padding-top(5, $space--5);
+@include render-padding-t-b(0, 0);
+@include render-padding-t-b('1-h', ($space--1 / 2));
+@include render-padding-t-b(1, $space--1);
+@include render-padding-t-b(2, $space--2);
+@include render-padding-t-b(3, $space--3);
+@include render-padding-t-b(4, $space--4);
+@include render-padding-t-b(5, $space--5);
 
 @include phone {
-   @include render-padding-top-phone(0, 0);
-   @include render-padding-top-phone('1-h', ($space--1 / 2));
-   @include render-padding-top-phone(1, ($space--1 / 1.5));
-   @include render-padding-top-phone(2, ($space--2 / 1.5));
-   @include render-padding-top-phone(3, ($space--3 / 1.5));
-   @include render-padding-top-phone(4, ($space--4 / 1.5));
-   @include render-padding-top-phone(5, ($space--5 / 1.5));
+   @include render-padding-t-b-phone(0, 0);
+   @include render-padding-t-b-phone('1-h', ($space--1 / 2));
+   @include render-padding-t-b-phone(1, ($space--1 / 1.5));
+   @include render-padding-t-b-phone(2, ($space--2 / 1.5));
+   @include render-padding-t-b-phone(3, ($space--3 / 1.5));
+   @include render-padding-t-b-phone(4, ($space--4 / 1.5));
+   @include render-padding-t-b-phone(5, ($space--5 / 1.5));
 }
 
 @include tablet-specific {
-   @include render-padding-top-tablet(0, 0);
-   @include render-padding-top-tablet('1-h', ($space--1 / 2));
-   @include render-padding-top-tablet(1, ($space--1 / 1.25));
-   @include render-padding-top-tablet(2, ($space--2 / 1.25));
-   @include render-padding-top-tablet(3, ($space--3 / 1.25));
-   @include render-padding-top-tablet(4, ($space--4 / 1.25));
-   @include render-padding-top-tablet(5, ($space--5 / 1.25));
+   @include render-padding-t-b-tablet(0, 0);
+   @include render-padding-t-b-tablet('1-h', ($space--1 / 2));
+   @include render-padding-t-b-tablet(1, ($space--1 / 1.25));
+   @include render-padding-t-b-tablet(2, ($space--2 / 1.25));
+   @include render-padding-t-b-tablet(3, ($space--3 / 1.25));
+   @include render-padding-t-b-tablet(4, ($space--4 / 1.25));
+   @include render-padding-t-b-tablet(5, ($space--5 / 1.25));
 }
 
 @include laptop {
-   @include render-padding-top-laptop(0, 0);
-   @include render-padding-top-laptop('1-h', ($space--1 / 2));
-   @include render-padding-top-laptop(1, $space--1);
-   @include render-padding-top-laptop(2, $space--2);
-   @include render-padding-top-laptop(3, $space--3);
-   @include render-padding-top-laptop(4, $space--4);
-   @include render-padding-top-laptop(5, $space--5);
+   @include render-padding-t-b-laptop(0, 0);
+   @include render-padding-t-b-laptop('1-h', ($space--1 / 2));
+   @include render-padding-t-b-laptop(1, $space--1);
+   @include render-padding-t-b-laptop(2, $space--2);
+   @include render-padding-t-b-laptop(3, $space--3);
+   @include render-padding-t-b-laptop(4, $space--4);
+   @include render-padding-t-b-laptop(5, $space--5);
 }
 
 @include desktop {
-   @include render-padding-top-desktop(0, 0);
-   @include render-padding-top-desktop('1-h', ($space--1 / 2));
-   @include render-padding-top-desktop(1, $space--1);
-   @include render-padding-top-desktop(2, $space--2);
-   @include render-padding-top-desktop(3, $space--3);
-   @include render-padding-top-desktop(4, $space--4);
-   @include render-padding-top-desktop(5, $space--5);
+   @include render-padding-t-b-desktop(0, 0);
+   @include render-padding-t-b-desktop('1-h', ($space--1 / 2));
+   @include render-padding-t-b-desktop(1, $space--1);
+   @include render-padding-t-b-desktop(2, $space--2);
+   @include render-padding-t-b-desktop(3, $space--3);
+   @include render-padding-t-b-desktop(4, $space--4);
+   @include render-padding-t-b-desktop(5, $space--5);
 }
 
 @include wide {
-   @include render-padding-top-wide(0, 0);
-   @include render-padding-top-wide('1-h', ($space--1 / 2));
-   @include render-padding-top-wide(1, $space--1);
-   @include render-padding-top-wide(2, $space--2);
-   @include render-padding-top-wide(3, $space--3);
-   @include render-padding-top-wide(4, $space--4);
-   @include render-padding-top-wide(5, $space--5);
+   @include render-padding-t-b-wide(0, 0);
+   @include render-padding-t-b-wide('1-h', ($space--1 / 2));
+   @include render-padding-t-b-wide(1, $space--1);
+   @include render-padding-t-b-wide(2, $space--2);
+   @include render-padding-t-b-wide(3, $space--3);
+   @include render-padding-t-b-wide(4, $space--4);
+   @include render-padding-t-b-wide(5, $space--5);
 }
