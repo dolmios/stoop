@@ -75,7 +75,8 @@ Done. Enjoy. 🍷
 | `.hidden` | 📱 Shows a hidden element, probably on a screen size specific level.  |
 | `.type-r, .type-c, .type-l, .type-j` | 📱 Text align `right, center, left, justify` respectively. |
 | `.type-i, .type-is` | 📱 Inline text positioning, with `.type-is` including horizontal padding (is = inline spaced). |
-| `.p-t-{size}` eg `.p-t-3` | 📱 Add padding at an element level. |
+| `.p-t-{size}` eg `.p-t-3` | 📱 Add padding top at an element level. |
+| `.p-b-{size}` eg `.p-b-3` | 📱 Add padding bottom at an element level. |
 
 ### Responsive classes
 Classes with the lil 📱 icon have screen size classes available. These are all as follows, column size used as an example - 
@@ -89,7 +90,7 @@ These sizes are also available for specific screen size breakpoints, and are ide
     5, 10, 15, 20. 25. 30. 33, 35, 40. 50, 60. 65, 66, 70, 75, 80, 85, 90, 95
 
 ### Padding options
-For now, these are all padding top. Used for responsive spacing for stacked columns mostly. 
+Either padding top or padding bottom. Used for responsive spacing for stacked columns mostly. 
 
     0 = removes padding, 
     1-h = ($space--1 / 2), 
