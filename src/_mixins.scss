@@ -178,13 +178,16 @@
 }
 
 /* paddings */
-@mixin render-padding-top($space-label, $space-var) {
+@mixin render-padding-t-b($space-label, $space-var) {
    .p-t-#{$space-label} {
       padding-top: (($space-var));
    }
+   .p-b-#{$space-label} {
+      padding-bottom: (($space-var));
+   }
 }
 
-@mixin render-padding-top-phone($space-label, $space-var) {
+@mixin render-padding-t-b-phone($space-label, $space-var) {
    @include phone {
       .p-t-#{$space-label} {
          padding-top: (($space-var));
@@ -193,10 +196,17 @@
       .p-t-#{$space-label}-phone {
          padding-top: (($space-var)) !important;
       }
+      .p-b-#{$space-label} {
+         padding-bottom: (($space-var));
+      }
+
+      .p-b-#{$space-label}-phone {
+         padding-bottom: (($space-var)) !important;
+      }
    }
 }
 
-@mixin render-padding-top-tablet($space-label, $space-var) {
+@mixin render-padding-t-b-tablet($space-label, $space-var) {
    @include tablet-specific {
       .p-t-#{$space-label} {
          padding-top: (($space-var));
@@ -205,10 +215,17 @@
       .p-t-#{$space-label}-tablet {
          padding-top: (($space-var)) !important;
       }
+      .p-b-#{$space-label} {
+         padding-bottom: (($space-var));
+      }
+
+      .p-b-#{$space-label}-tablet {
+         padding-bottom: (($space-var)) !important;
+      }
    }
 }
 
-@mixin render-padding-top-laptop($space-label, $space-var) {
+@mixin render-padding-t-b-laptop($space-label, $space-var) {
    @include laptop-specific {
       .p-t-#{$space-label} {
          padding-top: (($space-var));
@@ -217,22 +234,36 @@
       .p-t-#{$space-label}-laptop {
          padding-top: (($space-var)) !important;
       }
+      .p-b-#{$space-label} {
+         padding-bottom: (($space-var));
+      }
+
+      .p-b-#{$space-label}-laptop {
+         padding-bottom: (($space-var)) !important;
+      }
    }
 }
 
-@mixin render-padding-top-desktop($space-label, $space-var) {
+@mixin render-padding-t-b-desktop($space-label, $space-var) {
    @include desktop-specific {
       .p-t-#{$space-label} {
          padding-top: (($space-var));
       }
 
       .p-t-#{$space-label}-desktop {
-         padding-top: (($space-var)) !important;
+         padding-top:(($space-var)) !important;
+      }
+      .p-b-#{$space-label} {
+         padding-bottom: (($space-var));
+      }
+
+      .p-b-#{$space-label}-desktop {
+         padding-bottom: (($space-var)) !important;
       }
    }
 }
 
-@mixin render-padding-top-wide($space-label, $space-var) {
+@mixin render-padding-t-b-wide($space-label, $space-var) {
    @include wide {
       .p-t-#{$space-label} {
          padding-top: (($space-var));
@@ -240,6 +271,13 @@
 
       .p-t-#{$space-label}-wide {
          padding-top: (($space-var)) !important;
+      }
+      .p-b-#{$space-label} {
+         padding-bottom: (($space-var));
+      }
+
+      .p-b-#{$space-label}-wide {
+         padding-bottom: (($space-var)) !important;
       }
    }
 }
