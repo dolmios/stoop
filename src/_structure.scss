@@ -27,19 +27,23 @@
     -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
 
-    &.align-top {
+    &.align-top,
+    &.a-top {
        align-items: flex-start;
     }
 
-    &.align-bottom {
+    &.align-bottom,
+    &.a-b {
        align-items: flex-end;
     }
 
-    &.align-center {
+    &.align-center,
+    &.a-c {
        align-items: center;
     }
 
-    &.align-baseline {
+    &.align-baseline,
+    &.a-bl {
        align-items: baseline;
     }
 
