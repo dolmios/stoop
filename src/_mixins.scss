@@ -182,6 +182,7 @@
    .p-t-#{$space-label} {
       padding-top: (($space-var));
    }
+
    .p-b-#{$space-label} {
       padding-bottom: (($space-var));
    }
@@ -196,6 +197,7 @@
       .p-t-#{$space-label}-phone {
          padding-top: (($space-var)) !important;
       }
+
       .p-b-#{$space-label} {
          padding-bottom: (($space-var));
       }
@@ -215,6 +217,7 @@
       .p-t-#{$space-label}-tablet {
          padding-top: (($space-var)) !important;
       }
+
       .p-b-#{$space-label} {
          padding-bottom: (($space-var));
       }
@@ -234,6 +237,7 @@
       .p-t-#{$space-label}-laptop {
          padding-top: (($space-var)) !important;
       }
+
       .p-b-#{$space-label} {
          padding-bottom: (($space-var));
       }
@@ -251,8 +255,9 @@
       }
 
       .p-t-#{$space-label}-desktop {
-         padding-top:(($space-var)) !important;
+         padding-top: (($space-var)) !important;
       }
+
       .p-b-#{$space-label} {
          padding-bottom: (($space-var));
       }
@@ -272,6 +277,7 @@
       .p-t-#{$space-label}-wide {
          padding-top: (($space-var)) !important;
       }
+
       .p-b-#{$space-label} {
          padding-bottom: (($space-var));
       }
