@@ -1,3 +1,5 @@
+@use "sass:math";
+
 .clear:after,
 .inner:after,
 .outer:after,
@@ -235,7 +237,7 @@
 
 
 @include render-padding-t-b(0, 0);
-@include render-padding-t-b('1-h', ($space--1 / 2));
+@include render-padding-t-b('1-h', ($space--1 * 0.5));
 @include render-padding-t-b(1, $space--1);
 @include render-padding-t-b(2, $space--2);
 @include render-padding-t-b(3, $space--3);
@@ -244,27 +246,27 @@
 
 @include phone {
    @include render-padding-t-b-phone(0, 0);
-   @include render-padding-t-b-phone('1-h', ($space--1 / 2));
-   @include render-padding-t-b-phone(1, ($space--1 / 1.5));
-   @include render-padding-t-b-phone(2, ($space--2 / 1.5));
-   @include render-padding-t-b-phone(3, ($space--3 / 1.5));
-   @include render-padding-t-b-phone(4, ($space--4 / 1.5));
-   @include render-padding-t-b-phone(5, ($space--5 / 1.5));
+   @include render-padding-t-b-phone('1-h', ($space--1 * 0.5));
+   @include render-padding-t-b-phone(1, math.div($space--1, 1.5));
+   @include render-padding-t-b-phone(2, math.div($space--2, 1.5));
+   @include render-padding-t-b-phone(3, math.div($space--3, 1.5));
+   @include render-padding-t-b-phone(4, math.div($space--4, 1.5));
+   @include render-padding-t-b-phone(5, math.div($space--5, 1.5));
 }
 
 @include tablet-specific {
    @include render-padding-t-b-tablet(0, 0);
-   @include render-padding-t-b-tablet('1-h', ($space--1 / 2));
-   @include render-padding-t-b-tablet(1, ($space--1 / 1.25));
-   @include render-padding-t-b-tablet(2, ($space--2 / 1.25));
-   @include render-padding-t-b-tablet(3, ($space--3 / 1.25));
-   @include render-padding-t-b-tablet(4, ($space--4 / 1.25));
-   @include render-padding-t-b-tablet(5, ($space--5 / 1.25));
+   @include render-padding-t-b-tablet('1-h', ($space--1 * 0.5));
+   @include render-padding-t-b-tablet(1, math.div($space--1, 1.25));
+   @include render-padding-t-b-tablet(2, math.div($space--2, 1.25));
+   @include render-padding-t-b-tablet(3, math.div($space--3, 1.25));
+   @include render-padding-t-b-tablet(4, math.div($space--4, 1.25));
+   @include render-padding-t-b-tablet(5, math.div($space--5, 1.25));
 }
 
 @include laptop {
    @include render-padding-t-b-laptop(0, 0);
-   @include render-padding-t-b-laptop('1-h', ($space--1 / 2));
+   @include render-padding-t-b-laptop('1-h', ($space--1 * 0.5));
    @include render-padding-t-b-laptop(1, $space--1);
    @include render-padding-t-b-laptop(2, $space--2);
    @include render-padding-t-b-laptop(3, $space--3);
@@ -274,7 +276,7 @@
 
 @include desktop {
    @include render-padding-t-b-desktop(0, 0);
-   @include render-padding-t-b-desktop('1-h', ($space--1 / 2));
+   @include render-padding-t-b-desktop('1-h', ($space--1 * 0.5));
    @include render-padding-t-b-desktop(1, $space--1);
    @include render-padding-t-b-desktop(2, $space--2);
    @include render-padding-t-b-desktop(3, $space--3);
@@ -284,7 +286,7 @@
 
 @include wide {
    @include render-padding-t-b-wide(0, 0);
-   @include render-padding-t-b-wide('1-h', ($space--1 / 2));
+   @include render-padding-t-b-wide('1-h', ($space--1 * 0.5));
    @include render-padding-t-b-wide(1, $space--1);
    @include render-padding-t-b-wide(2, $space--2);
    @include render-padding-t-b-wide(3, $space--3);

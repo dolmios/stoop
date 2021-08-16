@@ -1,3 +1,5 @@
+ @use "sass:math";
+
  .outer {
     min-width: 100%;
     width: 100%;
@@ -47,6 +49,12 @@
        align-items: baseline;
     }
 
+    &.p-0 .column {
+       padding-right: 0;
+       padding-left: 0;
+
+    }
+
     .column {
        display: inline-block;
        flex: 1 1 auto;
@@ -54,36 +62,36 @@
        max-width: 100%;
        width: 100%;
        margin-bottom: inherit;
-       padding-right: ($space--1 / 2);
-       padding-left: ($space--1 / 2);
+       padding-right: ($space--1 * 0.5);
+       padding-left: ($space--1 * 0.5);
 
        @include laptop {
-          padding-right: ($space--1 / 1.25);
-          padding-left: ($space--1 / 1.25);
+          padding-right: math.div($space--1, 1.25);
+          padding-left: math.div($space--1, 1.25);
        }
 
        @include desktop {
-          padding-right: ($space--1 / 1.5);
-          padding-left: ($space--1 / 1.5);
+          padding-right: math.div($space--1, 1.5);
+          padding-left: math.div($space--1, 1.5);
        }
 
        @include tablet {
-          padding-right: ($space--1 / 1.4);
-          padding-left: ($space--1 / 1.4);
+          padding-right: math.div($space--1, 1.4);
+          padding-left: math.div($space--1, 1.4);
 
           &.p-r {
-             padding-right: $space--3 / 1.25;
+             padding-right: math.div($space--3, 1.25);
           }
 
           &.p-l {
-             padding-left: $space--3 / 1.25;
+             padding-left: math.div($space--3, 1.25);
           }
 
        }
 
        @include phone {
-          padding-right: ($space--1 / 1.3);
-          padding-left: ($space--1 / 1.3);
+          padding-right: math.div($space--1, 1.3);
+          padding-left: math.div($space--1, 1.3);
        }
 
        /* Columns, default from tablet up */
@@ -92,8 +100,10 @@
           @include render-column(10);
           @include render-column(15);
           @include render-column(20);
+          @include render-column(23);
           @include render-column(25);
           @include render-column(30);
+          @include render-column(31);
           @include render-column(33);
           @include render-column(35);
           @include render-column(40);
