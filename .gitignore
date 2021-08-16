@@ -1,13 +1,26 @@
-node_modules/
-/.next
+
+# dependencies
+.yarn
+
+# next.js
+.next
+/.vscode
+
 /out
+
+# production
 /build
+
+# misc
 .DS_Store
-**/.DS_Store
+
+# debug
 yarn-debug.log*
 yarn-error.log*
-yarn.lock*
+
+# local env files
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.DS_Store
