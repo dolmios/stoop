@@ -1,7 +1,7 @@
 
 # stoop [![npm version](https://badge.fury.io/js/stoop.svg)](https://badge.fury.io/js/stoop) 
 
-Foundational styling for static sites.
+Foundational styling for static sites. Stoop is intentionally limited, providing just enough at the core to keep _(lightweight)_ static sites inline with our development practices.
 
 &nbsp;
 
@@ -104,7 +104,7 @@ Either padding top or padding bottom. Used for responsive spacing for stacked co
 ## Contributing
 We would love contributions, in particular keeping it fresh and neat as some aspects of the project may fall behind with evolving standards. 
 
-    yarn
+    yarn install
     yarn watch
 
   
