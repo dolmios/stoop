@@ -18,7 +18,7 @@
 
 /* Breakpoints  */
 @mixin phone {
-   @media only screen and (max-width: $break--1 - 0.01rem) {
+   @media only screen and (max-width: $break--1 - 1px) {
       @content;
    }
 }
@@ -30,7 +30,7 @@
 }
 
 @mixin tablet-specific {
-   @media only screen and (min-width: $break--1) and (max-width: $break--2 - 0.01rem) {
+   @media only screen and (min-width: $break--1) and (max-width: $break--2 - 1px) {
       @content;
    }
 }
@@ -42,7 +42,7 @@
 }
 
 @mixin laptop-specific {
-   @media only screen and (min-width: $break--2) and (max-width: $break--3 - 0.01rem) {
+   @media only screen and (min-width: $break--2) and (max-width: $break--3 - 1px) {
       @content;
    }
 }
@@ -54,7 +54,7 @@
 }
 
 @mixin desktop-specific {
-   @media only screen and (min-width: $break--3) and (max-width: $break--4 - 0.01rem) {
+   @media only screen and (min-width: $break--3) and (max-width: $break--4 - 1px) {
       @content;
    }
 }
