@@ -14,8 +14,7 @@ $color--link: rgb(34, 34, 34) !default;
 
 $set--transition: all 0.17s ease-in-out !default;
 
-/* sizes */
-/* padding */
+/* spacing */
 $space--1: 1rem !default;
 $space--2: 3rem !default;
 $space--3: 9rem !default;
@@ -23,10 +22,10 @@ $space--4: 12rem !default;
 $space--5: 24rem !default;
 
 /* breakpoints (when) */
-$break--1: 53rem !default;
-$break--2: 74rem !default;
-$break--3: 95rem !default;
-$break--4: 130rem !default;
+$break--1: 600px !default;
+$break--2: 900px !default;
+$break--3: 1200px !default;
+$break--4: 1800px !default;
 
 /* widths */
 $width--phone: 95% !default;
