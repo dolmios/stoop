@@ -18,19 +18,19 @@
 
 /* Breakpoints  */
 @mixin phone {
-   @media only screen and (max-width: $break--1) {
+   @media only screen and (max-width: $break--1 - 0.01rem) {
       @content;
    }
 }
 
 @mixin tablet {
-   @media only screen and (min-width: $break--1 + 0.01rem) {
+   @media only screen and (min-width: $break--1) {
       @content;
    }
 }
 
 @mixin tablet-specific {
-   @media only screen and (min-width: $break--1 + 0.01rem) and (max-width: $break--2 - 0.01rem) {
+   @media only screen and (min-width: $break--1) and (max-width: $break--2 - 0.01rem) {
       @content;
    }
 }
