@@ -1,6 +1,6 @@
 # stoop [![npm version](https://badge.fury.io/js/stoop.svg)](https://badge.fury.io/js/stoop)
 
-Foundational styling for static sites. Stoop is intentionally limited, providing just enough at the core to keep _(lightweight)_ static sites inline with our development practices.
+Foundational styling for static sites. Stoop is intentionally limited, providing just enough at the core to keep _(lightweight)_ static sites inline with our development practices. This is a legacy system and is no longer used on projects.
 
 &nbsp;
 
