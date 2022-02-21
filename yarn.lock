@@ -12,6 +12,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lowereast/stoop@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@lowereast/stoop@workspace:."
+  dependencies:
+    prettier: ^2.5.1
+    sass: ^1.49.8
+  languageName: unknown
+  linkType: soft
+
 "@npmcli/fs@npm:^1.0.0":
   version: 1.0.0
   resolution: "@npmcli/fs@npm:1.0.0"
@@ -950,15 +959,6 @@ fsevents@~2.3.2:
   checksum: bc447f5af814fa9713aa201ec2522208ae0f4d8f3bda7a1f445a797c7b929a02720436ff7c478fb5edc4045adb02b1b88d2341b436a80798734e2494f1067b36
   languageName: node
   linkType: hard
-
-"stoop@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "stoop@workspace:."
-  dependencies:
-    prettier: ^2.5.1
-    sass: ^1.49.8
-  languageName: unknown
-  linkType: soft
 
 "string-width@npm:^1.0.1":
   version: 1.0.2
