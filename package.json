@@ -1,16 +1,11 @@
 {
-	"name": "@lowereast/stoop",
-	"description": "Foundational styling and varabies for static sites.",
-	"version": "1.0.0",
-	"author": "Lower & East",
-	"dependencies": {
-		"prettier": "^2.5.1",
-		"sass": "^1.49.8"
-	},
-	"license": "MIT",
-	"packageManager": "yarn@3.1.1",
-	"repository": "https://github.com:lowerandeast/stoop.git",
-	"scripts": {
-		"watch": "sass --watch --style=compressed src/app.scss public/app.css"
-	}
+  "name": "stoop",
+  "version": "0.1.0",
+  "description": "A small component library for quickly spinning up a pretty Next.js project.",
+  "scripts": {
+    "tidy": "pnpm lint && pnpm prettier"
+  },
+  "keywords": [],
+  "author": "Jackson Dolman <mail@dolmios.com>",
+  "license": "MIT"
 }
