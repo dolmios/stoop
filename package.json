@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "A small component library for quickly spinning up a pretty Next.js project.",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "license": "MIT",
   "type": "module",
@@ -17,10 +17,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js"
-    },
-    "./styles": {
-      "import": "./dist/globals.js",
-      "require": "./dist/globals.js"
     }
   },
   "files": [
@@ -56,7 +52,7 @@
     "build:clean": "rm -rf dist",
     "build:js": "bun build ./src/index.ts --outdir ./dist --format esm --target browser --sourcemap --external react --external react-dom --naming=directory --loader .css=text",
     "build:types": "tsc --project tsconfig.build.json",
-    "build:css": "bun build ./src/styles/globals.css --outdir ./dist --loader .css=text",
+    "build:css": "cp ./src/styles/globals.css ./dist/globals.css",
     "dev": "bun run next dev",
     "lint": "eslint . --fix",
     "prepare": "bun run build",
