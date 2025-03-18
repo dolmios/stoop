@@ -16,19 +16,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): JSX.
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<ThemeMode>("light");
 
-  // Handle hydration
+  // Initialize theme on client-side only
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Initialize theme
-  useEffect(() => {
-    if (!mounted) return;
-
     const stored = localStorage.getItem("theme") as ThemeMode;
 
     if (stored) {
       setMode(stored);
+      setMounted(true);
 
       return;
     }
@@ -36,7 +30,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): JSX.
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
     setMode(prefersDark ? "dark" : "light");
-  }, [mounted]);
+    setMounted(true);
+  }, []);
 
   // Update theme
   useEffect(() => {
@@ -47,12 +42,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): JSX.
 
   const toggleTheme = (): void => setMode((prev) => (prev === "light" ? "dark" : "light"));
 
-  // Prevent hydration mismatch
   if (!mounted) {
     return <> </>;
   }
 
-  return <ThemeContext.Provider value={{ mode, toggleTheme }}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={{ mode, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
 export function useTheme(): ThemeContextType {
