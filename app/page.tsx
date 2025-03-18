@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { JSX } from 'react';
+import { JSX } from "react";
 
-import { useTheme } from '../context/Theme';
+import { useTheme } from "../src/context/ThemeContext";
 
 export default function Home(): JSX.Element {
   const { mode, toggleTheme } = useTheme();
 
   return (
-    <main >
+    <main>
       <h1>Theme Playground</h1>
       <p>Current theme: {mode}</p>
       <button type="button" onClick={toggleTheme}>
@@ -16,4 +16,4 @@ export default function Home(): JSX.Element {
       </button>
     </main>
   );
-} 
+}
