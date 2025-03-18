@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "A small component library for quickly spinning up a pretty Next.js project.",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "license": "MIT",
   "type": "module",
@@ -52,7 +52,7 @@
     "build": "bun run build:clean && bun run build:types && bun run build:js",
     "build:clean": "rm -rf dist",
     "build:js": "bun build ./src/index.ts --outdir ./dist --target browser --minify --jsx=react",
-    "build:types": "tsc --project tsconfig.build.json",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist --jsx react-jsx src/index.ts src/types/*.d.ts",
     "preview": "bun run build && bun run preview/server.ts",
     "lint": "eslint src --fix",
     "prepare": "bun run build",

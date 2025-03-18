@@ -17,7 +17,7 @@ bun add stoop
 Import the global styles in your app:
 
 ```tsx
-import "stoop/globalStyles";
+import "stoop/styles";
 ```
 
 ### Using Components
