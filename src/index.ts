@@ -1,2 +1,2 @@
-// Context
-export { ThemeProvider, useTheme } from "./components/ThemeProvider";
+// Components
+export { Button } from "./components/Button/Button";
