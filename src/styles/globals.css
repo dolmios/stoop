@@ -2,7 +2,7 @@
   /* Colors */
   --color-text: #000000;
   --color-background: #ffffff;
-  --color-border: rgba(0, 0, 0, 0.5);
+  --color-border: rgba(0, 0, 0, 0.1);
   --color-primary: #000000;
   --color-muted: #666666;
 
@@ -29,12 +29,14 @@
   --breakpoint-desktop: 1440px;
 }
 
-[data-theme="dark"] {
-  --color-text: #ffffff;
-  --color-background: #212121;
-  --color-border: rgba(255, 255, 255, 0.5);
-  --color-primary: #ffffff;
-  --color-muted: #424242;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text: #ffffff;
+    --color-background: #000000;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-primary: #ffffff;
+    --color-muted: #999999;
+  }
 }
 
 /* Reset */
@@ -57,12 +59,9 @@ body {
   font-family:
     system-ui,
     -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
     sans-serif;
   font-size: 1.6rem;
   line-height: 1.5;
-  background-color: inherit;
-  color: inherit;
+  margin: 0;
+  padding: 0;
 }
