@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stoop Components Preview</title>
+    <link rel="stylesheet" href="../dist/index.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import { Button } from '../dist/index.js';
+        import React from 'https://esm.sh/react@19';
+        import ReactDOM from 'https://esm.sh/react-dom@19/client';
+
+        const App = () => React.createElement(Button, {
+            onClick: () => alert('Button clicked!'),
+            children: 'Click me'
+        });
+
+        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    </script>
+</body>
+</html> 

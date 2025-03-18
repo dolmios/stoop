@@ -1,3 +1,0 @@
-[build]
-css_modules = true
-css_modules_pattern = "[name]__[local]--[hash:base64:5]" 
