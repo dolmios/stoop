@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "A small component library for quickly spinning up a pretty Next.js project.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "dependencies": {
     "clsx": "^2.1.1",
