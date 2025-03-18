@@ -29,3 +29,8 @@ export interface Theme {
     desktop: string;
   };
 }
+
+declare module "*.module.css" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
