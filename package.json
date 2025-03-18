@@ -1,11 +1,14 @@
 {
   "name": "stoop",
   "description": "A small component library for quickly spinning up a pretty Next.js project.",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "license": "MIT",
   "type": "module",
-  "sideEffects": true,
+  "sideEffects": [
+    "**/*.css",
+    "./dist/index.js"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +18,7 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
-    "./styles": "./dist/styles.css"
+    "./styles": "./dist/globals.css"
   },
   "files": [
     "dist"
@@ -48,9 +51,9 @@
   "scripts": {
     "build": "bun run build:clean && bun run build:types && bun run build:js && bun run build:css",
     "build:clean": "rm -rf dist",
-    "build:js": "bun build ./src/index.ts --outdir ./dist --format esm --target browser --sourcemap --external react --external react-dom",
+    "build:js": "bun build ./src/index.ts --outdir ./dist --format esm --target browser --sourcemap --external react --external react-dom --naming=directory",
     "build:types": "tsc --project tsconfig.build.json",
-    "build:css": "mkdir -p dist/styles && cp src/styles/globals.css dist/styles/",
+    "build:css": "cp ./src/styles/globals.css ./dist/globals.css",
     "dev": "bun run next dev",
     "lint": "eslint . --fix",
     "prepare": "bun run build",
