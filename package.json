@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "A small component library for quickly spinning up a pretty Next.js project.",
-  "version": "0.0.9",
+  "version": "0.0.19",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "license": "MIT",
   "type": "module",
@@ -17,7 +17,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js"
-    }
+    },
+    "./styles": "./dist/index.css"
   },
   "files": [
     "dist"
@@ -34,10 +35,10 @@
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.11",
     "@types/react-dom": "^19.0.4",
+    "bun-types": "^1.2.5",
     "clsx": "^2.1.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.22.0",
     "eslint-config-dolmios": "^2.0.6",
-    "next": "^15.2.3",
     "prettier": "^3.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -48,15 +49,14 @@
     "react-dom": ">=19.0.0"
   },
   "scripts": {
-    "build": "bun run build:clean && bun run build:types && bun run build:js && bun run build:css",
+    "build": "bun run build:clean && bun run build:types && bun run build:js",
     "build:clean": "rm -rf dist",
-    "build:js": "bun build ./src/index.ts --outdir ./dist --format esm --target browser --sourcemap --external react --external react-dom --naming=directory --loader .css=text",
+    "build:js": "bun build ./src/index.ts --outdir ./dist --target browser --minify --jsx=react",
     "build:types": "tsc --project tsconfig.build.json",
-    "build:css": "cp ./src/styles/globals.css ./dist/globals.css",
-    "dev": "bun run next dev",
-    "lint": "eslint . --fix",
+    "preview": "bun run build && bun run preview/server.ts",
+    "lint": "eslint src --fix",
     "prepare": "bun run build",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write src"
   },
   "prettier": "eslint-config-dolmios/configs/prettier"
 }
