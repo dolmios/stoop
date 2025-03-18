@@ -14,4 +14,4 @@
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "examples", "src/app"]
-} 
+}
