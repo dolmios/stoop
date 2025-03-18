@@ -2,7 +2,7 @@
 
 import { JSX } from "react";
 
-import { useTheme } from "../src/context/ThemeContext";
+import { useTheme } from "../src/components/ThemeProvider";
 
 export default function Home(): JSX.Element {
   const { mode, toggleTheme } = useTheme();

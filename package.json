@@ -1,28 +1,14 @@
 {
   "name": "stoop",
   "description": "A small component library for quickly spinning up a pretty Next.js project.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Jackson Dolman <mail@dolmios.com>",
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "sass": "^1.71.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.13.10",
-    "@types/react": "^19.0.11",
-    "@types/react-dom": "^19.0.4",
-    "eslint": "^9.22.0",
-    "eslint-config-dolmios": "^2.0.6",
-    "next": "^15.2.3",
-    "prettier": "^3.5.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "typescript": "^5.8.2"
-  },
-  "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
-  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -36,12 +22,27 @@
   "keywords": [
     "components",
     "react",
-    "ui"
+    "ui",
+    "nextjs",
+    "theme",
+    "dark-mode"
   ],
-  "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "prettier": "eslint-config-dolmios/configs/prettier",
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.11",
+    "@types/react-dom": "^19.0.4",
+    "eslint": "^8.57.1",
+    "eslint-config-dolmios": "^2.0.6",
+    "next": "^15.2.3",
+    "prettier": "^3.5.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.8.2"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
   "scripts": {
     "build": "bun run build:clean && bun run build:types && bun run build:js",
     "build:clean": "rm -rf dist",
@@ -52,7 +53,5 @@
     "prepare": "bun run build",
     "prettier": "prettier --write ."
   },
-  "sideEffects": false,
-  "type": "module",
-  "types": "./dist/index.d.ts"
+  "prettier": "eslint-config-dolmios/configs/prettier"
 }
