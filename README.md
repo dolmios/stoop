@@ -1,62 +1,37 @@
-
 # [stoop](https://github.com/dolmios/stoop)
 > A small component library for quickly spinning up a pretty Next.js project. 
 
 ![Stoop Kid Steps Off](https://nomeatballs.files.wordpress.com/2012/08/stoop-kid-steps-off.png)
 
-  
-
 ## Install
 
-  
-
 ```sh
-pnpm install
+bun add stoop
 ```
 
-  
+## Development
 
-## Usage
-
-  
-
-Open [http://localhost:420](http://localhost:420) in the browser. If there are linting issues, the development server won’t start.
-
-  
+For local development:
 
 ```sh
-pnpm dev
-```
+# Install dependencies
+bun install
 
-  
+# Start development server
+bun run dev
 
-Before you deploy, lint your code and format it. Then run the build.
+# Build the library
+bun run build
 
-  
-
-```sh
-pnpm tidy
-pnpm build
+# Lint and format
+bun run lint
+bun run prettier
 ```
 
 ## Contributing
 
-  
-
-Feel free to get in touch with feedback, advice or suggestions. See [Conventional Commits](https://gist.github.com/dolmios/0e33c579a500d87fc6f44df6cde97259) for new contributors.
-
-  
-
-## Acknowledgments
-
-  
-
-- [stitches](https://github.com/stitchesjs/stitches)
-
-  
+Feel free to get in touch with feedback, advice or suggestions. 
 
 ## License
 
-  
-
-MIT © [Jackson Dolman](https://github.com/dolmios)
+MIT © 2025 [Jackson Dolman](https://github.com/dolmios)
