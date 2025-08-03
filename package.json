@@ -1,14 +1,11 @@
 {
   "name": "stoop",
-  "description": "A small component library for quickly spinning up a pretty Next.js project.",
+  "description": "A lightweight, polymorphic React component library with intuitive design tokens and built-in styling system.",
   "version": "0.0.20",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "license": "MIT",
   "type": "module",
-  "sideEffects": [
-    "**/*.css",
-    "./dist/index.js"
-  ],
+  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,32 +14,34 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js"
-    },
-    "./styles": "./dist/index.css"
+    }
   },
   "files": [
     "dist"
   ],
   "keywords": [
-    "components",
     "react",
+    "components",
     "ui",
-    "nextjs",
-    "theme",
-    "dark-mode"
+    "design-system",
+    "styled-components",
+    "polymorphic",
+    "css-in-js",
+    "layout",
+    "typescript"
   ],
   "devDependencies": {
-    "@types/node": "^22.13.10",
-    "@types/react": "^19.0.11",
-    "@types/react-dom": "^19.0.4",
-    "bun-types": "^1.2.5",
-    "clsx": "^2.1.0",
-    "eslint": "^9.22.0",
-    "eslint-config-dolmios": "^2.0.6",
-    "prettier": "^3.5.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "typescript": "^5.8.2"
+    "@types/node": "^22.17.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "bun-types": "^1.2.19",
+    "clsx": "^2.1.1",
+    "eslint": "^9.32.0",
+    "eslint-config-dolmios": "^2.0.10",
+    "prettier": "^3.6.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.9.2"
   },
   "peerDependencies": {
     "react": ">=19.0.0",
@@ -51,12 +50,16 @@
   "scripts": {
     "build": "bun run build:clean && bun run build:types && bun run build:js",
     "build:clean": "rm -rf dist",
-    "build:js": "bun build ./src/index.ts --outdir ./dist --target browser --minify --jsx=react",
-    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist --jsx react-jsx src/index.ts src/types/*.d.ts",
-    "preview": "bun run build && bun run preview/server.ts",
+    "build:js": "bun build ./src/index.ts --outdir ./dist --target browser --minify --jsx=react --splitting --external react --external react-dom",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist --jsx react-jsx src/index.ts",
+    "dev": "bun run build && bun run preview/dev.ts",
     "lint": "eslint src --fix",
+    "format": "prettier --write src",
     "prepare": "bun run build",
-    "prettier": "prettier --write src"
+    "kill": "kill $(lsof -t -i:3000)"
   },
-  "prettier": "eslint-config-dolmios/configs/prettier"
+  "prettier": "eslint-config-dolmios/configs/prettier",
+  "dependencies": {
+    "@floating-ui/dom": "^1.7.3"
+  }
 }
