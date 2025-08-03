@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "A lightweight, polymorphic React component library with intuitive design tokens and built-in styling system.",
-  "version": "0.0.20",
+  "version": "0.1.0",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "license": "MIT",
   "type": "module",
