@@ -1,45 +1,63 @@
 # [stoop](https://github.com/dolmios/stoop)
 
-> A small component library for quickly spinning up a pretty Next.js project.
+> A lightweight, polymorphic React component library with intuitive design tokens and built-in theming system.
 
 ![Stoop Kid Steps Off](https://nomeatballs.files.wordpress.com/2012/08/stoop-kid-steps-off.png)
 
 ## Install
 
 ```sh
+npm install stoop
+# or
 bun add stoop
 ```
 
 ## Usage
 
-### Global Styles
+### Setup Provider
 
-Import the global styles in your app:
+Wrap your app with the `StoopProvider`:
 
 ```tsx
-import "stoop/styles";
+import { StoopProvider } from "stoop";
+
+function App() {
+  return (
+    <StoopProvider theme="light">
+      {/* Your app content */}
+    </StoopProvider>
+  );
+}
 ```
 
 ### Using Components
 
 ```tsx
-import { Button } from "stoop";
+import { Stack, Text, Button } from "stoop";
 
 function MyComponent() {
-  return <Button>Click me</Button>;
+  return (
+    <Stack gap="medium">
+      <Text as="h1">Welcome</Text>
+      <Button>Click me</Button>
+    </Stack>
+  );
 }
 ```
 
-### Using CSS Variables
+### Theme Switching
 
-The theme system provides CSS variables that you can use in your components:
+```tsx
+import { useTheme, Button } from "stoop";
 
-```css
-.my-component {
-  color: var(--color-text);
-  background-color: var(--color-background);
-  padding: var(--space-medium);
-  border-radius: var(--radius-small);
+function ThemeToggle() {
+  const { themeName, setTheme } = useTheme();
+  
+  return (
+    <Button onClick={() => setTheme(themeName === 'light' ? 'dark' : 'light')}>
+      Switch to {themeName === 'light' ? 'Dark' : 'Light'}
+    </Button>
+  );
 }
 ```
 
