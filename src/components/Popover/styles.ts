@@ -15,7 +15,6 @@ export const PopoverStyled = styled(
     border: `1px solid $border`,
 
     // Sharp edges (key design language requirement)
-    borderRadius: "$small",
 
     // Scrollable content
     maxHeight: "70vh",

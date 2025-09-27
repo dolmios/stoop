@@ -15,3 +15,4 @@ export { MenuDemo } from './MenuDemo';
 export { SelectDemo } from './SelectDemo';
 export { PopoverDemo } from './PopoverDemo';
 export { ModalDemo } from './ModalDemo';
+export { HorizonDemo } from './HorizonDemo';

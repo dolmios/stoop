@@ -71,6 +71,8 @@ export type Theme = {
     text: string;
   };
   spacing: typeof import("./theme").spacing;
+  fontSizes: typeof import("./theme").fontSizes;
+  lineHeights: typeof import("./theme").lineHeights;
   typography: typeof import("./theme").typography;
   fonts: typeof import("./theme").fonts;
   transitions: typeof import("./theme").transitions;
@@ -79,6 +81,7 @@ export type Theme = {
   borderRadius: typeof import("./theme").borderRadius;
   breakpoints: typeof import("./theme").breakpoints;
   media: typeof import("./theme").media;
+  shadows: typeof import("./theme").shadows;
 };
 export type ThemeColors = {
   background: string;

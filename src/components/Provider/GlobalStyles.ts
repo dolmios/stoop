@@ -6,7 +6,7 @@ import { lightTheme } from "../../styles/theme";
  * Generate global CSS styles based on current theme
  */
 export function createGlobalStyles(theme: Theme = lightTheme): string {
-  const { colors, fonts, transitions, typography } = theme;
+  const { colors, fonts, fontSizes, lineHeights, transitions, typography } = theme;
 
   return `
     /* Custom font loading */
@@ -36,8 +36,8 @@ export function createGlobalStyles(theme: Theme = lightTheme): string {
     /* Base HTML styles with design tokens */
     html {
       font-family: ${fonts.default};
-      font-size: ${typography.p};
-      line-height: ${typography.normalHeight};
+      font-size: ${fontSizes.p};
+      line-height: ${lineHeights.default};
       -webkit-text-size-adjust: 100%;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -48,7 +48,7 @@ export function createGlobalStyles(theme: Theme = lightTheme): string {
       color: ${colors.text};
       background-color: ${colors.background};
       font-family: ${fonts.default};
-      line-height: ${typography.normalHeight};
+      line-height: ${lineHeights.default};
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
       transition: background-color 0.2s ease, color 0.2s ease;
@@ -123,27 +123,27 @@ export function createGlobalStyles(theme: Theme = lightTheme): string {
     h1, h2, h3, h4, h5, h6 {
       font-family: ${fonts.heading};
       font-weight: ${typography.bold};
-      line-height: ${typography.tight};
+      line-height: ${lineHeights.small};
       margin: 0; /* Reset margins - components handle their own spacing */
     }
 
-    h1 { font-size: ${typography.h1}; }
-    h2 { font-size: ${typography.h2}; }
-    h3 { font-size: ${typography.h3}; }
-    h4 { font-size: ${typography.h4}; }
-    h5 { font-size: ${typography.h5}; }
-    h6 { font-size: ${typography.h6}; }
+    h1 { font-size: ${fontSizes.h1}; }
+    h2 { font-size: ${fontSizes.h2}; }
+    h3 { font-size: ${fontSizes.h3}; }
+    h4 { font-size: ${fontSizes.h4}; }
+    h5 { font-size: ${fontSizes.h5}; }
+    h6 { font-size: ${fontSizes.h6}; }
 
     p {
       font-family: ${fonts.default};
-      font-size: ${typography.p};
-      line-height: ${typography.relaxed};
+      font-size: ${fontSizes.p};
+      line-height: ${lineHeights.relaxed};
       margin: 0; /* Reset margins - components handle their own spacing */
     }
 
     small {
-      font-size: ${typography.small};
-      line-height: ${typography.normalHeight};
+      font-size: ${fontSizes.small};
+      line-height: ${lineHeights.default};
     }
 
     strong {

@@ -47,48 +47,42 @@ export const fonts = {
   heading: "'Standard Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
 } as const;
 
-export const typography = {
-  bold: "700",
-  div: "inherit",
-  // Font sizes - responsive using clamp for better scaling
+// Font sizes - responsive using clamp for better scaling  
+export const fontSizes = {
   h1: "clamp(2rem, 1.75rem + 1vw, 3rem)", // 32-48px
   h2: "clamp(1.75rem, 1.5rem + 0.75vw, 2.5rem)", // 28-40px
   h3: "clamp(1.5rem, 1.25rem + 0.75vw, 2rem)", // 24-32px
   h4: "clamp(1.25rem, 1.125rem + 0.5vw, 1.5rem)", // 20-24px
   h5: "clamp(1.125rem, 1rem + 0.5vw, 1.25rem)", // 18-20px
   h6: "clamp(1rem, 0.9375rem + 0.25vw, 1.125rem)", // 16-18px
-  label: "clamp(0.8125rem, 0.75rem + 0.25vw, 0.875rem)", // 13-14px
-  medium: "500",
-  micro: "clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem)", // 12-13px
-  normalHeight: "1.4",
-  // Font weights
-  normalWeight: "400",
-
   p: "clamp(0.9375rem, 0.875rem + 0.25vw, 1rem)", // 15-16px
-  relaxed: "1.6",
-  semibold: "600",
-
   small: "clamp(0.8125rem, 0.75rem + 0.25vw, 0.875rem)", // 13-14px
-  span: "inherit",
-  strong: "inherit",
-  // Line heights
-  tight: "1.2",
+} as const;
+
+// Line heights
+export const lineHeights = {
+  default: "1.4",
+  relaxed: "1.6",
+  small: "1.2",
+} as const;
+
+// Font weights and other typography utilities
+export const typography = {
+  bold: "700",
+  medium: "500",
+  normalWeight: "400",
+  semibold: "600",
 } as const;
 
 // Transitions - standardized for consistency
 export const transitions = {
   default: "all 0.2s ease",
-  fast: "all 0.15s ease",
-  slow: "all 0.3s ease",
-  spring: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
 } as const;
 
 // Opacities - for muted states and overlays
 export const opacities = {
   disabled: "0.5",
-  light: "0.55",
   muted: "0.7",
-  overlay: "0.8",
 } as const;
 
 // Z-indices - layering system
@@ -102,9 +96,12 @@ export const zIndices = {
 } as const;
 
 export const borderRadius = {
-  medium: "6px", // for badges, buttons
-  none: "0px",
-  small: "3px", // for cards, modals, popovers, etc
+  default: "6px", // for badges only
+} as const;
+
+// Box shadows - for elevation and depth
+export const shadows = {
+  subtle: "0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06)",
 } as const;
 
 // Media query helpers
@@ -120,8 +117,11 @@ export const lightTheme = {
   breakpoints,
   colors: lightColors,
   fonts,
+  fontSizes,
+  lineHeights,
   media,
   opacities,
+  shadows,
   spacing,
   transitions,
   typography,
@@ -133,8 +133,11 @@ export const darkTheme = {
   breakpoints,
   colors: darkColors,
   fonts,
+  fontSizes,
+  lineHeights,
   media,
   opacities,
+  shadows,
   spacing,
   transitions,
   typography,
@@ -151,11 +154,14 @@ export type ColorToken = keyof typeof colors;
 export type SpacingToken = keyof typeof spacing;
 export type BorderRadiusToken = keyof typeof borderRadius;
 export type BreakpointToken = keyof typeof breakpoints;
+export type FontSizeToken = keyof typeof fontSizes;
+export type LineHeightToken = keyof typeof lineHeights;
 export type TypographyToken = keyof typeof typography;
 export type FontToken = keyof typeof fonts;
 export type TransitionToken = keyof typeof transitions;
 export type OpacityToken = keyof typeof opacities;
 export type ZIndexToken = keyof typeof zIndices;
+export type ShadowToken = keyof typeof shadows;
 
 // Theme token generator - returns theme paths as strings for the compiler to resolve
 function createThemeTokens<T extends Record<string, unknown>>(category: string, tokens: T): T {
@@ -175,8 +181,11 @@ export const theme = {
   breakpoints,
   colors: createThemeTokens("colors", lightColors),
   fonts,
+  fontSizes,
+  lineHeights,
   media,
   opacities,
+  shadows,
   spacing: createThemeTokens("spacing", spacing),
   transitions,
   // Static exports for non-themeable tokens

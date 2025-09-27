@@ -57,19 +57,21 @@ export const CardStyled = styled(
 export const CardHeaderStyled = styled(
   "div",
   {
-    borderBottom: `1px solid $border`,
-    fontWeight: "600",
+    alignItems: "center",
+    display: "flex",
+    flexShrink: 0,
+    justifyContent: "space-between",
   },
   {
     padding: {
       default: {
-        padding: `$medium $medium $small $medium`,
+        padding: `$small $medium $small $medium`,
       },
       minimal: {
-        padding: "0",
+        padding: `$smaller $smaller`,
       },
       small: {
-        padding: `$small $small $smaller $small`,
+        padding: `$smaller $small $smaller $small`,
       },
     },
   },
@@ -78,7 +80,6 @@ export const CardHeaderStyled = styled(
 export const CardFooterStyled = styled(
   "div",
   {
-    borderTop: `1px solid $border`,
     marginTop: "auto",
   },
   {

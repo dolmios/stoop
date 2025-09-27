@@ -11,8 +11,6 @@ export const SelectDropdownStyled = styled("div", {
   // Default styling
   backgroundColor: "$fill",
   border: `1px solid $border`,
-
-  // Sharp edges (key design language requirement)
   borderRadius: "$small",
 
   maxHeight: "300px",

@@ -18,12 +18,14 @@ import { StackDemo } from './StackDemo';
 import { TabsDemo } from './TabsDemo';
 import { TextareaDemo } from './TextareaDemo';
 import { TextDemo } from './TextDemo';
+import { HorizonDemo } from './HorizonDemo';
 
 // Component registry
 const components = [
   { category: 'Layout', component: StackDemo, id: 'stack', name: 'Stack' },
   { category: 'Layout', component: SectionDemo, id: 'section', name: 'Section' },
   { category: 'Layout', component: CardDemo, id: 'card', name: 'Card' },
+  { category: 'Layout', component: HorizonDemo, id: 'horizon', name: 'Horizon' },
   { category: 'Typography', component: TextDemo, id: 'text', name: 'Text' },
   { category: 'Interactive', component: ButtonDemo, id: 'button', name: 'Button' },
   { category: 'Interactive', component: BadgeDemo, id: 'badge', name: 'Badge' },

@@ -41,7 +41,6 @@ export const TabButtonStyled = styled(
     },
     background: "none",
     border: "none",
-    borderRadius: `$small $small 0 0`,
     color: "$text",
     cursor: "pointer",
     fontSize: "1rem",

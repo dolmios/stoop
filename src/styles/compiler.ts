@@ -22,8 +22,7 @@ const EMPTY_CSS: CSSObject = Object.freeze({});
 let ThemeContext: Context<any> | null = null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 // Dynamic import to avoid circular dependency
-function getThemeContext(): Context<any> | null {
-  // eslint-disable-line @typescript-eslint/no-explicit-any
+function getThemeContext(): Context<any> | null { // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!ThemeContext) {
     try {
       // Lazy import the provider context
@@ -86,6 +85,12 @@ function resolveSingleToken(token: string, currentTheme: Theme): string {
       return currentTheme.spacing[spacingKey] || token;
     }
 
+    if (token.startsWith("theme.borderRadius.")) {
+      const borderRadiusKey = token.replace("theme.borderRadius.", "") as keyof Theme["borderRadius"];
+
+      return currentTheme.borderRadius[borderRadiusKey] || token;
+    }
+
     return token;
   }
 
@@ -111,13 +116,17 @@ function resolveSingleToken(token: string, currentTheme: Theme): string {
       return currentTheme.zIndices[zIndexKey]?.toString() || token;
     }
 
-    // Handle shorthand tokens - check colors first, then spacing, then zIndices
+    // Handle shorthand tokens - check colors first, then spacing, then borderRadius, then zIndices
     if (tokenName in currentTheme.colors) {
       return currentTheme.colors[tokenName as keyof Theme["colors"]];
     }
 
     if (tokenName in currentTheme.spacing) {
       return currentTheme.spacing[tokenName as keyof Theme["spacing"]];
+    }
+
+    if (tokenName in currentTheme.borderRadius) {
+      return currentTheme.borderRadius[tokenName as keyof Theme["borderRadius"]];
     }
 
     if (tokenName in currentTheme.zIndices) {

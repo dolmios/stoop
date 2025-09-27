@@ -117,7 +117,15 @@ export function Modal({
               variant="default">
               {/* Header with title and close button */}
               <ModalHeaderStyled>
-                <Text as="h3" css={{ flex: 1, margin: 0 }}>
+                <Text 
+                  as="span" 
+                  css={{ 
+                    flex: 1, 
+                    fontSize: "$small",
+                    fontWeight: "$semibold",
+                    margin: 0 
+                  }}
+                >
                   {title}
                 </Text>
                 <Button

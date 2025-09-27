@@ -13,7 +13,7 @@ export const ButtonStyled = styled(
     appearance: "none",
     // Border styling (matches Badge)
     border: "1px solid transparent",
-    borderRadius: "$medium",
+    borderRadius: "$small",
     // Layout
     display: "inline-flex",
 
@@ -83,7 +83,8 @@ export const ButtonStyled = styled(
         "&:hover:not(:disabled)": {
           opacity: "0.9",
         },
-        backgroundColor: "$brand",
+        backgroundColor: "$text",
+        color: "$background",
       },
       secondary: {
         "&:active:not(:disabled)": {

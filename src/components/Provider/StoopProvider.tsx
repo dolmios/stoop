@@ -4,15 +4,22 @@ import type { ThemeName, Theme } from "../../styles/types";
 
 import { themes, lightTheme } from "../../styles/theme";
 import { injectGlobalStyles } from "./GlobalStyles";
+import { injectCriticalCSS } from "./CriticalStyles";
+import { useHydration } from "./useHydration";
 
 // Provider configuration
 export interface StoopProviderConfig {
   /** Whether to inject global styles and CSS reset */
   injectGlobalStyles?: boolean;
+  /** Whether to inject critical CSS immediately to prevent layout shift. 
+   * Default: false (SSR-first - inject critical CSS server-side for best performance) */
+  injectCriticalCSS?: boolean;
   /** Custom CSS to inject */
   customCSS?: string;
-  /** Initial theme (defaults to 'light') */
+  /** Initial theme (defaults to 'light'). Should match theme used in server-side critical CSS */
   theme?: ThemeName;
+  /** Whether to show a loading state during hydration */
+  showLoadingState?: boolean;
 }
 
 // Context for Stoop UI configuration and theming
@@ -21,12 +28,16 @@ interface StoopContextValue extends StoopProviderConfig {
   themeName: ThemeName;
   toggleTheme: () => void;
   setTheme: (theme: ThemeName) => void;
+  isHydrated: boolean;
 }
 
 const StoopContext = createContext<StoopContextValue>({
   currentTheme: lightTheme,
   injectGlobalStyles: true,
+  injectCriticalCSS: false, // SSR by default
+  isHydrated: false,
   setTheme: () => {},
+  showLoadingState: false,
   theme: "light",
   themeName: "light",
   toggleTheme: () => {},
@@ -38,73 +49,97 @@ export interface StoopProviderProps {
   config?: StoopProviderConfig;
 }
 
-// Helper functions for theme persistence
-function getStoredTheme(): ThemeName | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return localStorage.getItem("stoop-theme") as ThemeName;
-  } catch {
-    return null;
-  }
-}
-
-function storeTheme(theme: ThemeName): void {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem("stoop-theme", theme);
-  } catch {
-    // Ignore storage errors
-  }
+// Only inject critical CSS immediately if not using SSR approach
+if (typeof window !== "undefined") {
+  // This will be overridden by the provider config
 }
 
 /**
- * Stoop UI Provider - Sets up global styles, configuration, and theming
- * Wrap your app with this component to enable Stoop UI components
- * Theme choice persists across browser sessions
+ * Stoop UI Provider - Works with both Next.js App Router and Pages Router
+ * Prevents hydration errors and layout shift with SSR
+ * 
+ * For best performance:
+ * 1. Inject getCriticalCSS() server-side (_document.tsx or layout.tsx)
+ * 2. Use this provider with the same initial theme
  */
 export function StoopProvider({
   children,
-  config = { injectGlobalStyles: true, theme: "light" },
+  config = { 
+    injectGlobalStyles: true, 
+    injectCriticalCSS: false, // SSR by default - inject in _document.tsx
+    showLoadingState: false,
+    theme: "light" 
+  },
 }: StoopProviderProps): JSX.Element {
-  // Initialize theme from localStorage or config
-  const [themeName, setThemeName] = useState<ThemeName>(() => {
-    const stored = getStoredTheme();
-
-    return stored || config.theme || "light";
-  });
+  // Track hydration state
+  const isHydrated = useHydration();
+  
+  // SSR-safe theme management: prevent hydration mismatch
+  const [clientTheme, setClientTheme] = useState<ThemeName>(config.theme || "light");
+  
+  // Server + hydration: use config theme. Post-hydration: use client theme (from localStorage)
+  const themeName = isHydrated ? clientTheme : (config.theme || "light");
   const currentTheme = themes[themeName];
 
+  // Load stored theme after hydration to prevent SSR mismatch
+  useEffect(() => {
+    try {
+      const storedTheme = localStorage.getItem("stoop-theme") as ThemeName;
+      if (storedTheme && themes[storedTheme]) {
+        setClientTheme(storedTheme);
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, []);
+
   const toggleTheme = (): void => {
-    setThemeName((prev) => {
-      const newTheme = prev === "light" ? "dark" : "light";
-
-      storeTheme(newTheme);
-
-      return newTheme;
-    });
+    const newTheme = clientTheme === "light" ? "dark" : "light";
+    setClientTheme(newTheme);
+    
+    // Persist to localStorage
+    try {
+      localStorage.setItem("stoop-theme", newTheme);
+    } catch {
+      // Ignore storage errors
+    }
   };
 
   const setTheme = (theme: ThemeName): void => {
-    setThemeName(theme);
-    storeTheme(theme);
+    setClientTheme(theme);
+    
+    // Persist to localStorage
+    try {
+      localStorage.setItem("stoop-theme", theme);
+    } catch {
+      // Ignore storage errors
+    }
   };
 
   const contextValue: StoopContextValue = {
     ...config,
     currentTheme,
+    isHydrated,
     setTheme,
     themeName,
     toggleTheme,
   };
 
+  // Inject critical CSS immediately on client-side
   useEffect(() => {
-    // Inject global styles if enabled
-    if (config.injectGlobalStyles !== false) {
+    if (config.injectCriticalCSS !== false) {
+      injectCriticalCSS();
+    }
+  }, [config.injectCriticalCSS]);
+
+  useEffect(() => {
+    // Only inject full styles after hydration to prevent layout shift
+    if (isHydrated && config.injectGlobalStyles !== false) {
       injectGlobalStyles(currentTheme);
     }
 
     // Inject custom CSS if provided
-    if (config.customCSS) {
+    if (isHydrated && config.customCSS) {
       const style = document.createElement("style");
 
       style.id = "stoop-custom-styles";
@@ -120,16 +155,43 @@ export function StoopProvider({
         }
       };
     }
-  }, [config.injectGlobalStyles, config.customCSS, currentTheme]);
+  }, [config.injectGlobalStyles, config.customCSS, currentTheme, isHydrated]);
 
   // Add theme class to document body for CSS targeting
   useEffect(() => {
-    document.body.setAttribute("data-theme", themeName);
+    if (isHydrated) {
+      document.body.setAttribute("data-theme", themeName);
+      
+      // Remove loading class once styled
+      document.body.classList.remove("stoop-loading");
+      document.body.classList.add("stoop-ready");
 
-    return (): void => {
-      document.body.removeAttribute("data-theme");
-    };
-  }, [themeName]);
+      return (): void => {
+        document.body.removeAttribute("data-theme");
+        document.body.classList.remove("stoop-ready");
+      };
+    }
+  }, [themeName, isHydrated]);
+
+  // Optionally show loading state during hydration
+  if (config.showLoadingState && !isHydrated) {
+    return (
+      <div className="stoop-loading" style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        bottom: 0, 
+        backgroundColor: 'white', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        zIndex: 9999 
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return <StoopContext.Provider value={contextValue}>{children}</StoopContext.Provider>;
 }

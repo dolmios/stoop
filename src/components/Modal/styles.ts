@@ -85,12 +85,10 @@ export const ModalStyled = styled(
 
 export const ModalHeaderStyled = styled("div", {
   alignItems: "center",
-  borderBottom: `1px solid $border`,
   display: "flex",
   flexShrink: 0,
   justifyContent: "space-between",
-  padding: "$large",
-  paddingBottom: "$medium",
+  padding: "$small $medium $small $medium",
 });
 
 export const ModalTitleStyled = styled("h2", {
@@ -110,7 +108,6 @@ export const ModalCloseButtonStyled = styled("button", {
   },
   background: "none",
   border: "none",
-  borderRadius: "$small",
   color: "$text",
   cursor: "pointer",
 
@@ -128,7 +125,6 @@ export const ModalContentStyled = styled("div", {
 });
 
 export const ModalFooterStyled = styled("div", {
-  borderTop: `1px solid $border`,
   display: "flex",
   gap: "$small",
   justifyContent: "flex-end",
