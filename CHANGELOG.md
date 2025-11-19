@@ -5,45 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - Initial Release
+## [0.2.0] - 2025-11-19
 
-Initial usable release of Stoop as a CSS-in-JS library.
+Initial usable release of Stoop as a CSS-in-JS library with comprehensive theme management.
 
 ### Added
 
-- `createStoop()` factory function
-- `styled()` function for creating styled components
-- `css()` function for generating CSS classes
-- `createTheme()` function for theme extension
-- `globalCss()` function for global styles
-- `keyframes()` function for CSS animations
-- `getCssText()` function for SSR support
-- `warmCache()` function for cache pre-warming
-- `ThemeContext` React context for theme access
-- Theme token system with `$` prefix syntax
-- Variant system for component variations
-- Utility functions support
-- CSS variables for theme tokens
+#### Core APIs
+- `createStoop()` - Factory function for creating Stoop instances
+- `styled()` - Create polymorphic styled components with variants
+- `css()` - Generate CSS classes with theme token support
+- `createTheme()` - Extend and merge themes
+- `globalCss()` - Inject global styles
+- `keyframes()` - Create CSS animations with theme tokens
+
+#### Theme Management
+- Multi-theme support with automatic merging
+- Built-in `Provider` component for theme state management
+- `useTheme()` hook with `setTheme()` and `toggleTheme()` functions
+- Theme token system with `$` prefix syntax (e.g., `$colors.primary`)
+- CSS variables for dynamic theme switching
+- Automatic theme merging - partial themes inherit from default theme
 - Property-aware token resolution via themeMap
+
+#### SSR & Performance
+- `getCssText(theme?)` - Get CSS for server-side rendering with optional theme
+- `preloadTheme(theme)` - Inject theme variables before React renders (FOUC prevention)
+- `warmCache(styles)` - Pre-compile CSS objects for faster initial render
+- CSS rule deduplication
+- Token index cache for O(1) lookups
+
+#### Developer Experience
+- Full TypeScript type inference for theme tokens and variants
+- Polymorphic components with `as` prop
+- Component targeting with symbols
+- Variant system (string and boolean variants)
+- Utility functions support
 - Prefix support for multiple Stoop instances
-- TypeScript type inference for theme tokens and variants
-- SSR support
 - React 19+ support
 
 ### Architecture
 
-- Modular structure: `api/`, `core/`, `inject/`, `utils/`
+- Modular structure: `api/`, `core/`, `inject/`, `utils/`, `types/`
 - CSS compilation engine with caching
-- Single stylesheet injection
+- Single stylesheet injection (browser and SSR)
 - CSS rule deduplication
 - Token index cache for O(1) lookups
 - Symbol-based component targeting
+- Centralized theme variable updates via Provider
 
-### Limitations
+### Documentation
 
-- No compound variants
+- Comprehensive API reference (`docs/API.md`)
+- Getting started guide (`docs/GUIDE.md`)
+- Architecture documentation (`docs/ARCHITECTURE.md`)
+- Interactive preview application with live examples
+- Next.js integration examples (App Router and Pages Router)
+
+### Known Limitations
+
+- No compound variants (planned for future release)
 - Runtime-only CSS generation (no build-time extraction)
-- Basic utility function support
+- Basic utility function support (custom utilities via config)
 
 ## [0.1.0] - Pre-release
 
