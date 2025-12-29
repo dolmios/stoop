@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- update CHANGELOG for v0.3.0
 - bump version to 0.3.0 for release
 - add infrastructure for monorepo publishing and deployment
 - restructure project into monorepo
