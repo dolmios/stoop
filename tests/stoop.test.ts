@@ -162,6 +162,68 @@ describe("Stoop", () => {
       expect(cssText).toContain("--space-medium");
     });
 
+    it("should handle negative margins with shorthand tokens", () => {
+      const theme = createMockTheme();
+      const stoop = createStoop({ theme });
+
+      const className = stoop.css({
+        marginTop: "-$small",
+        marginLeft: "-$medium",
+      });
+
+      expect(typeof className).toBe("string");
+
+      const cssText = stoop.getCssText();
+      // Should contain calc(-1 * var(--space-small)) and calc(-1 * var(--space-medium))
+      expect(cssText).toContain("calc(-1 * var(--space-small)");
+      expect(cssText).toContain("calc(-1 * var(--space-medium)");
+    });
+
+    it("should handle multiple tokens in box-shadow", () => {
+      const theme = createMockTheme();
+      const stoop = createStoop({ theme });
+
+      const className = stoop.css({
+        boxShadow: "0 0 0 2px $primary, 0 4px 8px $subtle",
+      });
+
+      expect(typeof className).toBe("string");
+
+      const cssText = stoop.getCssText();
+      // Should contain both tokens replaced
+      expect(cssText).toContain("var(--colors-primary)");
+      expect(cssText).toContain("var(--shadows-subtle)");
+    });
+
+    it("should handle shorthand tokens in nested selectors with complex values", () => {
+      const theme = createMockTheme();
+      const stoop = createStoop({ theme });
+
+      const className = stoop.css({
+        padding: "$medium",
+        "&:hover": {
+          backgroundColor: "$hover",
+          border: "1px solid $border",
+          padding: "$large",
+        },
+        "&:focus": {
+          outline: "2px solid $primary",
+          outlineOffset: "$small",
+        },
+      });
+
+      expect(typeof className).toBe("string");
+
+      const cssText = stoop.getCssText();
+      // Should contain all tokens replaced correctly
+      expect(cssText).toContain("var(--space-medium)");
+      expect(cssText).toContain("var(--colors-hover)");
+      expect(cssText).toContain("var(--colors-border)");
+      expect(cssText).toContain("var(--space-large)");
+      expect(cssText).toContain("var(--colors-primary)");
+      expect(cssText).toContain("var(--space-small)");
+    });
+
     it("should handle tokens in media queries", () => {
       const theme = createMockTheme();
       const stoop = createStoop({ theme });
