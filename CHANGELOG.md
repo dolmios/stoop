@@ -19,6 +19,7 @@ Initial usable release of Stoop as a CSS-in-JS library with comprehensive theme 
 ### Added
 
 #### Core APIs
+
 - `createStoop()` - Factory function for creating Stoop instances
 - `styled()` - Create polymorphic styled components with variants
 - `css()` - Generate CSS classes with theme token support
@@ -27,6 +28,7 @@ Initial usable release of Stoop as a CSS-in-JS library with comprehensive theme 
 - `keyframes()` - Create CSS animations with theme tokens
 
 #### Theme Management
+
 - Multi-theme support with automatic merging
 - Built-in `Provider` component for theme state management
 - `useTheme()` hook with `setTheme()` and `toggleTheme()` functions
@@ -36,6 +38,7 @@ Initial usable release of Stoop as a CSS-in-JS library with comprehensive theme 
 - Property-aware token resolution via themeMap
 
 #### SSR & Performance
+
 - `getCssText(theme?)` - Get CSS for server-side rendering with optional theme
 - `preloadTheme(theme)` - Inject theme variables before React renders (FOUC prevention)
 - `warmCache(styles)` - Pre-compile CSS objects for faster initial render
@@ -43,6 +46,7 @@ Initial usable release of Stoop as a CSS-in-JS library with comprehensive theme 
 - Token index cache for O(1) lookups
 
 #### Developer Experience
+
 - Full TypeScript type inference for theme tokens and variants
 - Polymorphic components with `as` prop
 - Component targeting with symbols
@@ -78,4 +82,3 @@ Initial usable release of Stoop as a CSS-in-JS library with comprehensive theme 
 ## [0.1.0] - Pre-release
 
 Testing phase. Component library with in-house CSS-in-JS implementation. Not ready for use.
-
