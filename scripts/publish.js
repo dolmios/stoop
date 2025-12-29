@@ -438,8 +438,18 @@ async function publish() {
   // Step 2: Publish to npm
   console.log('📦 Publishing to npm...');
   const stoopPackageDir = join(rootDir, 'packages', 'stoop');
+  
+  // Check for OTP argument
+  const otpArg = process.argv.find(arg => arg.startsWith('--otp='));
+  const otp = otpArg ? otpArg.split('=')[1] : null;
+  const publishCommand = otp ? `npm publish --otp=${otp}` : 'npm publish';
+  
+  if (otp) {
+    console.log('   Using OTP for 2FA authentication...');
+  }
+  
   try {
-    execSync('npm publish', {
+    execSync(publishCommand, {
       cwd: stoopPackageDir,
       stdio: 'inherit',
     });
