@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs: update documentation for monorepo structure and SSR features
 - docs: update documentation for API changes and add testing guide
 - test: add comprehensive test coverage for core functionality
+
 ## [0.2.1] - 2025-11-19
 
 ### Fixed
