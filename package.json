@@ -1,9 +1,13 @@
 {
   "name": "stoop",
   "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Jackson Dolman <mail@dolmios.com>",
-  "main": "./dist/index.js",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/dolmios/stoop.git"
@@ -16,27 +20,17 @@
     "react-polymorphic-types": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.17.0",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
-    "bun-types": "^1.2.19",
-    "eslint": "^9.32.0",
-    "eslint-config-dolmios": "^2.0.10",
-    "prettier": "^3.6.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "typescript": "^5.9.2"
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "bun-types": "^1.3.5",
+    "eslint": "^9.39.2",
+    "eslint-config-dolmios": "^2.0.13",
+    "prettier": "^3.7.4",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
   },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "keywords": [
     "css variables",
     "css-in-ts",
@@ -71,19 +65,16 @@
   },
   "prettier": "eslint-config-dolmios/configs/prettier",
   "scripts": {
-    "build": "bun run build:clean && bun run build:js && bun run build:types && bun run build:copy-declarations",
-    "build:clean": "rm -rf dist",
-    "build:copy-declarations": "mkdir -p dist/types && cp src/types/react-polymorphic-types.d.ts dist/types/react-polymorphic-types.d.ts 2>/dev/null || true",
-    "build:js": "bun build ./src/index.ts --outdir ./dist --target browser --minify --jsx=react --splitting --external react --external react-dom",
-    "build:types": "bunx tsc src/index.ts src/**/*.ts --declaration --emitDeclarationOnly --outDir dist --skipLibCheck --jsx react-jsx --module ESNext --moduleResolution bundler --target ES2022 --lib dom,dom.iterable,esnext --rootDir src",
-    "dev": "bun run build && bun --bun preview/index.html",
-    "format": "prettier --write src preview",
+    "dev": "bun run build && bun --cwd apps/website dev",
+    "build": "bun run tidy && bun --cwd packages/stoop run build",
+    "build:website": "bun run tidy && bun run build && bun --cwd apps/website run build",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "kill": "lsof -ti:3000,420 | xargs kill -9 2>/dev/null || true",
-    "lint": "eslint . --ext .ts,.tsx --fix",
-    "prepare": "bun run build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage",
-    "test:watch": "bun test --watch"
+    "lint": "eslint . --fix",
+    "tidy": "bun run lint; bun run format",
+    "test": "bun --cwd packages/stoop test",
+    "test:coverage": "bun --cwd packages/stoop test --coverage",
+    "test:watch": "bun --cwd packages/stoop test --watch"
   },
   "sideEffects": false,
   "type": "module"

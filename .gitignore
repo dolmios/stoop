@@ -8,6 +8,8 @@ pnpm-lock.yaml
 
 # Build output
 dist/
+out/
+.next/
 
 # TypeScript
 *.tsbuildinfo

@@ -14,12 +14,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
     "types": ["bun-types"]
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.css"],
-  "exclude": ["node_modules"]
+  "include": ["packages/**/*", "apps/**/*"],
+  "exclude": ["node_modules", "**/node_modules", "**/dist", "**/.next", "**/dist"]
 }

@@ -1,0 +1,88 @@
+{
+  "name": "stoop",
+  "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
+  "version": "0.2.1",
+  "author": "Jackson Dolman <mail@dolmios.com>",
+  "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dolmios/stoop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dolmios/stoop/issues"
+  },
+  "homepage": "https://github.com/dolmios/stoop#readme",
+  "dependencies": {
+    "react-polymorphic-types": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.2",
+    "bun-types": "^1.2.6",
+    "typescript": "^5.7.2"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./ssr": {
+      "types": "./dist/ssr.d.ts",
+      "import": "./dist/ssr.js",
+      "require": "./dist/ssr.js",
+      "default": "./dist/ssr.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "css variables",
+    "css-in-ts",
+    "css-in-ts alternative",
+    "css-in-js",
+    "css-in-js alternative",
+    "emotion",
+    "emotion alternative",
+    "lightweight",
+    "minimal",
+    "next.js",
+    "nextjs",
+    "performance",
+    "react",
+    "react styling",
+    "stitches",
+    "stitches alternative",
+    "stitches-alternative",
+    "styled-components",
+    "styled-components alternative",
+    "styling",
+    "theme",
+    "theme switching",
+    "type-safe",
+    "typescript",
+    "variants"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "scripts": {
+    "build": "bun run build:clean && bun run build:types",
+    "build:clean": "rm -rf dist",
+    "build:copy-declarations": "mkdir -p dist/types && cp src/types/react-polymorphic-types.d.ts dist/types/react-polymorphic-types.d.ts 2>/dev/null || :",
+    "build:js": "NODE_ENV=production bun build ./src/index.ts --outdir ./dist --target node --minify --jsx=automatic --splitting --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='\"production\"'",
+    "build:types": "bunx tsc --project tsconfig.build.json && bun run build:copy-declarations",
+    "prepare": "bun run build",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:watch": "bun test --watch"
+  },
+  "sideEffects": false,
+  "type": "module"
+}
+
