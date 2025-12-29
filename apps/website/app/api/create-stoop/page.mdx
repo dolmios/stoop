@@ -1,0 +1,53 @@
+# createStoop
+
+Create a Stoop instance with theme configuration
+
+## Usage
+
+```typescript
+import { createStoop } from "stoop";
+
+const { styled, css, Provider, useTheme } = createStoop({
+  theme: lightTheme,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+  },
+});
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| theme | Theme | Base theme object with design tokens |
+| themes | `Record<string, Theme>` | Object mapping theme names to theme objects (optional, enables Provider and useTheme) |
+| media | `Record<string, string>` | Media query breakpoints for responsive styles (optional, can also be defined in theme) |
+| utils | `Record<string, UtilityFunction>` | Custom utility functions (optional) |
+| prefix | string | Prefix for CSS class names and variables (default: "stoop") |
+| themeMap | `Record<string, ThemeScale>` | Custom theme scale mapping (optional) |
+
+## Returns
+
+Returns a `StoopInstance` object with:
+
+### Core Functions
+- `styled` - Function to create styled components
+- `css` - Function to create CSS classes
+- `keyframes` - Function to create keyframe animations
+- `globalCss` - Function to create global styles
+- `createTheme` - Function to create additional themes
+
+### SSR Functions
+- `getCssText` - Get all generated CSS text for server-side rendering
+- `preloadTheme` - Preload theme CSS variables to prevent FOUC
+- `warmCache` - Pre-compile CSS objects to warm the cache
+
+### Theme Management (only if `themes` config provided)
+- `Provider` - React component for theme switching
+- `useTheme` - Hook to access current theme
+
+### Properties
+- `theme` - Current theme object (read-only)
+- `config` - Configuration object used to create this instance
+

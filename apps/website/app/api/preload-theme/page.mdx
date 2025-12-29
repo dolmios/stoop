@@ -1,0 +1,89 @@
+# preloadTheme
+
+Preload theme CSS variables before React renders to prevent FOUC (Flash of Unstyled Content)
+
+## Usage
+
+```typescript
+import { preloadTheme } from "./theme";
+
+// Preload theme by name
+preloadTheme("dark");
+
+// Preload theme object directly
+preloadTheme(customTheme);
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| theme | `string \| Theme` | Theme name (string) or theme object to preload |
+
+## Preventing FOUC
+
+When loading a non-default theme from localStorage, use `preloadTheme()` before React renders:
+
+### Client Component Approach
+
+```typescript
+"use client";
+
+import { useEffect, type ReactNode } from "react";
+import { preloadTheme } from "./theme";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("stoop-theme");
+    if (savedTheme) {
+      preloadTheme(savedTheme);
+    }
+  }, []);
+
+  return <>{children}</>;
+}
+```
+
+### Script Tag Approach (Recommended)
+
+```typescript
+import Script from "next/script";
+import { type ReactNode } from "react";
+import { getCssText } from "./theme";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html>
+      <head>
+        <style
+          id="stoop-styles"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+        />
+        <Script
+          id="stoop-theme-preload"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const savedTheme = localStorage.getItem('stoop-theme');
+                if (savedTheme) {
+                  // Preload theme CSS variables synchronously
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Notes
+
+- Use `preloadTheme()` for non-default themes to prevent FOUC
+- Must be called before React renders (use `beforeInteractive` script strategy or in a script tag)
+- Injects theme CSS variables synchronously
+- If a theme name is provided, ensure it exists in your `themes` config
+

@@ -1,0 +1,71 @@
+# warmCache
+
+Pre-compile CSS objects to warm the cache and eliminate FOUC
+
+## Usage
+
+```typescript
+import { warmCache } from "./theme";
+
+warmCache([
+  {
+    padding: "$medium",
+    backgroundColor: "$primary",
+  },
+  {
+    color: "$text",
+    fontSize: "$large",
+  },
+]);
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| styles | `CSS[]` | Array of CSS objects to pre-compile |
+
+## Purpose
+
+`warmCache` pre-compiles CSS objects before they're used, which:
+- Eliminates FOUC by ensuring styles are ready immediately
+- Improves performance by pre-generating CSS classes
+- Useful for common styles that are used throughout your app
+
+## Example
+
+Pre-compile common component styles:
+
+```typescript
+import { warmCache } from "./theme";
+
+// Pre-compile common styles
+warmCache([
+  // Button styles
+  {
+    padding: "$medium $large",
+    borderRadius: "$default",
+    cursor: "pointer",
+  },
+  // Card styles
+  {
+    padding: "$large",
+    borderRadius: "$default",
+    backgroundColor: "$background",
+  },
+  // Container styles
+  {
+    maxWidth: "1000px",
+    margin: "0 auto",
+    padding: "$medium",
+  },
+]);
+```
+
+## Notes
+
+- Call `warmCache()` early in your app initialization
+- Invalid styles are silently skipped
+- Works with theme tokens, utilities, and media queries
+- Most useful for frequently used styles
+

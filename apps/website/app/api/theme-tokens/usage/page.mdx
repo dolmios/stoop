@@ -1,0 +1,60 @@
+# Theme Token Usage Patterns
+
+Common patterns for using theme tokens
+
+## Basic Usage
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium $large",
+  color: "$text",
+  backgroundColor: "$primary",
+});
+```
+
+## Complex Values
+
+Mix tokens with literals:
+
+```typescript
+const Box = styled("div", {
+  border: "2px solid $primary",
+  borderRadius: "$radii.default",
+  padding: "$space.small $space.medium",
+});
+```
+
+## Multiple Tokens
+
+Use multiple tokens in a single value:
+
+```typescript
+const Card = styled("div", {
+  padding: "$small $medium $large $xlarge",
+  margin: "$medium 0",
+});
+```
+
+## Gradients
+
+Use tokens in gradients:
+
+```typescript
+const GradientBox = styled("div", {
+  background: "linear-gradient(135deg, $primary 0%, $text 100%)",
+});
+```
+
+## Focus States
+
+Use tokens in focus outlines:
+
+```typescript
+const Input = styled("input", {
+  "&:focus-visible": {
+    outline: "2px solid $primary",
+    outlineOffset: "$small",
+  },
+});
+```
+

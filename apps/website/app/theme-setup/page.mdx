@@ -1,0 +1,180 @@
+# Theme Setup
+
+Create your theme configuration with design tokens
+
+## Step 1: Create Theme File
+
+Create a theme file (e.g., `theme.ts`) to define your Stoop instance with design tokens. Stoop supports 13 approved theme scales.
+
+```typescript
+import { createStoop } from "stoop";
+
+const lightTheme = {
+  colors: {
+    primary: "#0070f3",
+    secondary: "#7928ca",
+    background: "#ffffff",
+    text: "#000000",
+    border: "#eaeaea",
+  },
+  space: {
+    small: "8px",
+    medium: "16px",
+    large: "24px",
+    xlarge: "32px",
+  },
+  fonts: {
+    body: "system-ui, sans-serif",
+    heading: "Georgia, serif",
+  },
+  fontSizes: {
+    small: "14px",
+    medium: "16px",
+    large: "20px",
+  },
+  // Only these 13 scales are allowed:
+  // colors, opacities, space, radii, sizes, fonts, fontWeights, fontSizes,
+  // lineHeights, letterSpacings, shadows, zIndices, transitions
+};
+
+const darkTheme = {
+  colors: {
+    primary: "#3291ff",
+    background: "#000000",
+    text: "#ffffff",
+    border: "#333333",
+  },
+  // Other scales inherit from lightTheme
+};
+
+export const { styled, css, Provider, useTheme } = createStoop({
+  theme: lightTheme,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+  },
+});
+```
+
+## Configuration Options
+
+### createStoop Configuration
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| theme | Theme | undefined | Base theme object with design tokens |
+| themes | `Record<string, Theme>` | undefined | Object mapping theme names to theme objects for multi-theme support |
+| prefix | string | "stoop" | Prefix for CSS class names and variables |
+| media | `Record<string, string>` | undefined | Media query breakpoints for responsive styles |
+| utils | `Record<string, UtilityFunction>` | undefined | Custom utility functions |
+| themeMap | `Record<string, ThemeScale>` | undefined | Custom theme scale mapping for property-aware token resolution |
+
+## Media Queries
+
+Define responsive breakpoints using the `media` option in `createStoop`, or include them in your theme object:
+
+```typescript
+export const { styled, css } = createStoop({
+  theme: lightTheme,
+  media: {
+    mobile: "@media (max-width: 768px)",
+    tablet: "@media (min-width: 769px) and (max-width: 1024px)",
+    desktop: "@media (min-width: 1025px)",
+  },
+});
+```
+
+### Using Media Queries in Styles
+
+Use media queries in styled components, `css()` function, or the `css` prop:
+
+```typescript
+const Button = styled("button", {
+  padding: "$small",
+  fontSize: "$small",
+  mobile: {
+    padding: "$medium",
+    fontSize: "$medium",
+  },
+  desktop: {
+    padding: "$large",
+    fontSize: "$large",
+  },
+});
+```
+
+### Media Queries in css() Function
+
+```typescript
+const responsiveClass = css({
+  padding: "$small",
+  mobile: {
+    padding: "$medium",
+  },
+  tablet: {
+    padding: "$large",
+  },
+  desktop: {
+    padding: "$xlarge",
+  },
+});
+```
+
+### Media Queries in css Prop
+
+```typescript
+<Box css={{
+  width: "100%",
+  mobile: {
+    width: "50%",
+  },
+  desktop: {
+    width: "25%",
+  },
+}}>
+  Responsive Box
+</Box>
+```
+
+### Common Breakpoint Patterns
+
+```typescript
+// Mobile-first approach
+media: {
+  sm: "@media (min-width: 640px)",
+  md: "@media (min-width: 768px)",
+  lg: "@media (min-width: 1024px)",
+  xl: "@media (min-width: 1280px)",
+}
+
+// Desktop-first approach
+media: {
+  mobile: "@media (max-width: 768px)",
+  tablet: "@media (max-width: 1024px)",
+  desktop: "@media (min-width: 1025px)",
+}
+
+// Custom breakpoints
+media: {
+  narrow: "@media (max-width: 600px)",
+  wide: "@media (min-width: 1200px)",
+  print: "@media print",
+}
+```
+
+### Notes
+
+- Media queries can be defined in the `media` option **or** in the theme's `media` property (theme takes precedence)
+- Media query names are arbitrary - use whatever makes sense for your project
+- Media queries work with theme tokens, utilities, and all CSS properties
+
+## Approved Theme Scales
+
+Stoop only allows 13 approved theme scales for type safety and consistency. See the [Theme Token Scales](/api/theme-tokens/scales) page for a complete list with examples.
+
+## Related Pages
+
+- [Creating Components](/creating-components) - Use theme tokens in styled components
+- [API Reference: Theme Tokens](/api/theme-tokens/overview) - Complete theme tokens documentation
+- [Migration from Stitches](/migration) - Migrate your Stitches theme configuration
+

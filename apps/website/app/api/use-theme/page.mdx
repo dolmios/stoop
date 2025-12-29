@@ -1,0 +1,109 @@
+# useTheme
+
+Hook to access current theme and toggle themes
+
+## Usage
+
+```typescript
+import { useTheme } from "./theme";
+
+function ThemeToggle() {
+  const { themeName, theme, setTheme, toggleTheme } = useTheme();
+
+  return (
+    <button onClick={toggleTheme}>
+      Current theme: {themeName}
+    </button>
+  );
+}
+```
+
+## Returns
+
+| Property | Type | Description |
+|----------|------|-------------|
+| themeName | string | Current theme name |
+| theme | Theme | Current theme object |
+| setTheme | (name: string) => void | Set theme by name |
+| toggleTheme | () => void | Toggle between themes |
+| availableThemes | `readonly string[]` | Array of all available theme names |
+
+## Examples
+
+### Basic Theme Toggle
+
+```typescript
+function ThemeToggle() {
+  const { themeName, toggleTheme } = useTheme();
+
+  return (
+    <button onClick={toggleTheme}>
+      Current theme: {themeName}
+    </button>
+  );
+}
+```
+
+### Theme Selector Dropdown
+
+```typescript
+function ThemeSelector() {
+  const { themeName, setTheme, availableThemes } = useTheme();
+
+  return (
+    <select value={themeName} onChange={(e) => setTheme(e.target.value)}>
+      {availableThemes.map((theme) => (
+        <option key={theme} value={theme}>
+          {theme.charAt(0).toUpperCase() + theme.slice(1)}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+### Accessing Theme Values
+
+```typescript
+function MyComponent() {
+  const { theme } = useTheme();
+
+  return (
+    <div style={{ backgroundColor: theme.colors.background }}>
+      Current background: {theme.colors.background}
+    </div>
+  );
+}
+```
+
+### Complete Example
+
+```typescript
+function ThemeSwitcher() {
+  const { themeName, theme, setTheme, toggleTheme, availableThemes } = useTheme();
+
+  return (
+    <div>
+      <p>Current theme: {themeName}</p>
+      <p>Available themes: {availableThemes.join(", ")}</p>
+
+      <button onClick={toggleTheme}>Toggle Theme</button>
+
+      <div>
+        {availableThemes.map((name) => (
+          <button
+            key={name}
+            onClick={() => setTheme(name)}
+            style={{
+              backgroundColor: name === themeName ? theme.colors.primary : "transparent",
+            }}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+

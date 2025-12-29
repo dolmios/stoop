@@ -1,0 +1,230 @@
+# Server-Side Rendering (SSR)
+
+Use Stoop with Next.js App Router for perfect SSR support
+
+## Overview
+
+Stoop fully supports Next.js App Router with zero FOUC (Flash of Unstyled Content). The recommended pattern uses `useServerInsertedHTML` to capture styles during SSR streaming.
+
+For detailed API documentation, see:
+- **[getCssText API](/api/get-css-text)** - Get all generated CSS text for SSR
+- **[preloadTheme API](/api/preload-theme)** - Preload theme CSS variables to prevent FOUC
+
+## Next.js App Router (Recommended)
+
+### Step 1: Create Styles Component
+
+Create a client component that handles SSR style injection:
+
+```typescript
+// app/components/Styles.tsx
+"use client";
+
+import { useServerInsertedHTML } from "next/navigation";
+import { getCssText, globalStyles } from "../../stoop.theme";
+
+export function Styles({ initialTheme }: { initialTheme: string }) {
+  useServerInsertedHTML(() => {
+    // Inject global styles first (CSS reset, base styles)
+    globalStyles();
+
+    // Get all CSS including theme variables and component styles
+    const cssText = getCssText(initialTheme);
+
+    if (!cssText) return null;
+
+    return (
+      <style
+        id="stoop-ssr"
+        dangerouslySetInnerHTML={{ __html: cssText }}
+        suppressHydrationWarning
+      />
+    );
+  });
+
+  return null;
+}
+```
+
+### Step 2: Use in Root Layout
+
+Add the `Styles` component to your root layout:
+
+```typescript
+// app/layout.tsx
+import { cookies } from "next/headers";
+import { type ReactNode } from "react";
+import { Provider } from "../stoop.theme";
+import { Styles } from "./components/Styles";
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Detect theme from cookies on server
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("stoop-theme");
+  const initialTheme = themeCookie?.value || "light";
+
+  return (
+    <html lang="en" data-theme={initialTheme} suppressHydrationWarning>
+      <body>
+        {/* Inject SSR styles - prevents FOUC */}
+        <Styles initialTheme={initialTheme} />
+
+        {/* Wrap app with theme provider */}
+        <Provider defaultTheme={initialTheme} storageKey="stoop-theme">
+          {children}
+        </Provider>
+      </body>
+    </html>
+  );
+}
+```
+
+### Preventing FOUC (Flash of Unstyled Content)
+
+To prevent FOUC when loading a theme from localStorage, use `preloadTheme()`:
+
+```typescript
+// app/layout.tsx
+"use client";
+
+import { useEffect, type ReactNode } from "react";
+import { preloadTheme } from "./theme";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    // Preload theme before React renders to prevent FOUC
+    const savedTheme = localStorage.getItem("stoop-theme");
+    if (savedTheme) {
+      preloadTheme(savedTheme);
+    }
+  }, []);
+
+  return <>{children}</>;
+}
+```
+
+For a more robust solution, create a script that runs before React:
+
+```typescript
+// app/layout.tsx
+import Script from "next/script";
+import { type ReactNode } from "react";
+import { getCssText } from "./theme";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html>
+      <head>
+        <style
+          id="stoop-styles"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+        />
+        <Script
+          id="stoop-theme-preload"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const savedTheme = localStorage.getItem('stoop-theme');
+                if (savedTheme) {
+                  // Preload theme CSS variables synchronously
+                  // This prevents FOUC
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Next.js Pages Router
+
+### Basic Setup
+
+In your `pages/_document.tsx`, inject the CSS:
+
+```typescript
+import { Html, Head, Main, NextScript } from "next/document";
+import { getCssText } from "../theme";
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <style
+          id="stoop-styles"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+        />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+### With Theme Support
+
+```typescript
+import { Html, Head, Main, NextScript } from "next/document";
+import { getCssText } from "../theme";
+
+export default function Document() {
+  const cssText = getCssText(); // or getCssText("dark")
+
+  return (
+    <Html>
+      <Head>
+        <style
+          id="stoop-styles"
+          dangerouslySetInnerHTML={{ __html: cssText }}
+        />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+## API Reference
+
+For complete API documentation, see:
+- **[getCssText](/api/get-css-text)** - Complete API reference with parameters and examples
+- **[preloadTheme](/api/preload-theme)** - Complete API reference with FOUC prevention examples
+
+## Best Practices
+
+1. **Always call `getCssText()` in your document/layout** - This ensures styles are available on initial render
+2. **Use `preloadTheme()` for non-default themes** - Prevents FOUC when loading saved theme preferences
+3. **Include theme variables** - `getCssText()` automatically includes theme CSS variables
+4. **Use consistent theme names** - When using `getCssText("theme-name")`, ensure the theme exists in your config
+
+## Common Issues
+
+### Styles not appearing on initial load
+
+Make sure you're calling `getCssText()` in your document/layout and the styles are injected before React hydrates.
+
+### FOUC with theme switching
+
+Use `preloadTheme()` before React renders to inject theme variables synchronously.
+
+### Theme not found warning
+
+Ensure the theme name passed to `getCssText()` exists in your `themes` config object.
+
+## Related Pages
+
+- [Theme Setup](/theme-setup) - Configure themes for SSR
+- [API Reference: getCssText](/api/get-css-text) - Complete getCssText documentation
+- [API Reference: preloadTheme](/api/preload-theme) - Complete preloadTheme documentation
+

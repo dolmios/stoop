@@ -1,0 +1,46 @@
+# createTheme
+
+Create additional themes by merging overrides with the base theme
+
+## Usage
+
+`createTheme` deep merges theme overrides with the base theme, preserving all properties from the base theme:
+
+```typescript
+import { createTheme } from "./theme";
+
+const darkTheme = createTheme({
+  colors: {
+    background: "#000000",
+    text: "#ffffff",
+  },
+  // Other scales (space, fonts, etc.) are inherited from base theme
+});
+```
+
+## How It Works
+
+`createTheme` performs a deep merge:
+- Properties in the override replace base theme properties
+- Nested objects (like `colors`, `space`) are merged, not replaced
+- Properties not in the override are preserved from the base theme
+
+## Adding Themes
+
+```typescript
+const { Provider } = createStoop({
+  theme: lightTheme,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+    custom: createTheme({
+      colors: {
+        background: "#f0f0f0",
+        text: "#333333",
+      },
+      // space, fonts, etc. inherit from lightTheme
+    }),
+  },
+});
+```
+

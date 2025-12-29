@@ -1,0 +1,154 @@
+# Creating Components
+
+Create styled components with Stoop
+
+## Basic Component
+
+Create a styled component using the `styled` function:
+
+```typescript
+import { styled } from "./theme";
+
+const Button = styled("button", {
+  padding: "$medium $large",
+  borderRadius: "$default",
+  backgroundColor: "$primary",
+  color: "$background",
+  border: "none",
+  cursor: "pointer",
+  "&:hover": {
+    opacity: 0.9,
+  },
+});
+```
+
+## With Variants
+
+Add variants for different styles:
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium $large",
+  borderRadius: "$default",
+  cursor: "pointer",
+}, {
+  variant: {
+    primary: {
+      backgroundColor: "$primary",
+      color: "$background",
+    },
+    secondary: {
+      backgroundColor: "$background",
+      border: "1px solid $border",
+    },
+  },
+  size: {
+    small: {
+      padding: "$small $medium",
+      fontSize: "$small",
+    },
+  },
+});
+
+<Button variant="primary" size="small">Click me</Button>
+```
+
+### Boolean Variants
+
+You can also create boolean variants:
+
+```typescript
+const ToggleButton = styled("button", {
+  padding: "$medium $large",
+  borderRadius: "$default",
+}, {
+  active: {
+    false: {
+      backgroundColor: "$background",
+    },
+    true: {
+      backgroundColor: "$primary",
+      color: "$background",
+    },
+  },
+});
+
+<ToggleButton active={true}>Active</ToggleButton>
+```
+
+### Multiple Variants
+
+Components can have multiple variant props:
+
+```typescript
+const Card = styled("div", {
+  padding: "$large",
+  borderRadius: "$default",
+}, {
+  variant: {
+    outlined: { border: "1px solid $border" },
+    filled: { backgroundColor: "$background" },
+  },
+  size: {
+    small: { padding: "$small" },
+    large: { padding: "$xlarge" },
+  },
+});
+
+<Card variant="outlined" size="small">Content</Card>
+```
+
+## Polymorphic Components
+
+Use the `as` prop to render as different elements:
+
+```typescript
+const Box = styled("div", {
+  padding: "$medium",
+});
+
+<Box as="section">Content</Box>
+<Box as="article">Article</Box>
+```
+
+## Dynamic Styles with `css` Prop
+
+Use the `css` prop to apply dynamic styles to styled components:
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium $large",
+  borderRadius: "$default",
+});
+
+function MyComponent() {
+  const isActive = true;
+
+  return (
+    <Button
+      css={{
+        marginTop: "$large",
+        backgroundColor: isActive ? "$primary" : "$background",
+        "&:hover": {
+          opacity: 0.8,
+        },
+      }}
+    >
+      Dynamic Button
+    </Button>
+  );
+}
+```
+
+The `css` prop merges with the component's base styles and supports:
+- Theme tokens (`$primary`, `$medium`, etc.)
+- Pseudo-classes (`&:hover`, `&:focus`, etc.)
+- Media queries (if configured)
+- All CSS properties
+
+## Related Pages
+
+- [Theme Setup](/theme-setup) - Learn about theme configuration
+- [API Reference: styled](/api/styled) - Complete styled API documentation
+- [Utility Functions](/utility-functions) - Create custom CSS utilities
+

@@ -1,0 +1,78 @@
+# Migration from Stitches
+
+Migrate your Stitches codebase to Stoop
+
+## Key Differences
+
+Stoop is similar to Stitches but with some key differences:
+
+- Stoop uses CSS variables for theme tokens (no runtime theme injection)
+- Stoop supports 13 approved theme scales (same as Stitches)
+- Stoop has built-in multi-theme support via Provider
+- Stoop uses `$` prefix for theme tokens (same as Stitches)
+
+## Migration Steps
+
+1. **Install Stoop**
+
+```bash
+npm install stoop
+```
+
+2. **Update Imports**
+
+```typescript
+// Before (Stitches)
+import { styled, css } from "@stitches/react";
+
+// After (Stoop)
+import { styled, css } from "./theme";
+```
+
+3. **Update Theme Configuration**
+
+```typescript
+// Before (Stitches)
+const { styled, css } = createStitches({
+  theme: { ... },
+});
+
+// After (Stoop)
+const { styled, css } = createStoop({
+  theme: { ... },
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+  },
+});
+```
+
+4. **Update Component Usage**
+
+Component API is mostly the same:
+
+```typescript
+// Works the same in both
+const Button = styled("button", {
+  padding: "$medium",
+  variants: {
+    size: {
+      small: { padding: "$small" },
+    },
+  },
+});
+```
+
+## Breaking Changes
+
+- Theme tokens resolve to CSS variables instead of runtime values
+- Multi-theme requires Provider wrapper
+- Some utility functions may differ
+
+## Related Pages
+
+- [Installation Guide](/installation) - Get started with Stoop
+- [Theme Setup](/theme-setup) - Configure your theme
+- [Creating Components](/creating-components) - Learn how to create styled components
+- [Comparison: Stitches vs Stoop](/comparison) - Detailed feature comparison
+

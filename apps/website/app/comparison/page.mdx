@@ -1,0 +1,127 @@
+# Stitches vs Stoop
+
+Technical comparison between Stitches and Stoop CSS-in-JS libraries
+
+## Overview
+
+Stoop is a minimalist implementation of Stitches' high-level features. It provides a similar API for `styled`, `css`, and variants, but with some key differences.
+
+## Feature Comparison
+
+| Feature | Stitches | Stoop |
+|---------|----------|-------|
+| Type-safe CSS objects | ✅ | ✅ |
+| Theme tokens with `$` prefix | ✅ | ✅ |
+| Variant system | ✅ | ✅ |
+| Polymorphic components (`as` prop) | ✅ | ✅ |
+| CSS variables for themes | ❌ | ✅ |
+| Runtime CSS injection | ✅ | ✅ |
+| Build-time CSS extraction | ✅ | ❌ |
+| Compound variants | ✅ | ❌ |
+| Multi-theme support | Limited | ✅ Built-in |
+| Utility functions | Advanced | Basic |
+| SSR support | ✅ | ✅ |
+| React 16.8+ required | ✅ | ✅ |
+| Next.js App Router | ✅ | ✅ |
+| Next.js Pages Router | ✅ | ✅ |
+
+## Key Differences
+
+### Theme System
+
+**Stitches:** Theme tokens resolve to runtime values injected via JavaScript.
+
+**Stoop:** Theme tokens resolve to CSS variables (`var(--colors-primary)`), enabling instant theme switching without recompiling CSS.
+
+### Multi-Theme Support
+
+**Stitches:** Requires manual theme management.
+
+**Stoop:** Built-in multi-theme support via `Provider` component with automatic CSS variable switching.
+
+### Build-Time CSS Extraction
+
+**Stitches:** Supports build-time CSS extraction for zero-runtime CSS.
+
+**Stoop:** Runtime-only CSS generation. If you need build-time extraction, consider [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
+
+### Compound Variants
+
+**Stitches:** Supports compound variants (combining multiple variant conditions).
+
+**Stoop:** Does not support compound variants. Variants work independently.
+
+### Utility Functions
+
+**Stitches:** Advanced utility function system with extensive built-in utilities.
+
+**Stoop:** Basic utility function support. You can create custom utilities, but fewer built-in utilities are provided.
+
+## API Similarities
+
+The core APIs are very similar:
+
+```typescript
+// Both libraries
+const Button = styled("button", {
+  padding: "$medium",
+  backgroundColor: "$primary",
+}, {
+  variant: {
+    primary: { backgroundColor: "$primary" },
+    secondary: { backgroundColor: "$secondary" },
+  },
+});
+```
+
+## Migration Considerations
+
+When migrating from Stitches to Stoop:
+
+1. **Theme tokens:** Work the same way (`$medium`, `$primary`, etc.)
+2. **Component API:** Mostly identical
+3. **CSS variables:** Stoop uses CSS variables instead of runtime injection
+4. **Multi-theme:** Requires `Provider` wrapper in Stoop
+5. **Compound variants:** Need to be refactored to use separate variant props
+6. **Utilities:** May need to recreate custom utilities
+
+See the [Migration Guide](/migration) for detailed migration steps.
+
+## When to Use Stoop
+
+- You want a Stitches-like API with CSS variable-based theming
+- You need built-in multi-theme support
+- You prefer runtime CSS generation
+- You don't need compound variants
+- You want a simpler, more focused API
+
+## When to Use Stitches
+
+- You need compound variants
+- You want build-time CSS extraction
+- You need advanced utility functions
+- You prefer the original Stitches implementation
+
+## Development Status
+
+**Stitches:** No longer actively maintained (as of 2024).
+
+**Stoop:** Currently in active development (beta).
+
+## Related Libraries
+
+Other CSS-in-JS alternatives to consider:
+
+- [Vanilla Extract](https://vanilla-extract.style) - Zero-runtime CSS-in-JS
+- [Panda CSS](https://panda-css.com) - CSS-in-JS with build-time generation
+- [styled-components](https://styled-components.com) - Runtime CSS-in-JS
+- [Emotion](https://emotion.sh) - CSS-in-JS library
+- [Goober](https://goober.rocks) - Lightweight CSS-in-JS
+
+## Related Pages
+
+- [Migration Guide](/migration) - Step-by-step migration from Stitches
+- [Installation](/installation) - Get started with Stoop
+- [Theme Setup](/theme-setup) - Configure your theme
+- [API Reference](/api) - Complete API documentation
+

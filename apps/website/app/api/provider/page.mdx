@@ -1,0 +1,53 @@
+# Provider
+
+React component for theme switching and management
+
+## Usage
+
+```typescript
+import { Provider } from "./theme";
+
+function App() {
+  return (
+    <Provider defaultTheme="light" storageKey="my-theme">
+      {/* Your app */}
+    </Provider>
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| defaultTheme | string | First theme name | Default theme name (defaults to first theme in `themes` config) |
+| storageKey | string | "stoop-theme" | localStorage key for theme persistence |
+| attribute | string | "data-theme" | HTML attribute name to apply theme to (e.g., "data-theme", "class") |
+
+## Theme Persistence
+
+The Provider automatically saves the selected theme to localStorage and restores it on page load.
+
+## Custom Attribute
+
+By default, the Provider applies the theme name to the `data-theme` attribute on the root element. You can customize this with the `attribute` prop:
+
+```typescript
+// Default: applies data-theme="light" or data-theme="dark"
+<Provider defaultTheme="light">
+  <App />
+</Provider>
+
+// Custom attribute: applies class="light" or class="dark"
+<Provider defaultTheme="light" attribute="class">
+  <App />
+</Provider>
+
+// Custom data attribute
+<Provider defaultTheme="light" attribute="data-color-scheme">
+  <App />
+</Provider>
+```
+
+This is useful if you want to use CSS attribute selectors or integrate with other systems that use different attribute names.
+

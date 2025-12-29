@@ -1,0 +1,79 @@
+# globalCss
+
+Apply global styles using theme tokens
+
+## Usage
+
+```typescript
+import { globalCss } from "./theme";
+
+const globalStyles = globalCss({
+  body: {
+    fontFamily: "$body",
+    backgroundColor: "$background",
+    color: "$text",
+  },
+  a: {
+    color: "$text",
+    textDecoration: "none",
+    "&:hover": {
+      opacity: "$opacities.hover",
+    },
+  },
+});
+
+globalStyles();
+```
+
+## CSS Reset Example
+
+Here's a comprehensive CSS reset example:
+
+```typescript
+import { globalCss } from "./theme";
+
+const globalStyles = globalCss({
+  "*": {
+    boxSizing: "border-box",
+    margin: 0,
+    padding: 0,
+  },
+  body: {
+    fontFamily: "$body",
+    backgroundColor: "$background",
+    color: "$text",
+    lineHeight: 1.6,
+  },
+  // Typography
+  "h1, h2, h3, h4, h5, h6": {
+    fontFamily: "$heading",
+    fontWeight: "$bold",
+    lineHeight: 1.2,
+    margin: 0,
+  },
+  // Links
+  a: {
+    color: "$text",
+    textDecoration: "none",
+    "&:hover": {
+      opacity: "$opacities.hover",
+    },
+  },
+  // Form elements
+  "button, input, select, textarea": {
+    fontFamily: "inherit",
+    fontSize: "inherit",
+  },
+});
+
+globalStyles();
+```
+
+## Best Practices
+
+- Call `globalStyles()` in your app entry point
+- Use theme tokens for colors, spacing, and typography
+- Keep global styles minimal - prefer component-level styles
+- Use nested selectors for pseudo-classes (`&:hover`, etc.)
+- Global styles automatically update when the theme changes
+

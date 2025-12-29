@@ -1,0 +1,89 @@
+# getCssText
+
+Get all generated CSS text for server-side rendering
+
+## Usage
+
+```typescript
+import { getCssText } from "./theme";
+
+// Default theme
+const cssText = getCssText();
+
+// Specific theme by name
+const darkCss = getCssText("dark");
+
+// Theme object directly
+const customCss = getCssText(customTheme);
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| theme | `string \| Theme` | Optional theme name or theme object (defaults to default theme) |
+
+## Returns
+
+Returns a string containing all generated CSS including:
+- Theme CSS variables (for the specified theme)
+- All component styles
+- Global styles
+- Keyframe animations
+
+## Next.js App Router
+
+In your root layout (`app/layout.tsx`):
+
+```typescript
+import { type ReactNode } from "react";
+import { getCssText } from "./theme";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html>
+      <head>
+        <style
+          id="stoop-styles"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Next.js Pages Router
+
+In your `pages/_document.tsx`:
+
+```typescript
+import { Html, Head, Main, NextScript } from "next/document";
+import { getCssText } from "../theme";
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <style
+          id="stoop-styles"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+        />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+## Notes
+
+- Always call `getCssText()` in your document/layout to ensure styles are available on initial render
+- The function automatically includes theme CSS variables
+- If a theme name is provided, ensure it exists in your `themes` config
+- Theme variables are always included at the top of the CSS output
+

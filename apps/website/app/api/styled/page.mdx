@@ -1,0 +1,87 @@
+# styled
+
+Create styled components with type-safe props and variants
+
+## Usage
+
+```typescript
+import { styled } from "./theme";
+
+const Button = styled("button", {
+  padding: "$medium $large",
+  borderRadius: "$default",
+  cursor: "pointer",
+});
+```
+
+## With Variants
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium $large",
+}, {
+  variant: {
+    primary: {
+      backgroundColor: "$primary",
+      color: "$background",
+    },
+    secondary: {
+      backgroundColor: "$background",
+      border: "1px solid $border",
+    },
+  },
+  size: {
+    small: {
+      padding: "$small $medium",
+    },
+  },
+});
+```
+
+## Polymorphic Components
+
+Use the `as` prop to render as different elements:
+
+```typescript
+const Box = styled("div", {
+  padding: "$medium",
+});
+
+<Box as="section">Content</Box>
+```
+
+## Dynamic Styles with `css` Prop
+
+Use the `css` prop to apply dynamic styles to styled components:
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium $large",
+  borderRadius: "$default",
+});
+
+function MyComponent() {
+  const isActive = true;
+
+  return (
+    <Button
+      css={{
+        marginTop: "$large",
+        backgroundColor: isActive ? "$primary" : "$background",
+        "&:hover": {
+          opacity: 0.8,
+        },
+      }}
+    >
+      Dynamic Button
+    </Button>
+  );
+}
+```
+
+The `css` prop merges with the component's base styles and supports:
+- Theme tokens (`$primary`, `$medium`, etc.)
+- Pseudo-classes (`&:hover`, `&:focus`, etc.)
+- Media queries (if configured)
+- All CSS properties
+

@@ -1,0 +1,249 @@
+# Utility Functions
+
+Create custom shorthand properties that transform into CSS
+
+## Overview
+
+Utility functions allow you to create shorthand properties that transform into full CSS objects. They're applied before theme token resolution, so you can use theme tokens in utility values.
+
+## How Utilities Work
+
+1. CSS object is processed
+2. Utility functions are applied (transform shorthand → CSS properties)
+3. Theme tokens are resolved
+4. CSS is generated and injected
+
+## Basic Setup
+
+Define utility functions in your `createStoop` configuration:
+
+```typescript
+import { createStoop } from "stoop";
+import type { CSS, UtilityFunction } from "stoop";
+
+type CSSPropertyValue = string | number;
+
+const utils: Record<string, UtilityFunction> = {
+  px: (value: CSSPropertyValue | CSS | undefined): CSS => {
+    const val = typeof value === "string" || typeof value === "number"
+      ? String(value)
+      : "";
+    return { paddingLeft: val, paddingRight: val };
+  },
+  py: (value: CSSPropertyValue | CSS | undefined): CSS => {
+    const val = typeof value === "string" || typeof value === "number"
+      ? String(value)
+      : "";
+    return { paddingTop: val, paddingBottom: val };
+  },
+};
+
+export const { styled, css } = createStoop({
+  theme: {
+    space: {
+      small: "8px",
+      medium: "16px",
+      large: "24px",
+    },
+  },
+  utils,
+});
+```
+
+## Common Utility Examples
+
+### Spacing Utilities
+
+```typescript
+const utils = {
+  // Padding
+  px: (value) => ({ paddingLeft: value, paddingRight: value }),
+  py: (value) => ({ paddingTop: value, paddingBottom: value }),
+  pt: (value) => ({ paddingTop: value }),
+  pr: (value) => ({ paddingRight: value }),
+  pb: (value) => ({ paddingBottom: value }),
+  pl: (value) => ({ paddingLeft: value }),
+
+  // Margin
+  mx: (value) => ({ marginLeft: value, marginRight: value }),
+  my: (value) => ({ marginTop: value, marginBottom: value }),
+  mt: (value) => ({ marginTop: value }),
+  mr: (value) => ({ marginRight: value }),
+  mb: (value) => ({ marginBottom: value }),
+  ml: (value) => ({ marginLeft: value }),
+};
+```
+
+### Usage with Theme Tokens
+
+```typescript
+const Button = styled("button", {
+  px: "$medium",  // → paddingLeft: "16px", paddingRight: "16px"
+  py: "$small",   // → paddingTop: "8px", paddingBottom: "8px"
+  mt: "$large",   // → marginTop: "24px"
+});
+```
+
+### Complex Utilities
+
+Utilities can return complex CSS objects, including nested selectors and media queries:
+
+```typescript
+const utils = {
+  hidden: (value: CSSPropertyValue | CSS | undefined): CSS => {
+    const breakpoint = typeof value === "string" ? value : "";
+
+    if (breakpoint === "mobile") {
+      return {
+        mobile: {
+          display: "none",
+        },
+      };
+    }
+
+    if (breakpoint === "desktop") {
+      return {
+        desktop: {
+          display: "none",
+        },
+      };
+    }
+
+    return { display: "none" };
+  },
+
+  // Responsive spacing
+  responsivePadding: (value) => ({
+    padding: value,
+    mobile: {
+      padding: "$small",
+    },
+    desktop: {
+      padding: "$large",
+    },
+  }),
+};
+```
+
+## Using Utilities
+
+### In Styled Components
+
+```typescript
+const Box = styled("div", {
+  px: "$medium",
+  my: "$large",
+  hidden: "mobile", // Hide on mobile breakpoint
+});
+```
+
+### In css() Function
+
+```typescript
+const buttonClass = css({
+  px: "$medium",
+  py: "$small",
+  mx: "auto",
+});
+```
+
+### With the css Prop
+
+```typescript
+<Box css={{ px: "$large", mt: "$medium" }}>
+  Content
+</Box>
+```
+
+## Utility Function Type
+
+A utility function has the following signature:
+
+```typescript
+type UtilityFunction = (
+  value: CSSPropertyValue | CSS | undefined
+) => CSS;
+```
+
+- **Input**: Can be a string, number, CSS object, or undefined
+- **Output**: Must return a CSS object
+
+## Best Practices
+
+1. **Use theme tokens** - Utilities work great with theme tokens (`$medium`, `$primary`, etc.)
+2. **Keep utilities simple** - Each utility should do one thing well
+3. **Handle edge cases** - Always handle undefined/null values gracefully
+4. **Type safety** - Use TypeScript to ensure type safety
+5. **Documentation** - Document complex utilities with examples
+
+## Advanced Example
+
+Here's a complete example with multiple utilities:
+
+```typescript
+import { createStoop } from "stoop";
+import type { CSS, UtilityFunction } from "stoop";
+
+type CSSPropertyValue = string | number;
+
+const utils: Record<string, UtilityFunction> = {
+  // Spacing
+  px: (value) => {
+    const val = String(value || "");
+    return { paddingLeft: val, paddingRight: val };
+  },
+  py: (value) => {
+    const val = String(value || "");
+    return { paddingTop: val, paddingBottom: val };
+  },
+  mx: (value) => {
+    const val = String(value || "");
+    return { marginLeft: val, marginRight: val };
+  },
+  my: (value) => {
+    const val = String(value || "");
+    return { marginTop: val, marginBottom: val };
+  },
+
+  // Layout
+  flex: (value) => ({ display: "flex" }),
+  grid: (value) => ({ display: "grid" }),
+
+  // Visibility
+  hidden: (value) => {
+    if (value === "mobile") {
+      return { mobile: { display: "none" } };
+    }
+    return { display: "none" };
+  },
+};
+
+export const { styled, css } = createStoop({
+  theme: {
+    space: { small: "8px", medium: "16px", large: "24px" },
+  },
+  utils,
+});
+
+// Usage
+const Card = styled("div", {
+  px: "$medium",
+  py: "$large",
+  mx: "auto",
+  flex: true,
+});
+```
+
+## Notes
+
+- Utilities are applied **before** theme token resolution
+- Utilities work in styled components, `css()` function, and the `css` prop
+- Utilities can return nested CSS objects with media queries
+- Utility names must not conflict with CSS property names
+
+## Related Pages
+
+- [Creating Components](/creating-components) - Use utilities in styled components
+- [Theme Setup](/theme-setup) - Configure utilities in your theme
+- [API Reference](/api) - Complete API documentation
+

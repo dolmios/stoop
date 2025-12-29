@@ -1,0 +1,56 @@
+# Theme Tokens Overview
+
+Understanding theme tokens in Stoop
+
+## What are Theme Tokens?
+
+Theme tokens are design values (colors, spacing, typography, etc.) that can be referenced in your styles using the `$` prefix. They resolve to CSS variables automatically.
+
+## Usage
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium",      // Theme token
+  color: "$text",          // Theme token
+  backgroundColor: "$primary", // Theme token
+});
+```
+
+## Shorthand vs Explicit
+
+You can use shorthand (property-aware resolution) or explicit scale specification:
+
+```typescript
+// Shorthand (automatically resolves to correct scale)
+padding: "$medium"  // → space.medium
+color: "$text"      // → colors.text
+
+// Explicit
+padding: "$space.medium"
+color: "$colors.text"
+```
+
+## CSS Variables
+
+Tokens resolve to CSS variables:
+
+```typescript
+padding: "$medium"
+// Becomes:
+padding: var(--stoop-space-medium)
+
+color: "$text"
+// Becomes:
+color: var(--stoop-colors-text)
+```
+
+## Property-Aware Resolution
+
+Stoop automatically resolves tokens based on the CSS property:
+
+- `color`, `backgroundColor`, `borderColor` → `colors` scale
+- `padding`, `margin`, `gap` → `space` scale
+- `fontSize` → `fontSizes` scale
+- `fontWeight` → `fontWeights` scale
+- And more...
+
