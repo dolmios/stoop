@@ -17,7 +17,7 @@ import { createUseThemeHook } from "./api/use-theme";
 import { compileCSS } from "./core/compiler";
 import { registerDefaultTheme, updateThemeVariables } from "./core/theme-manager";
 import { getCssText as getCssTextBase, registerTheme } from "./inject";
-import { sanitizePrefix } from "./utils/string";
+import { getRootRegex, sanitizePrefix } from "./utils/string";
 import { generateCSSVariables } from "./utils/theme";
 import { DEFAULT_THEME_MAP } from "./utils/theme-map";
 import { validateTheme } from "./utils/theme-validation";
@@ -29,7 +29,9 @@ import { validateTheme } from "./utils/theme-validation";
  * @returns StoopInstance with all API functions (styled, css, globalCss, keyframes, createTheme, etc.)
  */
 export function createStoop(config: StoopConfig): StoopInstance {
-  const { media: configMedia, prefix = "", theme, themeMap: userThemeMap, utils } = config;
+  // Default prefix to "stoop" for better stability and conflict prevention
+  // sanitizePrefix will ensure we always have a valid prefix (defaults to "stoop")
+  const { media: configMedia, prefix = "stoop", theme, themeMap: userThemeMap, utils } = config;
   const sanitizedPrefix = sanitizePrefix(prefix);
 
   const validatedTheme = validateTheme(theme);
@@ -143,13 +145,7 @@ export function createStoop(config: StoopConfig): StoopInstance {
     const baseCss = getCssTextBase();
 
     // Remove existing theme variables from base CSS to avoid duplication
-    const rootSelector = sanitizedPrefix
-      ? `:root[data-stoop="${sanitizedPrefix}"]`
-      : ":root";
-    const rootRegex = new RegExp(
-      `${rootSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\{[^}]*\\}`,
-      "g",
-    );
+    const rootRegex = getRootRegex(sanitizedPrefix);
     const cssWithoutThemeVars = baseCss.replace(rootRegex, "").trim();
 
     if (cssWithoutThemeVars) {

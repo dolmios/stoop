@@ -50,7 +50,7 @@ export type UtilityFunction = (value: CSSPropertyValue | CSS | undefined) => CSS
 export type ThemeScale = keyof DefaultTheme;
 
 /**
- * Theme interface - strictly enforces only these 12 approved scales.
+ * Theme interface - strictly enforces only these 13 approved scales.
  * Custom theme scales are NOT allowed.
  * Media queries are also supported as part of the theme.
  */
@@ -63,6 +63,7 @@ export interface DefaultTheme {
   fonts?: Record<string, string>;
   fontWeights?: Record<string, string | number>;
   fontSizes?: Record<string, string>;
+  lineHeights?: Record<string, string | number>;
   letterSpacings?: Record<string, string>;
   shadows?: Record<string, string>;
   zIndices?: Record<string, string | number>;

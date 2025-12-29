@@ -19,7 +19,7 @@ import { compileCSS } from "../core/compiler";
  */
 export function createCSSFunction(
   defaultTheme: Theme,
-  prefix = "",
+  prefix = "stoop",
   media?: Record<string, string>,
   utils?: Record<string, UtilityFunction>,
   themeMap?: Record<string, ThemeScale>,

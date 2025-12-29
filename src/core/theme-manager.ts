@@ -13,6 +13,9 @@ import { generateCSSVariables, themesAreEqual } from "../utils/theme";
 // Store default themes per prefix
 const defaultThemes = new Map<string, Theme>();
 
+// Cache merged themes to avoid repeated merging
+const mergedThemeCache = new WeakMap<Theme, Map<string, Theme>>();
+
 /**
  * Registers the default theme for a given prefix.
  * Called automatically by createStoop.
@@ -20,7 +23,7 @@ const defaultThemes = new Map<string, Theme>();
  * @param theme - Default theme from createStoop
  * @param prefix - Optional prefix for theme scoping
  */
-export function registerDefaultTheme(theme: Theme, prefix = ""): void {
+export function registerDefaultTheme(theme: Theme, prefix = "stoop"): void {
   const sanitizedPrefix = prefix || "";
 
   defaultThemes.set(sanitizedPrefix, theme);
@@ -32,7 +35,7 @@ export function registerDefaultTheme(theme: Theme, prefix = ""): void {
  * @param prefix - Optional prefix for theme scoping
  * @returns Default theme or null if not registered
  */
-export function getDefaultTheme(prefix = ""): Theme | null {
+export function getDefaultTheme(prefix = "stoop"): Theme | null {
   const sanitizedPrefix = prefix || "";
 
   return defaultThemes.get(sanitizedPrefix) || null;
@@ -41,13 +44,13 @@ export function getDefaultTheme(prefix = ""): Theme | null {
 /**
  * Merges a theme with the default theme if it's not already the default theme.
  * This ensures all themes extend the default theme, keeping all original properties.
- * Always merges to guarantee correctness - merging is cheap and ensures safety.
+ * Uses caching to avoid repeated merging of the same theme objects.
  *
  * @param theme - Theme to merge
  * @param prefix - Optional prefix for theme scoping
  * @returns Merged theme (or original if it's the default theme)
  */
-function mergeWithDefaultTheme(theme: Theme, prefix = ""): Theme {
+function mergeWithDefaultTheme(theme: Theme, prefix = "stoop"): Theme {
   const defaultTheme = getDefaultTheme(prefix);
 
   if (!defaultTheme) {
@@ -58,6 +61,20 @@ function mergeWithDefaultTheme(theme: Theme, prefix = ""): Theme {
   // If this is already the default theme, return as-is
   if (themesAreEqual(theme, defaultTheme)) {
     return theme;
+  }
+
+  // Check cache first
+  let prefixCache = mergedThemeCache.get(theme);
+
+  if (!prefixCache) {
+    prefixCache = new Map<string, Theme>();
+    mergedThemeCache.set(theme, prefixCache);
+  }
+
+  const cached = prefixCache.get(prefix);
+
+  if (cached) {
+    return cached;
   }
 
   // Always merge theme with default theme to ensure all properties are present
@@ -96,6 +113,9 @@ function mergeWithDefaultTheme(theme: Theme, prefix = ""): Theme {
     }
   }
 
+  // Cache the result
+  prefixCache.set(prefix, merged);
+
   return merged;
 }
 
@@ -106,7 +126,7 @@ function mergeWithDefaultTheme(theme: Theme, prefix = ""): Theme {
  * @param theme - Theme object to generate CSS variables from
  * @param prefix - Optional prefix for CSS variable names
  */
-export function updateThemeVariables(theme: Theme, prefix = ""): void {
+export function updateThemeVariables(theme: Theme, prefix = "stoop"): void {
   if (typeof document === "undefined") {
     return;
   }

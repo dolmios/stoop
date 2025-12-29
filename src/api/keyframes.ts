@@ -6,9 +6,9 @@
 
 import type { CSS, Theme, ThemeScale } from "../types";
 
+import { LRUCache } from "../core/cache";
 import { injectCSS } from "../inject";
 import {
-  escapeCSSValue,
   hashObject,
   sanitizeCSSPropertyName,
   sanitizePrefix,
@@ -59,16 +59,21 @@ function keyframesToCSS(
 
     const themedStyles = replaceThemeTokensWithVars(styles, theme, themeMap);
 
-    for (const prop in themedStyles) {
+    // FIXED: Sort properties for deterministic CSS generation
+    const sortedProps = Object.keys(themedStyles).sort();
+
+    for (const prop of sortedProps) {
       const value = themedStyles[prop];
 
       if (value !== undefined && (typeof value === "string" || typeof value === "number")) {
         const sanitizedProp = sanitizeCSSPropertyName(prop);
 
         if (sanitizedProp) {
-          const escapedValue = escapeCSSValue(value);
+          // Don't escape keyframe values - they're already valid CSS
+          // Escaping breaks complex values like polygon(), translate(), etc.
+          const cssValue = String(value);
 
-          css += ` ${sanitizedProp}: ${escapedValue};`;
+          css += ` ${sanitizedProp}: ${cssValue};`;
         }
       }
     }
@@ -90,13 +95,16 @@ function keyframesToCSS(
  * @param themeMap - Optional theme scale mappings
  * @returns Function that accepts keyframes objects and returns animation names
  */
+// LRU cache for keyframe animations to prevent memory leaks
+const KEYFRAME_CACHE_LIMIT = 500;
+
 export function createKeyframesFunction(
-  prefix = "",
+  prefix = "stoop",
   theme?: Theme,
   themeMap?: Record<string, ThemeScale>,
 ): (keyframes: Record<string, CSS>) => string {
   const sanitizedPrefix = sanitizePrefix(prefix);
-  const animationCache = new Map<string, string>();
+  const animationCache = new LRUCache<string, string>(KEYFRAME_CACHE_LIMIT);
 
   return function keyframes(keyframesObj: Record<string, CSS>): string {
     const keyframesKey = hashObject(keyframesObj);

@@ -6,13 +6,11 @@
 
 import { MAX_CLASS_NAME_CACHE_SIZE } from "../constants";
 
-const stylesCache = new Map<string, string>();
-
 /**
  * LRU Cache implementation for class names and CSS strings.
  * Automatically evicts least recently used entries when size limit is exceeded.
  */
-class LRUCache<K, V> extends Map<K, V> {
+export class LRUCache<K, V> extends Map<K, V> {
   private readonly maxSize: number;
 
   constructor(maxSize: number) {
@@ -51,43 +49,35 @@ class LRUCache<K, V> extends Map<K, V> {
 export const classNameCache = new LRUCache<string, string>(MAX_CLASS_NAME_CACHE_SIZE);
 export const cssStringCache = new LRUCache<string, string>(MAX_CLASS_NAME_CACHE_SIZE);
 
+// Separate cache for tracking injected CSS strings (used by browser injection)
+const injectedStylesCache = new Set<string>();
+
 /**
- * Checks if a CSS string is cached.
+ * Checks if a CSS string has been injected.
+ * Uses a Set for O(1) lookup.
  *
  * @param css - CSS string to check
- * @returns True if CSS is cached
+ * @returns True if CSS has been injected
  */
 export function isCachedStyle(css: string): boolean {
-  return stylesCache.has(css);
+  return injectedStylesCache.has(css);
 }
 
 /**
- * Marks a CSS string as cached.
+ * Marks a CSS string as injected.
  *
  * @param css - CSS string to cache
  */
 export function markStyleAsCached(css: string): void {
-  stylesCache.set(css, css);
+  injectedStylesCache.add(css);
 }
 
-/**
- * Limits cache size by evicting least recently used entries.
- */
-export function limitCacheSize(): void {
-  // Safety check for direct cache access (LRU handles eviction automatically)
-  if (classNameCache.size > MAX_CLASS_NAME_CACHE_SIZE) {
-    const firstKey = classNameCache.keys().next().value;
-
-    if (firstKey) {
-      classNameCache.delete(firstKey);
-      cssStringCache.delete(firstKey);
-    }
-  }
-}
 
 /**
  * Clears all cached styles.
  */
 export function clearStyleCache(): void {
-  stylesCache.clear();
+  classNameCache.clear();
+  cssStringCache.clear();
+  injectedStylesCache.clear();
 }

@@ -19,7 +19,7 @@ import {
 import { replaceThemeTokensWithVars } from "../utils/theme";
 import { isValidCSSObject } from "../utils/type-guards";
 import { applyUtilities } from "../utils/utilities";
-import { classNameCache, cssStringCache, limitCacheSize } from "./cache";
+import { classNameCache, cssStringCache } from "./cache";
 
 function isStyledComponentKey(key: string | symbol, value: unknown): boolean {
   if (typeof key === "symbol" && key === STOOP_COMPONENT_SYMBOL) {
@@ -68,10 +68,14 @@ function cssObjectToString(
     return "";
   }
 
-  let css = "";
-  let nestedRules = "";
+  const cssProperties: string[] = [];
+  const nestedRulesList: string[] = [];
 
-  for (const key in obj) {
+  // FIXED: Sort keys for deterministic CSS generation
+  // This ensures the same CSS object always produces the same hash
+  const keys = Object.keys(obj).sort();
+
+  for (const key of keys) {
     const value = obj[key];
 
     if (isStyledComponentKey(key, value)) {
@@ -87,12 +91,17 @@ function cssObjectToString(
         continue;
       }
 
-      const componentSelector = `.${sanitizedClassName}`;
+      // Component targeting must be scoped to parent selector
+      const componentSelector = selector
+        ? `${selector} .${sanitizedClassName}`
+        : `.${sanitizedClassName}`;
       const nestedCss = isValidCSSObject(value)
         ? cssObjectToString(value, componentSelector, depth + 1, media)
         : "";
 
-      nestedRules += nestedCss;
+      if (nestedCss) {
+        nestedRulesList.push(nestedCss);
+      }
       continue;
     }
 
@@ -101,44 +110,61 @@ function cssObjectToString(
         const mediaQuery = sanitizeMediaQuery(media[key]);
 
         if (mediaQuery) {
-        const nestedCss = cssObjectToString(value, selector, depth + 1, media);
+          const nestedCss = cssObjectToString(value, selector, depth + 1, media);
 
-        nestedRules += `${mediaQuery} { ${nestedCss} }`;
+          if (nestedCss) {
+            nestedRulesList.push(`${mediaQuery} { ${nestedCss} }`);
+          }
         }
       } else if (key.startsWith("@")) {
         const sanitizedKey = sanitizeCSSSelector(key);
 
         if (sanitizedKey) {
-        const nestedCss = cssObjectToString(value, selector, depth + 1, media);
+          const nestedCss = cssObjectToString(value, selector, depth + 1, media);
 
-          nestedRules += `${sanitizedKey} { ${nestedCss} }`;
+          if (nestedCss) {
+            nestedRulesList.push(`${sanitizedKey} { ${nestedCss} }`);
+          }
         }
       } else if (key.includes("&")) {
         const sanitizedKey = sanitizeCSSSelector(key);
 
         if (sanitizedKey) {
-          const nestedSelector = sanitizedKey.replace(/&/g, selector);
-        const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
+          // Improved ampersand replacement: handle multiple & correctly
+          // Split by & and rejoin with selector, handling edge cases
+          const parts = sanitizedKey.split("&");
+          const nestedSelector = parts.join(selector);
+          const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
 
-        nestedRules += nestedCss;
+          if (nestedCss) {
+            nestedRulesList.push(nestedCss);
+          }
         }
       } else if (key.startsWith(":")) {
         const sanitizedKey = sanitizeCSSSelector(key);
 
         if (sanitizedKey) {
           const nestedSelector = `${selector}${sanitizedKey}`;
-        const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
+          const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
 
-        nestedRules += nestedCss;
+          if (nestedCss) {
+            nestedRulesList.push(nestedCss);
+          }
         }
       } else if (key.includes(" ") || key.includes(">") || key.includes("+") || key.includes("~")) {
         const sanitizedKey = sanitizeCSSSelector(key);
 
         if (sanitizedKey) {
-          const nestedSelector = `${selector} ${sanitizedKey}`;
-        const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
+          // Improved combinator handling: check if key starts with combinator
+          const startsWithCombinator = /^[\s>+~]/.test(sanitizedKey.trim());
+          const nestedSelector = startsWithCombinator
+            ? `${selector}${sanitizedKey}`
+            : `${selector} ${sanitizedKey}`;
+          const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
 
-        nestedRules += nestedCss;
+          if (nestedCss) {
+            nestedRulesList.push(nestedCss);
+          }
         }
       } else {
         const sanitizedKey = sanitizeCSSSelector(key);
@@ -147,7 +173,9 @@ function cssObjectToString(
           const nestedSelector = selector ? `${selector} ${sanitizedKey}` : sanitizedKey;
           const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
 
-        nestedRules += nestedCss;
+          if (nestedCss) {
+            nestedRulesList.push(nestedCss);
+          }
         }
       }
     } else if (value !== undefined) {
@@ -156,14 +184,14 @@ function cssObjectToString(
       if (property && (typeof value === "string" || typeof value === "number")) {
         const escapedValue = escapeCSSValue(value);
 
-        css += `${property}: ${escapedValue}; `;
+        cssProperties.push(`${property}: ${escapedValue};`);
       }
     }
   }
 
-  const rule = css ? `${selector} { ${css.trim()}}` : "";
+  const rule = cssProperties.length > 0 ? `${selector} { ${cssProperties.join(" ")} }` : "";
 
-  return rule + nestedRules;
+  return rule + nestedRulesList.join("");
 }
 
 /**
@@ -181,7 +209,7 @@ function cssObjectToString(
 export function compileCSS(
   styles: CSS,
   currentTheme: Theme,
-  prefix = "",
+  prefix = "stoop",
   media?: Record<string, string>,
   utils?: Record<string, UtilityFunction>,
   themeMap?: Record<string, ThemeScale>,
@@ -190,36 +218,32 @@ export function compileCSS(
   const stylesWithUtils = applyUtilities(styles, utils);
   const themedStyles = replaceThemeTokensWithVars(stylesWithUtils, currentTheme, themeMap);
 
+  // Generate CSS without selector for hashing (to detect style changes)
   const cssString = cssObjectToString(themedStyles, "", 0, media);
   const stylesHash = hash(cssString);
-  const cacheKey = `${sanitizedPrefix}:${stylesHash}`;
 
-  const cachedClassName = classNameCache.get(cacheKey);
+  // Generate unique className based on hash
+  const className = sanitizedPrefix ? `${sanitizedPrefix}-${stylesHash}` : `css-${stylesHash}`;
 
-  if (cachedClassName) {
-    const cachedCSS = cssStringCache.get(cacheKey);
+  // Use className as cache key to ensure unique CSS per component
+  const cacheKey = `${sanitizedPrefix}:${className}`;
 
-    if (cachedCSS) {
-      injectCSS(cachedCSS, sanitizedPrefix, cacheKey);
+  const cachedCSS = cssStringCache.get(cacheKey);
 
-      return cachedClassName;
-    }
+  if (cachedCSS) {
+    // CSS already generated and cached, just inject it
+    injectCSS(cachedCSS, sanitizedPrefix, cacheKey);
 
-    const fullCSS = cssObjectToString(themedStyles, `.${cachedClassName}`, 0, media);
-
-    cssStringCache.set(cacheKey, fullCSS);
-    injectCSS(fullCSS, sanitizedPrefix, cacheKey);
-
-    return cachedClassName;
+    return className;
   }
 
-  const className = sanitizedPrefix ? `${sanitizedPrefix}-${stylesHash}` : `css-${stylesHash}`;
+  // Generate full CSS with selector
   const fullCSS = cssObjectToString(themedStyles, `.${className}`, 0, media);
 
-  classNameCache.set(cacheKey, className);
+  // Cache the generated CSS
   cssStringCache.set(cacheKey, fullCSS);
+  classNameCache.set(cacheKey, className);
 
-  limitCacheSize();
   injectCSS(fullCSS, sanitizedPrefix, cacheKey);
 
   return className;

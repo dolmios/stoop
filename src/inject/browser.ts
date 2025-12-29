@@ -6,8 +6,7 @@
 
 import type { Theme } from "../types";
 
-import { isCachedStyle, markStyleAsCached } from "../core/cache";
-import { sanitizePrefix } from "../utils/string";
+import { getRootRegex, sanitizePrefix } from "../utils/string";
 import { generateCSSVariables } from "../utils/theme";
 import * as dedup from "./dedup";
 import * as ssr from "./ssr";
@@ -16,10 +15,6 @@ let stylesheetElement: HTMLStyleElement | null = null;
 const lastInjectedThemes = new Map<string, Theme>();
 const lastInjectedCSSVars = new Map<string, string>();
 const pendingThemes = new Map<string, Theme>();
-
-// Batch DOM updates for better performance
-const pendingCSSUpdates = new Map<string, string>();
-let rafId: number | null = null;
 
 // Auto-initialize stylesheet synchronously when module loads (browser only)
 // This prevents FOUC by ensuring stylesheet exists before any code runs
@@ -34,73 +29,8 @@ if (typeof document !== "undefined") {
   })();
 }
 
-function flushPendingCSSUpdates(): void {
-  if (pendingCSSUpdates.size === 0 || !stylesheetElement || !stylesheetElement.parentNode) {
-    rafId = null;
-
-    return;
-  }
-
-  const batchedCSS = Array.from(pendingCSSUpdates.values()).join("\n");
-
-  if (!batchedCSS) {
-    pendingCSSUpdates.clear();
-    rafId = null;
-
-    return;
-  }
-
-  const {sheet} = stylesheetElement;
-
-  // Use CSSOM insertRule for better performance with simple rules
-  // Falls back to textContent for nested rules or @media queries
-  if (sheet && sheet.insertRule && !batchedCSS.includes("@") && !batchedCSS.includes("&")) {
-    try {
-      const rules = batchedCSS.split(/(?<=})\s*(?=\S)/);
-
-      let allInserted = true;
-
-      for (const rule of rules) {
-        const trimmedRule = rule.trim();
-
-        if (trimmedRule) {
-          try {
-            sheet.insertRule(trimmedRule, sheet.cssRules.length);
-          } catch {
-            allInserted = false;
-            break;
-          }
-        }
-      }
-
-      if (allInserted) {
-        pendingCSSUpdates.clear();
-        rafId = null;
-
-        return;
-      }
-    } catch {
-      // Fall through to textContent fallback
-    }
-  }
-
-  // Fallback to textContent update (handles all cases)
-  const currentCSS = stylesheetElement.textContent || "";
-
-  stylesheetElement.textContent = currentCSS + (currentCSS ? "\n" : "") + batchedCSS;
-  pendingCSSUpdates.clear();
-  rafId = null;
-}
-
-function scheduleCSSUpdate(css: string, ruleKey: string): void {
-  pendingCSSUpdates.set(ruleKey, css);
-
-  if (!rafId && typeof requestAnimationFrame !== "undefined") {
-    rafId = requestAnimationFrame(flushPendingCSSUpdates);
-  } else if (!rafId) {
-    flushPendingCSSUpdates();
-  }
-}
+// REMOVED: RAF batching code - it was causing race conditions and dropped styles
+// Now using synchronous injection for maximum stability
 
 /**
  * Gets or creates the stylesheet element for CSS injection.
@@ -109,7 +39,7 @@ function scheduleCSSUpdate(css: string, ruleKey: string): void {
  * @returns HTMLStyleElement
  * @throws Error if called in SSR context
  */
-export function getStylesheet(prefix = ""): HTMLStyleElement {
+export function getStylesheet(prefix = "stoop"): HTMLStyleElement {
   if (typeof document === "undefined") {
     throw new Error("Cannot access document in SSR context");
   }
@@ -151,7 +81,7 @@ export function getStylesheet(prefix = ""): HTMLStyleElement {
  * @param theme - Theme object
  * @param prefix - Optional prefix for CSS variables
  */
-export function injectThemeVariables(cssVars: string, theme: Theme, prefix = ""): void {
+export function injectThemeVariables(cssVars: string, theme: Theme, prefix = "stoop"): void {
   if (!cssVars) {
     return;
   }
@@ -189,14 +119,8 @@ export function injectThemeVariables(cssVars: string, theme: Theme, prefix = "")
   const currentCSS = sheet.textContent || "";
 
   if (dedup.isInjectedRule(key)) {
-    // Replace existing CSS variables block - use a more robust regex that handles whitespace
-    const rootSelector = sanitizedPrefix ? `:root[data-stoop="${sanitizedPrefix}"]` : ":root";
-    // Match :root selector with any whitespace, then {, then any content until matching }
-    // Use [\s\S]*? for non-greedy match to handle nested braces correctly
-    const rootRegex = new RegExp(
-      `${rootSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\{[\\s\\S]*?\\}`,
-      "g",
-    );
+    // Replace existing CSS variables block - use pre-compiled regex
+    const rootRegex = getRootRegex(sanitizedPrefix);
     const withoutVars = currentCSS.replace(rootRegex, "").trim();
 
     // Always put CSS variables first, then other CSS
@@ -218,7 +142,7 @@ export function injectThemeVariables(cssVars: string, theme: Theme, prefix = "")
  * @param theme - Theme object to register
  * @param prefix - Optional prefix for CSS variables
  */
-export function registerTheme(theme: Theme, prefix = ""): void {
+export function registerTheme(theme: Theme, prefix = "stoop"): void {
   const sanitizedPrefix = sanitizePrefix(prefix);
 
   pendingThemes.set(sanitizedPrefix, theme);
@@ -237,72 +161,34 @@ export function registerTheme(theme: Theme, prefix = ""): void {
 
 /**
  * Updates the stylesheet with new CSS rules.
+ * FIXED: Always inject synchronously to prevent race conditions.
  *
  * @param css - CSS string to inject
  * @param ruleKey - Unique key for deduplication
  * @param prefix - Optional prefix for CSS rules
  */
-export function updateStylesheet(css: string, ruleKey: string, prefix = ""): void {
+export function updateStylesheet(css: string, ruleKey: string, prefix = "stoop"): void {
   if (typeof document === "undefined") {
     return;
   }
 
   const sanitizedPrefix = sanitizePrefix(prefix);
 
-  if (stylesheetElement && stylesheetElement.parentNode) {
-    const currentCSS = stylesheetElement.textContent || "";
-    const normalizedNew = css.replace(/\s+/g, " ").trim();
-    const normalizedCurrent = currentCSS.replace(/\s+/g, " ").trim();
-
-    if (normalizedCurrent.includes(normalizedNew)) {
-      if (!dedup.isInjectedRule(ruleKey)) {
-        dedup.markRuleAsInjected(ruleKey, css);
-      }
-
-      return;
-    }
+  // Check dedup first - most efficient check
+  if (dedup.isInjectedRule(ruleKey)) {
+    return;
   }
 
   try {
     const sheet = getStylesheet(sanitizedPrefix);
     const currentCSS = sheet.textContent || "";
-    const normalizedNew = css.replace(/\s+/g, " ").trim();
-    const normalizedCurrent = currentCSS.replace(/\s+/g, " ").trim();
 
-    if (normalizedCurrent.includes(normalizedNew)) {
-      if (!dedup.isInjectedRule(ruleKey)) {
-        dedup.markRuleAsInjected(ruleKey, css);
-      }
+    // FIXED: Always inject synchronously to prevent styles from dropping
+    sheet.textContent = currentCSS + (currentCSS ? "\n" : "") + css;
 
-      return;
-    }
-
-    // Update immediately on initial render to avoid FOUC
-    // Use batched updates for subsequent renders
-    if (!currentCSS) {
-      const allInjectedRules = dedup.getAllInjectedRules();
-
-      if (allInjectedRules.size > 0) {
-        const allCSS = Array.from(allInjectedRules.entries())
-          .filter(([key]) => !key.startsWith("__theme_vars_") && key !== ruleKey)
-          .map(([, cssValue]) => cssValue)
-          .join("\n");
-
-        sheet.textContent = allCSS + (allCSS ? "\n" : "") + css;
-      } else {
-        sheet.textContent = css;
-      }
-    } else {
-      scheduleCSSUpdate(css, ruleKey);
-    }
-
-    if (!dedup.isInjectedRule(ruleKey)) {
-      dedup.markRuleAsInjected(ruleKey, css);
-    }
+    dedup.markRuleAsInjected(ruleKey, css);
   } catch {
-    if (!dedup.isInjectedRule(ruleKey)) {
-      dedup.markRuleAsInjected(ruleKey, css);
-    }
+    dedup.markRuleAsInjected(ruleKey, css);
   }
 
   if (!ssr.isInSSRCache(css)) {
@@ -312,39 +198,20 @@ export function updateStylesheet(css: string, ruleKey: string, prefix = ""): voi
 
 /**
  * Injects CSS into the browser stylesheet with deduplication.
+ * FIXED: Proper deduplication order to prevent race conditions.
  *
  * @param css - CSS string to inject
  * @param ruleKey - Unique key for deduplication
  * @param prefix - Optional prefix for CSS rules
  */
-export function injectBrowserCSS(css: string, ruleKey: string, prefix = ""): void {
+export function injectBrowserCSS(css: string, ruleKey: string, prefix = "stoop"): void {
+  // FIXED: Check dedup first, then delegate to updateStylesheet which also checks
+  // This prevents double-checking and ensures consistent behavior
   if (dedup.isInjectedRule(ruleKey)) {
     return;
   }
 
-  dedup.markRuleAsInjected(ruleKey, css);
-
-  if (isCachedStyle(css)) {
-    return;
-  }
-
-  markStyleAsCached(css);
-
   const sanitizedPrefix = sanitizePrefix(prefix);
-
-  if (stylesheetElement && stylesheetElement.parentNode) {
-    try {
-      const currentCSS = stylesheetElement.textContent || "";
-      const normalizedNew = css.replace(/\s+/g, " ").trim();
-      const normalizedCurrent = currentCSS.replace(/\s+/g, " ").trim();
-
-      if (normalizedCurrent.includes(normalizedNew)) {
-        return;
-      }
-    } catch {
-      // Continue with normal injection
-    }
-  }
 
   updateStylesheet(css, ruleKey, sanitizedPrefix);
 }
@@ -359,16 +226,9 @@ export function getStylesheetElement(): HTMLStyleElement | null {
 }
 
 /**
- * Clears the stylesheet and all pending updates.
+ * Clears the stylesheet and all caches.
  */
 export function clearStylesheet(): void {
-  if (rafId !== null && typeof cancelAnimationFrame !== "undefined") {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-
-  pendingCSSUpdates.clear();
-
   if (stylesheetElement && stylesheetElement.parentNode) {
     stylesheetElement.parentNode.removeChild(stylesheetElement);
   }

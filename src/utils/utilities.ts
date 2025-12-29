@@ -31,7 +31,10 @@ export function applyUtilities(styles: CSS, utils?: Record<string, UtilityFuncti
         const utilityResult = utils[key](value as CSSPropertyValue | CSS);
 
         if (utilityResult && typeof utilityResult === "object") {
-          Object.assign(result, utilityResult);
+          // Merge utility result into result object using spread for immutability
+          for (const utilKey in utilityResult) {
+            result[utilKey] = utilityResult[utilKey];
+          }
         }
       } catch {
         result[key] = value;

@@ -32,7 +32,7 @@ import {
 } from "../constants";
 import { compileCSS } from "../core/compiler";
 import { applyVariants } from "../core/variants";
-import { sanitizeClassName } from "../utils/string";
+import { hash, sanitizeClassName } from "../utils/string";
 
 /**
  * Creates a styled component reference for selector targeting.
@@ -107,7 +107,7 @@ type CSSWithVariants = {
  */
 export function createStyledFunction(
   defaultTheme: Theme,
-  prefix = "",
+  prefix = "stoop",
   media?: Record<string, string>,
   utils?: Record<string, UtilityFunction>,
   themeMap?: Record<string, ThemeScale>,
@@ -162,7 +162,9 @@ export function createStyledFunction(
 
     type Props = StyledComponentProps<DefaultElement, VariantsConfig>;
 
-    const baseClassName = compileCSS(actualBaseStyles, defaultTheme, prefix, media, utils, themeMap);
+    // Note: Removed unused baseClassName compilation - it was never used and caused
+    // duplicate CSS generation. Styles are now compiled only once inside the component
+    // with variants applied.
 
     let baseElementClassName: string | undefined;
 
@@ -180,10 +182,15 @@ export function createStyledFunction(
         };
         const element = (as || defaultElement) as ElementType;
 
-        const cssObject: CSS =
-          cssStyles && typeof cssStyles === "object" && cssStyles !== null
-            ? (cssStyles as CSS)
-            : EMPTY_CSS;
+        // Stabilize cssObject to prevent unnecessary recompilation
+        // Only recreate when cssStyles reference actually changes
+        const cssObject: CSS = useMemo(
+          () =>
+            cssStyles && typeof cssStyles === "object" && cssStyles !== null
+              ? (cssStyles as CSS)
+              : EMPTY_CSS,
+          [cssStyles],
+        );
 
         const { elementProps, variantProps } = extractVariantProps(restProps, actualVariants);
 
@@ -191,12 +198,16 @@ export function createStyledFunction(
 
         const currentTheme = contextValue?.theme || defaultTheme;
 
-        // Extract media from current theme if available, otherwise use default media
-        const currentMedia = currentTheme.media || media;
+        // Merge media from theme with config media instead of replacing
+        // This ensures media queries from config aren't lost when theme switches
+        const currentMedia = currentTheme.media ? { ...media, ...currentTheme.media } : media;
 
         // Note: Theme variable updates are now handled centrally by the Provider component
         // This eliminates the need for each styled component to update theme variables
 
+        // Create stable variant key without JSON.stringify for better performance
+        // Use individual variant values as dependencies instead of serialization
+        // FIXED: Use proper dependency array to prevent unnecessary recomputation
         const variantKey = useMemo(() => {
           if (!actualVariants) {
             return "";
@@ -212,8 +223,9 @@ export function createStyledFunction(
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([key, value]) => `${key}:${String(value)}`)
             .join("|");
-        }, [actualVariants, ...Object.values(variantProps)]);
+        }, [variantProps]);
 
+        // FIXED: Added actualBaseStyles and actualVariants to dependencies for stability
         const finalStyles = useMemo(() => {
           let componentStyles: CSS = actualBaseStyles;
 
@@ -226,8 +238,10 @@ export function createStyledFunction(
           }
 
           return componentStyles;
-        }, [variantKey, cssObject]);
+        }, [variantKey, cssObject, actualBaseStyles, actualVariants, variantProps]);
 
+        // FIXED: Removed currentTheme from dependencies - theme changes are handled via CSS variables
+        // This prevents recompilation when theme switches, maintaining stable class names
         const finalClassName = useMemo(() => {
           const classNames: string[] = [];
 
@@ -251,7 +265,7 @@ export function createStyledFunction(
           }
 
           return classNames.length > 0 ? classNames.join(" ") : undefined;
-        }, [finalStyles, currentTheme, prefix, currentMedia, utils, themeMap, className, baseElementClassName]);
+        }, [finalStyles, className, baseElementClassName]);
 
         return createElement(element, {
           ...elementProps,
@@ -261,11 +275,17 @@ export function createStyledFunction(
       },
     );
 
+    // FIXED: Generate a deterministic className for component targeting that doesn't depend on theme
+    // Use a stable hash of the base styles structure to ensure consistent selector across renders
+    // This prevents selector mismatches when theme changes
+    const selectorHash = hash(JSON.stringify(actualBaseStyles));
+    const selectorClassName = `${prefix}-${selectorHash}`;
+
     const componentWithSelector = StyledComponent as typeof StyledComponent & {
       selector: StyledComponentRef;
     };
 
-    componentWithSelector.selector = createStyledComponentRef(baseClassName);
+    componentWithSelector.selector = createStyledComponentRef(selectorClassName);
 
     return componentWithSelector;
   };

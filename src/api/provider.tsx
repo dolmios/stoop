@@ -31,7 +31,7 @@ export function createProvider(
   ThemeContext: Context<ThemeContextValue | null>,
   themes: Record<string, Theme>,
   defaultTheme: Theme,
-  prefix = "",
+  prefix = "stoop",
 ): {
   Provider: ComponentType<ProviderProps>;
   ThemeManagementContext: Context<ThemeManagementContextValue | null>;
@@ -48,6 +48,7 @@ export function createProvider(
     storageKey = "stoop-theme",
   }: ProviderProps): JSX.Element {
     // Get initial theme from localStorage synchronously before first render
+    // Memoize properly to prevent recreation on every render
     const getInitialTheme = useCallback((): string => {
       if (typeof window === "undefined") {
         return defaultThemeProp || firstThemeName;
@@ -64,14 +65,15 @@ export function createProvider(
       }
 
       return defaultThemeProp || firstThemeName;
-    }, [defaultThemeProp, storageKey]);
+    }, [defaultThemeProp, storageKey, firstThemeName]);
 
     const [themeName, setThemeNameState] = useState<string>(getInitialTheme);
 
     // Get current theme object based on theme name
+    // Fixed: Added missing 'themes' dependency to prevent stale theme references
     const currentTheme = useMemo(() => {
       return themes[themeName] || themes[defaultThemeProp || firstThemeName] || defaultTheme;
-    }, [themeName, defaultThemeProp]);
+    }, [themeName, defaultThemeProp, firstThemeName]);
 
     // Update CSS variables when theme changes (centralized, runs once per theme change)
     useLayoutEffect(() => {

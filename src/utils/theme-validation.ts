@@ -19,6 +19,11 @@ export function validateTheme(theme: unknown): DefaultTheme {
     throw new Error("[Stoop] Theme must be a non-null object");
   }
 
+  // Skip expensive validation in production for better performance
+  if (typeof process !== "undefined" && process.env?.NODE_ENV === "production") {
+    return theme as DefaultTheme;
+  }
+
   const themeObj = theme as Record<string, unknown>;
   const invalidScales: string[] = [];
 
@@ -37,12 +42,7 @@ export function validateTheme(theme: unknown): DefaultTheme {
       `[Stoop] Theme contains invalid scales: ${invalidScales.join(", ")}. ` +
       `Only these scales are allowed: ${APPROVED_THEME_SCALES.join(", ")}`;
 
-    if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
-      throw new Error(errorMessage);
-    }
-
-    // eslint-disable-next-line no-console
-    console.warn(errorMessage);
+    throw new Error(errorMessage);
   }
 
   return theme as DefaultTheme;

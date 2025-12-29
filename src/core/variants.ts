@@ -34,5 +34,7 @@ export function applyVariants(variants: Variants, props: VariantProps, baseStyle
     }
   }
 
-  return hasVariants ? Object.assign({}, baseStyles, ...appliedVariantStyles) : baseStyles;
+  // Use spread operator instead of Object.assign for safer immutability
+  // This prevents potential mutation issues with nested objects
+  return hasVariants ? { ...baseStyles, ...appliedVariantStyles.reduce((acc, style) => ({ ...acc, ...style }), {}) } : baseStyles;
 }

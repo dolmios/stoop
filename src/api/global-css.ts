@@ -31,20 +31,34 @@ import { applyUtilities } from "../utils/utilities";
  * @param themeMap - Optional theme scale mappings
  * @returns Function that accepts CSS objects and returns a cleanup function
  */
+// Global Set to track injected global CSS across all instances
+// This prevents the bug where multiple Stoop instances would share the same closure-scoped Set
+const globalInjectedStyles = new WeakMap<Theme, Set<string>>();
+
+function getInjectedSet(theme: Theme): Set<string> {
+  let set = globalInjectedStyles.get(theme);
+
+  if (!set) {
+    set = new Set<string>();
+    globalInjectedStyles.set(theme, set);
+  }
+
+  return set;
+}
+
 export function createGlobalCSSFunction(
   defaultTheme: Theme,
-  prefix = "",
+  prefix = "stoop",
   media?: Record<string, string>,
   utils?: Record<string, UtilityFunction>,
   themeMap?: Record<string, ThemeScale>,
 ) {
-  const injected = new Set<string>();
-
   return function globalCss(styles: CSS): () => void {
     if (typeof document === "undefined") {
       return () => {};
     }
 
+    const injected = getInjectedSet(defaultTheme);
     const cssKey = hashObject(styles);
 
     if (injected.has(cssKey)) {
@@ -60,7 +74,10 @@ export function createGlobalCSSFunction(
 
       let result = "";
 
-      Object.entries(obj).forEach(([key, value]) => {
+      // FIXED: Sort keys for deterministic CSS generation
+      const sortedEntries = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
+
+      sortedEntries.forEach(([key, value]) => {
         if (isCSSObject(value)) {
           if (media && key in media) {
             const mediaQuery = sanitizeMediaQuery(media[key]);

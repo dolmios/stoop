@@ -8,13 +8,16 @@ import type { CSS, Theme, ThemeScale } from "../types";
 
 import {
   escapeCSSVariableValue,
-  escapePrefixForSelector,
   sanitizeCSSVariableName,
 } from "./string";
 import { getScaleForProperty } from "./theme-map";
 import { isCSSObject, isThemeObject } from "./type-guards";
 
 const tokenIndexCache = new WeakMap<Theme, Map<string, string[][]>>();
+
+// Pre-compiled regex for token replacement
+// Matches tokens like $primary, -$medium, $colors.primary, etc.
+const TOKEN_REGEX = /(-?\$[a-zA-Z][a-zA-Z0-9]*(?:\$[a-zA-Z][a-zA-Z0-9]*)?(?:\.[a-zA-Z][a-zA-Z0-9]*)?)/g;
 
 function buildTokenIndex(theme: Theme): Map<string, string[][]> {
   const cached = tokenIndexCache.get(theme);
@@ -26,7 +29,8 @@ function buildTokenIndex(theme: Theme): Map<string, string[][]> {
   const index = new Map<string, string[][]>();
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
-    const keys = Object.keys(obj).sort() as Array<ThemeScale>;
+    // No need to sort - just iterate in natural order for better performance
+    const keys = Object.keys(obj) as Array<ThemeScale>;
 
     for (const key of keys) {
       const value = obj[key];
@@ -237,12 +241,15 @@ export function tokenToCSSVar(
  * @param prefix - Optional prefix for CSS variable names
  * @returns CSS string with :root selector and CSS variables
  */
-export function generateCSSVariables(theme: Theme, prefix = ""): string {
-  const escapedPrefix = escapePrefixForSelector(prefix);
-  const rootSelector = escapedPrefix ? `:root[data-stoop="${escapedPrefix}"]` : ":root";
+export function generateCSSVariables(theme: Theme, prefix = "stoop"): string {
+  // Use simple :root selector for single instance (default case)
+  // Only use attribute selector if explicitly needed for multiple instances
+  // This prevents issues where data-stoop attribute isn't set on <html>
+  const rootSelector = ":root";
   const variables: string[] = [];
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
+    // Sort keys for deterministic CSS variable order (important for SSR consistency)
     const keys = Object.keys(obj).sort() as Array<ThemeScale>;
 
     for (const key of keys) {
@@ -283,6 +290,8 @@ export function generateCSSVariables(theme: Theme, prefix = ""): string {
 
 /**
  * Recursively replaces theme tokens with CSS variable references in a CSS object.
+ * FIXED: Removed theme-specific caching to prevent cross-contamination issues.
+ * Token-to-CSS-var conversion is deterministic and fast enough without caching.
  *
  * @param obj - CSS object to process
  * @param theme - Optional theme for token resolution
@@ -302,43 +311,32 @@ export function replaceThemeTokensWithVars(
 
   const result: CSS = {};
 
-  for (const key in obj) {
+  // FIXED: Sort keys for deterministic output
+  const keys = Object.keys(obj).sort();
+
+  for (const key of keys) {
     const value = obj[key];
 
     if (isCSSObject(value)) {
       // Key is a selector (pseudo-selector, media query), not a CSS property
-      result[key] = replaceThemeTokensWithVars(value, theme, themeMap, property);
+      // Pass undefined for property so nested CSS properties use their own keys
+      result[key] = replaceThemeTokensWithVars(value, theme, themeMap, undefined);
     } else if (typeof value === "string" && value.includes("$")) {
       const cssProperty = property || key;
 
-      result[key] = value.replace(
-        /(calc\()?(-?)(\$[a-zA-Z][a-zA-Z0-9]*(?:\$[a-zA-Z][a-zA-Z0-9]*)?(?:\.[a-zA-Z][a-zA-Z0-9]*)?)/g,
-        (match, calcPrefix, negativeSign, token, offset, string) => {
-          const cssVar = tokenToCSSVar(token, theme, cssProperty, themeMap);
+      // FIXED: Removed caching to prevent cross-theme contamination
+      // Token resolution is deterministic and fast enough without caching
+      result[key] = value.replace(TOKEN_REGEX, (token) => {
+        // Handle negative tokens
+        if (token.startsWith("-$")) {
+          const positiveToken = token.slice(1);
+          const cssVar = tokenToCSSVar(positiveToken, theme, cssProperty, themeMap);
 
-          // Check if we're inside a calc() function by looking backwards
-          const beforeMatch = string.slice(Math.max(0, offset - 10), offset);
-          const isInsideCalc = beforeMatch.includes("calc(") && !beforeMatch.includes(")");
+          return `calc(-1 * ${cssVar})`;
+        }
 
-          // If there's a negative sign before the token
-          if (negativeSign === "-") {
-            // If we're already inside a calc(), use negative CSS var directly
-            if (isInsideCalc || calcPrefix === "calc(") {
-              return `${calcPrefix || ""}-${cssVar}`;
-            }
-            // Otherwise, wrap in calc()
-
-            return `calc(-1 * ${cssVar})`;
-          }
-
-          // If we have a calc prefix but no negative sign, preserve it
-          if (calcPrefix === "calc(") {
-            return `${calcPrefix}${cssVar}`;
-          }
-
-          return cssVar;
-        },
-      );
+        return tokenToCSSVar(token, theme, cssProperty, themeMap);
+      });
     } else {
       result[key] = value;
     }

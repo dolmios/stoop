@@ -20,7 +20,7 @@ export { isInjectedRule } from "./dedup";
  * @param prefix - Optional prefix for CSS rules
  * @param ruleKey - Optional unique key for deduplication
  */
-export function injectCSS(css: string, prefix = "", ruleKey?: string): void {
+export function injectCSS(css: string, prefix = "stoop", ruleKey?: string): void {
   const key = ruleKey || css;
 
   if (typeof document === "undefined") {
@@ -43,7 +43,7 @@ export function injectCSS(css: string, prefix = "", ruleKey?: string): void {
  * @param theme - Theme object
  * @param prefix - Optional prefix for CSS variables
  */
-export function injectThemeVariables(cssVars: string, theme: Theme, prefix = ""): void {
+export function injectThemeVariables(cssVars: string, theme: Theme, prefix = "stoop"): void {
   browser.injectThemeVariables(cssVars, theme, prefix);
 }
 
@@ -54,7 +54,7 @@ export function injectThemeVariables(cssVars: string, theme: Theme, prefix = "")
  * @param theme - Theme object to register
  * @param prefix - Optional prefix for CSS variables
  */
-export function registerTheme(theme: Theme, prefix = ""): void {
+export function registerTheme(theme: Theme, prefix = "stoop"): void {
   browser.registerTheme(theme, prefix);
 }
 
