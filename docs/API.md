@@ -8,7 +8,7 @@ Creates a Stoop instance with your theme configuration.
 
 #### `config.theme` (required)
 
-Your theme object containing design tokens. **Only the 12 approved theme scales are allowed:**
+Your theme object containing design tokens. **Only the 13 approved theme scales are allowed:**
 
 - `colors` - Color values (strings)
 - `opacities` - Opacity values (strings or numbers)
@@ -18,6 +18,7 @@ Your theme object containing design tokens. **Only the 12 approved theme scales 
 - `fonts` - Font family values (strings)
 - `fontWeights` - Font weight values (strings or numbers)
 - `fontSizes` - Font size values (strings)
+- `lineHeights` - Line height values (strings or numbers)
 - `letterSpacings` - Letter spacing values (strings)
 - `shadows` - Shadow values (strings)
 - `zIndices` - Z-index values (strings or numbers)
@@ -77,7 +78,7 @@ const { styled, css, Provider, useTheme } = createStoop({
 </Provider>
 
 // In components
-const { theme, themeName, setTheme, availableThemes } = useTheme();
+const { theme, themeName, setTheme, toggleTheme, availableThemes } = useTheme();
 ```
 
 **Benefits:**
@@ -87,21 +88,22 @@ const { theme, themeName, setTheme, availableThemes } = useTheme();
 - Built-in FOUC prevention with `useLayoutEffect`
 - No need to manually create Provider component
 
-If `themes` is not provided, you can still use custom theme management with `setTheme()` and `ThemeContext`.
+If `themes` is not provided, you can still use custom theme management by manually creating your own React Context and using `createTheme()` to create theme variants. Note that `setTheme()` and `toggleTheme()` are only available via `useTheme()` which requires the `themes` config.
 
 #### `config.prefix` (optional)
 
-Prefix for generated CSS class names and CSS variable scoping. Defaults to empty string.
+Prefix for generated CSS class names and CSS variable names. Defaults to `"stoop"`.
 
 When a prefix is provided:
 - CSS class names will be prefixed (e.g., `my-app-abc123`)
-- CSS variables will be scoped to `:root[data-stoop="prefix"]` instead of `:root`
+- CSS variable names will be prefixed in their names (e.g., `--my-app-colors-primary`)
+- CSS variables are always injected in `:root` selector (prefix does not affect the selector)
 - This enables multiple Stoop instances to coexist without conflicts
 
 ```tsx
 {
   prefix: "my-app", // Classes will be: my-app-abc123
-  // CSS variables will be: :root[data-stoop="my-app"] { --colors-primary: ... }
+  // CSS variables will be: :root { --my-app-colors-primary: ... }
 }
 ```
 
@@ -162,9 +164,11 @@ An object containing:
 - **`keyframes`** - Function to create CSS keyframe animations
 - **`getCssText`** - Function to get CSS text for SSR
 - **`warmCache`** - Function to pre-compile CSS objects for cache warming
-- **`ThemeContext`** - React context for theme access
+- **`preloadTheme`** - Function to preload theme CSS variables before React renders
 - **`theme`** - Frozen copy of your theme object
 - **`config`** - Your configuration object
+- **`Provider`** - Theme provider component (only if `themes` config provided)
+- **`useTheme`** - Hook to access theme management (only if `themes` config provided)
 
 ---
 
@@ -311,11 +315,22 @@ Partial theme object that will be merged with the base theme:
 
 ### Returns
 
-A new theme object that can be used with `ThemeContext.Provider`.
+A new theme object that extends the base theme. When used with the `themes` config in `createStoop`, themes created with `createTheme` are automatically merged with the default theme.
 
 ### Example
 
 ```tsx
+const { createTheme } = createStoop({
+  theme: {
+    colors: {
+      primary: "#0070f3",
+      background: "#ffffff",
+      text: "#000000",
+    },
+  },
+});
+
+// Create a dark theme variant
 const darkTheme = createTheme({
   colors: {
     background: "#000000",
@@ -323,9 +338,14 @@ const darkTheme = createTheme({
   },
 });
 
-<ThemeContext.Provider value={{ theme: darkTheme }}>
-  {/* Components will use dark theme */}
-</ThemeContext.Provider>
+// Use with themes config for automatic theme management
+const { Provider } = createStoop({
+  theme: lightTheme,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme, // Uses createTheme result
+  },
+});
 ```
 
 ---
@@ -599,6 +619,7 @@ Object with theme management methods:
 - `theme: Theme` - Current theme object
 - `themeName: string` - Current theme name
 - `setTheme: (themeName: string) => void` - Function to change theme
+- `toggleTheme: () => void` - Function to cycle to next theme
 - `availableThemes: readonly string[]` - Array of available theme names
 
 ### Example
@@ -610,10 +631,10 @@ const { useTheme } = createStoop({
 });
 
 function ThemeToggle() {
-  const { themeName, setTheme, availableThemes } = useTheme();
+  const { themeName, toggleTheme, availableThemes } = useTheme();
 
   return (
-    <button onClick={() => setTheme(themeName === 'light' ? 'dark' : 'light')}>
+    <button onClick={toggleTheme}>
       Switch to {themeName === 'light' ? 'dark' : 'light'} mode
     </button>
   );
@@ -653,7 +674,7 @@ Stoop uses `$` prefix for theme tokens, converted to CSS variables.
 
 Property-aware resolution uses `themeMap` (150+ properties) or pattern matching. Each property maps to a specific scale, eliminating ambiguity.
 
-CSS variables are injected once in `:root` (or `:root[data-stoop="prefix"]` with prefix). Theme switching updates variables, not CSS classes.
+CSS variables are injected once in `:root` selector. Prefix affects CSS variable names (e.g., `--my-app-colors-primary`) and class names, but not the selector. Theme switching updates variables, not CSS classes.
 
 ---
 

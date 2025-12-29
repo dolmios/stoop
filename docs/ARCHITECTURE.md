@@ -13,7 +13,8 @@ Stoop is a CSS-in-JS library that compiles CSS objects into CSS classes at runti
 The main factory function that creates a Stoop instance. It:
 - Accepts theme configuration
 - Creates a React Context for theme access
-- Returns configured functions (`styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`), `ThemeContext`, `theme`, and `config`
+- Returns configured functions (`styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`), `theme`, and `config`
+- Conditionally returns `Provider` and `useTheme` if `themes` config is provided
 
 ### 2. CSS Compilation (`core/compiler.ts`)
 
@@ -28,11 +29,11 @@ The CSS compilation engine that:
 ### 3. CSS Variables (`utils/theme.ts`)
 
 Theme token system that:
-- Generates CSS variables from theme objects (`:root { --colors-primary: #0070f3; }` or `:root[data-stoop="prefix"] { --colors-primary: #0070f3; }` when prefix is provided)
+- Generates CSS variables from theme objects (`:root { --colors-primary: #0070f3; }`)
 - Converts theme tokens to CSS variable references
 - Enables instant theme switching without recompiling CSS
 - Uses token index cache (WeakMap) for O(1) token lookups instead of O(n) recursive search
-- Scopes CSS variables with prefix to enable multiple Stoop instances
+- Prefix affects CSS variable names (e.g., `--my-app-colors-primary`) and class names, but CSS variables are always injected in `:root` selector
 
 ### 4. CSS Injection (`inject/`)
 
@@ -106,8 +107,8 @@ Creates CSS keyframe animations:
 1. CSS object: { color: "$primary" }
 2. Extract token: "primary" (shorthand) or "colors.primary" (full path)
 3. Resolve via themeMap (property-aware) or search all categories
-4. Convert to CSS variable: "var(--colors-primary)"
-5. CSS variables injected once in :root (or :root[data-stoop="prefix"] with prefix)
+4. Convert to CSS variable: "var(--colors-primary)" (or "var(--prefix-colors-primary)" with prefix)
+5. CSS variables injected once in :root selector (prefix affects variable names, not selector)
 6. Theme switching updates CSS variables, not CSS classes
 ```
 
@@ -183,9 +184,9 @@ Stoop uses CSS variables (CSS custom properties) for theme tokens:
 
 ### How It Works
 
-1. Theme tokens (`$primary` or `$colors.primary`) are converted to CSS variables (`var(--colors-primary)`)
-2. CSS variables are injected once in `:root` block (or `:root[data-stoop="prefix"]` when a prefix is configured)
+1. Theme tokens (`$primary` or `$colors.primary`) are converted to CSS variables (`var(--colors-primary)` or `var(--prefix-colors-primary)` with prefix)
+2. CSS variables are injected once in `:root` selector (prefix affects variable names, not the selector)
 3. When theme changes, only CSS variables are updated
 4. All components automatically reflect new theme values
-5. Prefix scoping enables multiple Stoop instances to coexist without CSS variable conflicts
+5. Prefix in variable names enables multiple Stoop instances to coexist without CSS variable conflicts
 

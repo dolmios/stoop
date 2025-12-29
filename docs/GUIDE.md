@@ -12,127 +12,86 @@ bun add stoop
 yarn add stoop
 ```
 
-## Step 1: Create Your Theme
+## Step 1: Create Stoop Instance with Themes
 
-Create `theme.ts` to define your Stoop instance:
+Create `theme.ts` to define your Stoop instance with multiple themes:
 
 ```tsx
 // theme.ts
 import { createStoop } from "stoop";
 
-const { styled, css, createTheme, globalCss, keyframes, ThemeContext } = createStoop({
-  theme: {
-    colors: {
-      primary: "#0070f3",
-      secondary: "#7928ca",
-      background: "#ffffff",
-      text: "#000000",
-      border: "#eaeaea",
-    },
-    space: {
-      small: "8px",
-      medium: "16px",
-      large: "24px",
-      xlarge: "32px",
-    },
-    fonts: {
-      body: "system-ui, sans-serif",
-      heading: "Georgia, serif",
-    },
-    fontSizes: {
-      small: "14px",
-      medium: "16px",
-      large: "20px",
-      xlarge: "24px",
-    },
-    // Only these 12 scales are allowed:
-    // colors, opacities, space, radii, sizes, fonts, fontWeights, fontSizes,
-    // letterSpacings, shadows, zIndices, transitions
+const lightTheme = {
+  colors: {
+    primary: "#0070f3",
+    secondary: "#7928ca",
+    background: "#ffffff",
+    text: "#000000",
+    border: "#eaeaea",
   },
-  media: {
-    mobile: "@media (max-width: 768px)",
-    tablet: "@media (min-width: 769px) and (max-width: 1024px)",
-    desktop: "@media (min-width: 1025px)",
+  space: {
+    small: "8px",
+    medium: "16px",
+    large: "24px",
+    xlarge: "32px",
   },
-});
+  fonts: {
+    body: "system-ui, sans-serif",
+    heading: "Georgia, serif",
+  },
+  fontSizes: {
+    small: "14px",
+    medium: "16px",
+    large: "20px",
+    xlarge: "24px",
+  },
+  // Only these 13 scales are allowed:
+  // colors, opacities, space, radii, sizes, fonts, fontWeights, fontSizes,
+  // lineHeights, letterSpacings, shadows, zIndices, transitions
+};
 
-const darkTheme = createTheme({
+const darkTheme = {
   colors: {
     primary: "#3291ff",
     background: "#000000",
     text: "#ffffff",
     border: "#333333",
   },
+  space: {
+    small: "8px",
+    medium: "16px",
+    large: "24px",
+    xlarge: "32px",
+  },
+  fonts: {
+    body: "system-ui, sans-serif",
+    heading: "Georgia, serif",
+  },
+  fontSizes: {
+    small: "14px",
+    medium: "16px",
+    large: "20px",
+    xlarge: "24px",
+  },
+};
+
+export const {
+  styled,
+  css,
+  createTheme,
+  globalCss,
+  keyframes,
+  Provider,
+  useTheme,
+} = createStoop({
+  theme: lightTheme,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+  },
 });
-
-export { styled, css, createTheme, globalCss, keyframes, ThemeContext, darkTheme };
 ```
 
-## Step 2: Create Theme Provider
-
-Create `Provider.tsx` to manage theme switching:
-
-```tsx
-// Provider.tsx
-"use client"; // If using Next.js App Router
-
-import { createContext, useContext, useEffect, useState } from "react";
-import { ThemeContext as StoopThemeContext, darkTheme } from "./theme";
-
-type ThemeName = "light" | "dark";
-
-interface ThemeContextValue {
-  theme: any;
-  themeName: ThemeName;
-  toggleTheme: () => void;
-  setTheme: (theme: ThemeName) => void;
-}
-
-const ThemeManagementContext = createContext<ThemeContextValue | null>(null);
-
-export function ThemeProvider({ children }) {
-  const [themeName, setThemeName] = useState<ThemeName>("light");
-  const currentTheme = themeName === "dark" ? darkTheme : {};
-
-  useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored === "dark" || stored === "light") {
-      setThemeName(stored);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = themeName === "light" ? "dark" : "light";
-    setThemeName(newTheme);
-    localStorage.setItem("theme", newTheme);
-  };
-
-  const setTheme = (theme: ThemeName) => {
-    setThemeName(theme);
-    localStorage.setItem("theme", theme);
-  };
-
-  return (
-    <StoopThemeContext.Provider value={{ theme: currentTheme }}>
-      <ThemeManagementContext.Provider
-        value={{ theme: currentTheme, themeName, toggleTheme, setTheme }}
-      >
-        {children}
-      </ThemeManagementContext.Provider>
-    </StoopThemeContext.Provider>
-  );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeManagementContext);
-  if (!context) {
-    throw new Error("useTheme must be used within ThemeProvider");
-  }
-  return context;
-}
-```
-
-## Step 3: Set Up Global Styles
+## Step 2: Set Up Global Styles
 
 Create global styles in your app entry point:
 
@@ -157,7 +116,7 @@ const globalStyles = globalCss({
 globalStyles();
 ```
 
-## Step 4: Create Styled Components
+## Step 3: Create Styled Components
 
 ```tsx
 // components/Button.tsx
@@ -209,11 +168,11 @@ export const Button = styled("button", {
 });
 ```
 
-## Step 5: Use Components
+## Step 4: Use Components
 
 ```tsx
 // pages/index.tsx or app/page.tsx
-import { ThemeProvider, useTheme } from "./Provider";
+import { Provider, useTheme } from "./theme";
 import { Button } from "./components/Button";
 
 function HomePage() {
@@ -233,9 +192,9 @@ function HomePage() {
 
 export default function App() {
   return (
-    <ThemeProvider>
+    <Provider defaultTheme="light" storageKey="theme">
       <HomePage />
-    </ThemeProvider>
+    </Provider>
   );
 }
 ```
@@ -307,7 +266,7 @@ export const globalStyles = globalCss({
 ```tsx
 // app/layout.tsx
 import { cookies } from 'next/headers';
-import { Provider, getServerStyles, globalStyles } from './theme';
+import { Provider, getCssText, globalStyles } from './theme';
 
 // Call globalStyles() at module level
 globalStyles();
@@ -350,18 +309,18 @@ export default function RootLayout({
 import { useTheme } from '../theme';
 
 export function ThemeToggle() {
-  const { themeName, setTheme } = useTheme();
+  const { themeName, toggleTheme } = useTheme();
 
-  const toggleTheme = () => {
-    const newTheme = themeName === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+  const handleToggle = () => {
+    toggleTheme();
 
     // Update cookie for SSR
+    const newTheme = themeName === 'light' ? 'dark' : 'light';
     document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
   };
 
   return (
-    <button onClick={toggleTheme}>
+    <button onClick={handleToggle}>
       Switch to {themeName === 'light' ? 'dark' : 'light'} mode
     </button>
   );
@@ -375,7 +334,7 @@ export function ThemeToggle() {
 ```tsx
 // pages/_document.tsx
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import { getServerStyles } from '../theme';
+import { getCssText } from '../theme';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -442,18 +401,18 @@ export default function App({ Component, pageProps }: AppProps) {
 import { useTheme } from '../theme';
 
 export function ThemeToggle() {
-  const { themeName, setTheme } = useTheme();
+  const { themeName, toggleTheme } = useTheme();
 
-  const toggleTheme = () => {
-    const newTheme = themeName === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+  const handleToggle = () => {
+    toggleTheme();
 
     // Update cookie for SSR
+    const newTheme = themeName === 'light' ? 'dark' : 'light';
     document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
   };
 
   return (
-    <button onClick={toggleTheme}>
+    <button onClick={handleToggle}>
       Switch to {themeName === 'light' ? 'dark' : 'light'} mode
     </button>
   );
@@ -555,7 +514,7 @@ color: "#000000",
 
 ### Organize Theme by Scales
 
-Only these 12 scales are allowed: `colors`, `opacities`, `space`, `radii`, `sizes`, `fonts`, `fontWeights`, `fontSizes`, `letterSpacings`, `shadows`, `zIndices`, `transitions`.
+Only these 13 scales are allowed: `colors`, `opacities`, `space`, `radii`, `sizes`, `fonts`, `fontWeights`, `fontSizes`, `lineHeights`, `letterSpacings`, `shadows`, `zIndices`, `transitions`.
 
 ### Prefer Variants Over CSS Prop
 
@@ -571,11 +530,12 @@ Use variants for reusable patterns, `css` prop for one-off styles:
 
 ### Theme Switching
 
-CSS variables enable instant theme switching. Update theme in Provider:
+CSS variables enable instant theme switching. The built-in `Provider` handles theme updates automatically:
 
 ```tsx
-const currentTheme = themeName === "dark" ? darkTheme : {};
-<StoopThemeContext.Provider value={{ theme: currentTheme }}>
+<Provider defaultTheme="light" storageKey="theme">
+  <App />
+</Provider>
 ```
 
 ## Utility Functions
@@ -633,7 +593,7 @@ const Button = styled("button", {}, {
 ## Troubleshooting
 
 **Styles not applying:**
-- Ensure `ThemeProvider` wraps your app
+- Ensure `Provider` wraps your app (when using `themes` config)
 - Verify theme tokens use `$` prefix
 - Check theme structure matches token references
 
@@ -643,6 +603,6 @@ const Button = styled("button", {}, {
 - Use `as` prop for polymorphic components
 
 **Theme not switching:**
-- Verify `ThemeContext.Provider` receives correct theme
+- Ensure `themes` config is provided to `createStoop` to enable `Provider` and `useTheme`
 - Check localStorage for stored preference
 - Ensure theme structure matches base theme

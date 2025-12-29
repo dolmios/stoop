@@ -30,7 +30,8 @@ If you need these features, consider [Vanilla Extract](https://vanilla-extract.s
 - Utility functions for custom CSS transformations
 - Multiple themes with `createTheme()`
 - SSR support via `getCssText()`
-- React 19+ required (Next.js Pages & App Router supported)
+- React >=16.8.0 required (Next.js Pages & App Router supported)
+- Automatic prefix (`stoop` by default) for CSS class names and variables
 
 ## Installation
 
@@ -47,7 +48,7 @@ yarn add stoop
 ```tsx
 import { createStoop } from "stoop";
 
-const { styled, css, createTheme, globalCss, keyframes, ThemeContext } = createStoop({
+const { styled, css, createTheme, globalCss, keyframes } = createStoop({
   theme: {
     colors: {
       primary: "#0070f3",
@@ -65,10 +66,11 @@ const { styled, css, createTheme, globalCss, keyframes, ThemeContext } = createS
 const Button = styled("button", {
   padding: "$medium",
   backgroundColor: "$primary",
+  color: "$text",
 }, {
   variant: {
     primary: { backgroundColor: "$primary" },
-    secondary: { backgroundColor: "$secondary" },
+    secondary: { backgroundColor: "$background", border: "1px solid $primary" },
   },
 });
 
@@ -82,23 +84,24 @@ See [GUIDE.md](./docs/GUIDE.md) for complete setup instructions.
 - **[GUIDE.md](./docs/GUIDE.md)** - Step-by-step setup and usage guide
 - **[API.md](./docs/API.md)** - Complete API reference
 - **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Internal implementation details
+- **[TESTING.md](./docs/TESTING.md)** - Testing guide and test suite documentation
 
 ## API Overview
 
 ### `createStoop(config)`
 
-Creates a Stoop instance. Returns: `styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `ThemeContext`, `theme`, `config`.
+Creates a Stoop instance. Returns: `styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`, `theme`, `config`. If `themes` config is provided, also returns `Provider` and `useTheme`.
 
 See [API.md](./docs/API.md) for complete API documentation.
 
 ### Theme Tokens
 
-Use `$` prefix for theme tokens. Shorthand `$token` searches all scales; explicit `$scale.token` specifies the scale.
+Use `$` prefix for theme tokens. Shorthand `$token` uses property-aware resolution (preferred); explicit `$scale.token` specifies the scale.
 
 ```tsx
 {
-  color: "$primary",           // Shorthand (preferred)
-  padding: "$medium",          // Property-aware resolution
+  color: "$primary",           // Shorthand (preferred, property-aware)
+  padding: "$medium",          // Property-aware → space scale
   fontSize: "$fontSizes.small", // Explicit scale
 }
 ```
@@ -137,7 +140,6 @@ See [GUIDE.md](./docs/GUIDE.md) for migration examples.
 
 **CSS-in-JS Libraries:**
 - [Stitches](https://stitches.dev) - Original library Stoop is based on (no longer maintained)
-- [Stitches](https://stitches.dev) - CSS-in-JS library (original inspiration)
 - [Vanilla Extract](https://vanilla-extract.style) - Zero-runtime CSS-in-JS
 - [styled-components](https://styled-components.com) - CSS-in-JS library
 - [Emotion](https://emotion.sh) - CSS-in-JS library
