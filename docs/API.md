@@ -75,13 +75,14 @@ const { styled, css, Provider, useTheme } = createStoop({
 // Usage
 <Provider defaultTheme="light" storageKey="theme">
   <App />
-</Provider>
+</Provider>;
 
 // In components
 const { theme, themeName, setTheme, toggleTheme, availableThemes } = useTheme();
 ```
 
 **Benefits:**
+
 - Automatic theme state management
 - LocalStorage persistence
 - Centralized theme variable updates (prevents performance issues)
@@ -95,6 +96,7 @@ If `themes` is not provided, you can still use custom theme management by manual
 Prefix for generated CSS class names and CSS variable names. Defaults to `"stoop"`.
 
 When a prefix is provided:
+
 - CSS class names will be prefixed (e.g., `my-app-abc123`)
 - CSS variable names will be prefixed in their names (e.g., `--my-app-colors-primary`)
 - CSS variables are always injected in `:root` selector (prefix does not affect the selector)
@@ -146,6 +148,7 @@ Custom property-to-scale mapping for theme token resolution. Overrides default m
 ```
 
 **Resolution Priority:**
+
 1. User's custom `themeMap` (if provided)
 2. Default `themeMap` (150+ common CSS properties)
 3. Pattern-based auto-detection (fallback for unmapped properties)
@@ -223,6 +226,7 @@ Variant configuration object:
 ### Returns
 
 A React component that accepts:
+
 - All standard HTML element props
 - Variant props (from your variants config)
 - `css` prop for additional styles
@@ -243,18 +247,22 @@ const Card = styled("div", {
 ### Example
 
 ```tsx
-const Button = styled("button", {
-  padding: "$medium",
-  borderRadius: "8px",
-}, {
-  variant: {
-    primary: { backgroundColor: "$primary" },
+const Button = styled(
+  "button",
+  {
+    padding: "$medium",
+    borderRadius: "8px",
   },
-});
+  {
+    variant: {
+      primary: { backgroundColor: "$primary" },
+    },
+  },
+);
 
 <Button variant="primary" css={{ marginTop: "10px" }} as="a" href="/">
   Click me
-</Button>
+</Button>;
 ```
 
 ---
@@ -289,7 +297,7 @@ const className = css({
   padding: "$medium",
 });
 
-<div className={className}>Styled content</div>
+<div className={className}>Styled content</div>;
 ```
 
 ---
@@ -456,6 +464,7 @@ Gets all generated CSS text for server-side rendering. Always includes theme CSS
 #### `theme` (optional)
 
 Theme to include CSS variables for (defaults to default theme):
+
 - String: theme name (looks up in `themes` config)
 - Theme object: use directly
 
@@ -470,13 +479,13 @@ A string containing all CSS including theme variables and component styles.
 const cssText = getCssText();
 
 // With specific theme name
-const darkCssText = getCssText('dark');
+const darkCssText = getCssText("dark");
 
 // With theme object
 const darkCssText = getCssText(darkTheme);
 
 // Inject into HTML
-<style dangerouslySetInnerHTML={{ __html: cssText }} />
+<style dangerouslySetInnerHTML={{ __html: cssText }} />;
 ```
 
 ---
@@ -505,14 +514,14 @@ warmCache([
 ### Example
 
 ```tsx
-const { warmCache } = createStoop({ theme: { /* ... */ } });
+const { warmCache } = createStoop({
+  theme: {
+    /* ... */
+  },
+});
 
 // Pre-compile common styles
-warmCache([
-  { padding: "$medium" },
-  { color: "$text" },
-  { backgroundColor: "$background" },
-]);
+warmCache([{ padding: "$medium" }, { color: "$text" }, { backgroundColor: "$background" }]);
 ```
 
 ---
@@ -528,6 +537,7 @@ Critical for preventing FOUC when loading a non-default theme from localStorage 
 #### `theme` (required)
 
 Theme to preload:
+
 - String: theme name (looks up in `themes` config)
 - Theme object: use directly
 
@@ -544,13 +554,13 @@ const { preloadTheme } = createStoop({
 });
 
 // Before React renders - prevents FOUC
-const savedTheme = localStorage.getItem('theme');
+const savedTheme = localStorage.getItem("theme");
 if (savedTheme) {
   preloadTheme(savedTheme); // Injects theme vars synchronously
 }
 
 // Then render React
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById("root"));
 root.render(<App />);
 ```
 
@@ -558,16 +568,16 @@ root.render(<App />);
 
 ```tsx
 // main.tsx or index.tsx
-import { createRoot } from 'react-dom/client';
-import { preloadTheme } from './theme';
+import { createRoot } from "react-dom/client";
+import { preloadTheme } from "./theme";
 
 // Prevent FOUC by preloading saved theme
 try {
-  const savedTheme = localStorage.getItem('theme');
+  const savedTheme = localStorage.getItem("theme");
   if (savedTheme) preloadTheme(savedTheme);
 } catch {}
 
-const root = createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
 ```
 
@@ -596,10 +606,11 @@ const { Provider } = createStoop({
 
 <Provider defaultTheme="light" storageKey="my-app-theme" attribute="data-theme">
   <App />
-</Provider>
+</Provider>;
 ```
 
 The Provider:
+
 - Reads initial theme from localStorage
 - Updates CSS variables when theme changes (centralized)
 - Persists theme changes to localStorage
@@ -634,9 +645,7 @@ function ThemeToggle() {
   const { themeName, toggleTheme, availableThemes } = useTheme();
 
   return (
-    <button onClick={toggleTheme}>
-      Switch to {themeName === 'light' ? 'dark' : 'light'} mode
-    </button>
+    <button onClick={toggleTheme}>Switch to {themeName === "light" ? "dark" : "light"} mode</button>
   );
 }
 ```
@@ -698,21 +707,25 @@ Variants create component variations via props.
 ### Usage
 
 ```tsx
-const Button = styled("button", {}, {
-  variant: {
-    primary: { backgroundColor: "$primary" },
-    secondary: { backgroundColor: "$secondary" },
+const Button = styled(
+  "button",
+  {},
+  {
+    variant: {
+      primary: { backgroundColor: "$primary" },
+      secondary: { backgroundColor: "$secondary" },
+    },
+    size: {
+      small: { padding: "$small" },
+      large: { padding: "$large" },
+    },
+    disabled: {
+      true: { opacity: 0.5, cursor: "not-allowed" },
+    },
   },
-  size: {
-    small: { padding: "$small" },
-    large: { padding: "$large" },
-  },
-  disabled: {
-    true: { opacity: 0.5, cursor: "not-allowed" },
-  },
-});
+);
 
-<Button variant="primary" size="large" disabled />
+<Button variant="primary" size="large" disabled />;
 ```
 
 **Note**: Compound variants (variants that depend on multiple props) are not supported.
@@ -798,4 +811,3 @@ Using @media syntax:
   },
 }
 ```
-

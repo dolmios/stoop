@@ -11,6 +11,7 @@ Stoop is a CSS-in-JS library that compiles CSS objects into CSS classes at runti
 ### 1. `createStoop`
 
 The main factory function that creates a Stoop instance. It:
+
 - Accepts theme configuration
 - Creates a React Context for theme access
 - Returns configured functions (`styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`), `theme`, and `config`
@@ -19,6 +20,7 @@ The main factory function that creates a Stoop instance. It:
 ### 2. CSS Compilation (`core/compiler.ts`)
 
 The CSS compilation engine that:
+
 - Converts theme tokens to CSS variables (`$colors.primary` → `var(--colors-primary)`)
 - Converts CSS objects to CSS strings
 - Generates unique class names using hash functions
@@ -29,6 +31,7 @@ The CSS compilation engine that:
 ### 3. CSS Variables (`utils/theme.ts`)
 
 Theme token system that:
+
 - Generates CSS variables from theme objects (`:root { --colors-primary: #0070f3; }`)
 - Converts theme tokens to CSS variable references
 - Enables instant theme switching without recompiling CSS
@@ -38,12 +41,14 @@ Theme token system that:
 ### 4. CSS Injection (`inject/`)
 
 Modular CSS injection system split into focused modules:
+
 - **`browser.ts`** - Browser-specific injection logic (stylesheet management, theme variables)
 - **`ssr.ts`** - SSR cache management (CSS text cache for server-side rendering)
 - **`dedup.ts`** - Deduplication logic (tracks injected rules to prevent duplicates)
 - **`index.ts`** - Public API that composes the modules
 
 Features:
+
 - Maintains one `<style>` tag for all CSS
 - Updates stylesheet content instead of creating multiple tags
 - Injects CSS variables at the top of stylesheet
@@ -53,6 +58,7 @@ Features:
 ### 5. Styled Components (`api/styled.ts`)
 
 Creates React components that:
+
 - Accept variant props
 - Support `css` prop for additional styles
 - Support `as` prop for polymorphic elements
@@ -64,6 +70,7 @@ Creates React components that:
 ### 6. CSS Function (`api/css.ts`)
 
 Generates CSS classes from CSS objects:
+
 - Uses default theme (doesn't access context)
 - Returns class name string
 - Useful for utility classes
@@ -71,14 +78,16 @@ Generates CSS classes from CSS objects:
 ### 7. Global CSS (`api/globalCss.ts`)
 
 Injects global styles:
+
 - Supports selectors (`*`, `body`, etc.)
 - Resolves theme tokens
 - Returns cleanup function
-- No-op for SSR
+- Works in both SSR and client environments
 
 ### 8. Keyframes (`api/keyframes.ts`)
 
 Creates CSS keyframe animations:
+
 - Generates `@keyframes` rules
 - Returns animation name string
 - Supports prefix for scoped animations
@@ -137,10 +146,61 @@ Creates CSS keyframe animations:
 
 ## SSR Support
 
-Stoop supports server-side rendering through:
-- `getCssText()` function that returns all generated CSS
-- No-op functions for `globalCss` when `document` is undefined
-- Theme context that can be provided server-side
+Stoop fully supports server-side rendering with Next.js App Router:
+
+### Dual Entry Points
+
+- **`stoop`** - Full client-side instance with all APIs (`styled`, `Provider`, `useTheme`, `getCssText`, etc.)
+- **`stoop/ssr`** - Server-safe instance with only non-React APIs (`createStoop`, `getCssText`, `generateCSSVariables`, etc.)
+
+### SSR Flow
+
+1. **Server Components**: Can import from `stoop/ssr` for server-safe utilities
+2. **Client Components**: Import from `stoop` for full functionality
+3. **CSS Injection**: Use `useServerInsertedHTML` hook from Next.js to capture styles during SSR
+4. **Global Styles**: `globalCss` works in both SSR and client environments
+5. **Theme Variables**: Generated during SSR and included in initial HTML
+
+### Next.js App Router Pattern
+
+```tsx
+// stoop.theme.ts (client-side)
+import { createStoop } from "stoop";
+export const { styled, Provider, useTheme, getCssText, globalCss } = createStoop(config);
+
+// app/components/Styles.tsx (client component)
+("use client");
+import { useServerInsertedHTML } from "next/navigation";
+import { getCssText, globalStyles } from "../stoop.theme";
+
+export function Styles({ initialTheme }) {
+  useServerInsertedHTML(() => {
+    globalStyles(); // Inject global CSS first
+    const cssText = getCssText(initialTheme);
+    return <style id="stoop-ssr" dangerouslySetInnerHTML={{ __html: cssText }} />;
+  });
+  return null;
+}
+
+// app/layout.tsx (server component)
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <Styles initialTheme="light" />
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+### Key Features
+
+- **No FOUC**: Styles are included in initial HTML
+- **Streaming SSR**: Works with React 18 streaming
+- **Theme Detection**: Server can detect theme from cookies
+- **Automatic Hydration**: Client reuses SSR-generated styles
 
 ## Limitations
 
@@ -189,4 +249,3 @@ Stoop uses CSS variables (CSS custom properties) for theme tokens:
 3. When theme changes, only CSS variables are updated
 4. All components automatically reflect new theme values
 5. Prefix in variable names enables multiple Stoop instances to coexist without CSS variable conflicts
-

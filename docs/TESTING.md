@@ -7,6 +7,7 @@ Comprehensive guide to the Stoop test suite, including how to run tests, test st
 The Stoop test suite provides comprehensive coverage of all public APIs, edge cases, error handling, and internal behaviors. All tests use [Bun's built-in test runner](https://bun.sh/docs/cli/test) and React's `renderToString` for SSR testing.
 
 **Test Statistics:**
+
 - **Total Tests:** 138
 - **Test Files:** 7
 - **Coverage:** All public APIs, edge cases, and internal behaviors
@@ -319,6 +320,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 ### Core APIs
 
 ✅ **Fully Covered:**
+
 - `createStoop` factory function
 - `css` function with all token types
 - `styled` components with variants
@@ -336,6 +338,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 ### Theme System
 
 ✅ **Fully Covered:**
+
 - Theme structure validation
 - All 13 approved theme scales
 - Theme token resolution (shorthand and explicit)
@@ -347,6 +350,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 ### Edge Cases
 
 ✅ **Fully Covered:**
+
 - Invalid inputs
 - Null/undefined values
 - Empty objects
@@ -361,6 +365,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 ### Performance
 
 ✅ **Fully Covered:**
+
 - Cache behavior (hits, misses, eviction)
 - CSS deduplication
 - Class name stability
@@ -369,6 +374,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 ### SSR Support
 
 ✅ **Fully Covered:**
+
 - `getCssText` in SSR context
 - Theme variable inclusion
 - CSS text generation
@@ -377,6 +383,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 ### Browser Behavior
 
 ✅ **Fully Covered:**
+
 - Stylesheet injection
 - Theme variable updates
 - localStorage persistence
@@ -541,4 +548,3 @@ When adding new features:
 - **[API.md](./API.md)** - Complete API reference
 - **[GUIDE.md](./GUIDE.md)** - Usage guide
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Implementation details
-

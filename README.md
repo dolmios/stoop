@@ -1,12 +1,11 @@
-# Stoop
+# [stoop](https://github.com/dolmios/stoop)
 
-CSS-in-JS library with type inference, theme creation, and variants support.
+> A lightweight, polymorphic React component library with intuitive design tokens and built-in theming system.
+
+![Stoop Kid Steps Off](https://stoop.dolmios.com/stoop.jpg)
 
 [![npm version](https://img.shields.io/npm/v/stoop)](https://www.npmjs.com/package/stoop)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-> **Warning: Not Production Ready**
-> Stoop is currently in active development and is not recommended for production use. The API may change, and there may be bugs or missing features. Use at your own risk.
 
 ## About
 
@@ -15,6 +14,7 @@ Stoop is a CSS-in-JS library—a TypeScript-first approach to styling that provi
 Stoop is a minimalist implementation of Stitches' high-level features. It provides a similar API for `styled`, `css`, and variants, but omits several Stitches features.
 
 **What's missing compared to Stitches:**
+
 - Compound variants
 - Build-time CSS extraction (runtime-only)
 - Advanced utility functions (basic support only)
@@ -63,18 +63,22 @@ const { styled, css, createTheme, globalCss, keyframes } = createStoop({
   },
 });
 
-const Button = styled("button", {
-  padding: "$medium",
-  backgroundColor: "$primary",
-  color: "$text",
-}, {
-  variant: {
-    primary: { backgroundColor: "$primary" },
-    secondary: { backgroundColor: "$background", border: "1px solid $primary" },
+const Button = styled(
+  "button",
+  {
+    padding: "$medium",
+    backgroundColor: "$primary",
+    color: "$text",
   },
-});
+  {
+    variant: {
+      primary: { backgroundColor: "$primary" },
+      secondary: { backgroundColor: "$background", border: "1px solid $primary" },
+    },
+  },
+);
 
-<Button variant="primary">Click me</Button>
+<Button variant="primary">Click me</Button>;
 ```
 
 See [GUIDE.md](./docs/GUIDE.md) for complete setup instructions.
@@ -113,23 +117,28 @@ Tokens resolve to CSS variables (`var(--colors-primary)`), enabling instant them
 Variants create component variations via props:
 
 ```tsx
-const Button = styled("button", {}, {
-  variant: {
-    primary: { backgroundColor: "$primary" },
-    secondary: { backgroundColor: "$secondary" },
+const Button = styled(
+  "button",
+  {},
+  {
+    variant: {
+      primary: { backgroundColor: "$primary" },
+      secondary: { backgroundColor: "$secondary" },
+    },
+    size: {
+      small: { padding: "$small" },
+      large: { padding: "$large" },
+    },
   },
-  size: {
-    small: { padding: "$small" },
-    large: { padding: "$large" },
-  },
-});
+);
 
-<Button variant="primary" size="small" />
+<Button variant="primary" size="small" />;
 ```
 
 ## Migration from Stitches
 
 Stoop provides a similar API for the features it implements. Key differences:
+
 - CSS variables for theme tokens
 - Simple theme system with `createTheme()`
 - Full TypeScript inference
@@ -139,6 +148,7 @@ See [GUIDE.md](./docs/GUIDE.md) for migration examples.
 ## Related Projects
 
 **CSS-in-JS Libraries:**
+
 - [Stitches](https://stitches.dev) - Original library Stoop is based on (no longer maintained)
 - [Vanilla Extract](https://vanilla-extract.style) - Zero-runtime CSS-in-JS
 - [styled-components](https://styled-components.com) - CSS-in-JS library
@@ -152,30 +162,98 @@ See [GUIDE.md](./docs/GUIDE.md) for migration examples.
 - [Treat](https://seek-oss.github.io/treat) - Themeable CSS-in-JS
 
 **Variant Systems:**
+
 - [CVA](https://cva.style) - Class Variance Authority for component variants
 - [clsx](https://github.com/lukeed/clsx) - Tiny utility for constructing className strings
 
 **Utility-First:**
+
 - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
 - [UnoCSS](https://unocss.dev) - Instant atomic CSS engine
 
 **Component Libraries:**
+
 - [Radix UI](https://www.radix-ui.com) - Unstyled, accessible component primitives
 - [Chakra UI](https://chakra-ui.com) - Component library built on Emotion
 - [Mantine](https://mantine.dev) - React components library with Emotion
 
 ## Development
 
+This is a monorepo using Bun workspaces. The project structure:
+
+```
+stoop/
+├── packages/
+│   └── stoop/          # Main library package
+├── apps/
+│   └── website/       # Website/documentation site (Next.js)
+└── scripts/           # Shared scripts
+```
+
+### Setup
+
 ```sh
+# Install all dependencies (for all workspaces)
 bun install
+
+# Build the library
+bun run build
+
+# Build the website
+bun run build:website
+```
+
+### Development Commands
+
+```sh
+# Start website dev server
+bun run dev
+
+# Build library
+bun run build
+
+# Build website
+bun run build:website
+
+# Run tests
+bun run test
+
+# Lint all packages
+bun run lint
+
+# Format code
+bun run format
+```
+
+### Working with Packages
+
+```sh
+# Work in a specific package
+cd packages/stoop
+bun run build
+bun run test
+
+# Work in website app
+cd apps/website
 bun run dev
 bun run build
-bun run lint
 ```
+
+### Monorepo Structure
+
+- **`packages/stoop`** - The main Stoop library
+  - Build: `bun run build`
+  - Test: `bun run test`
+
+- **`apps/website`** - Website and documentation site
+  - Dev: `bun run dev`
+  - Build: `bun run build`
+
+The website app uses `stoop` as a workspace dependency, so changes to the library are automatically available in the website app.
 
 ## Contributing
 
-Contributions welcome. See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for implementation details.
+Feel free to get in touch with feedback, advice or suggestions. See [Conventional Commits](https://gist.github.com/dolmios/0e33c579a500d87fc6f44df6cde97259) for new contributors.
 
 ## License
 

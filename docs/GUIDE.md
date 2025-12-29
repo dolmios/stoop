@@ -74,15 +74,7 @@ const darkTheme = {
   },
 };
 
-export const {
-  styled,
-  css,
-  createTheme,
-  globalCss,
-  keyframes,
-  Provider,
-  useTheme,
-} = createStoop({
+export const { styled, css, createTheme, globalCss, keyframes, Provider, useTheme } = createStoop({
   theme: lightTheme,
   themes: {
     light: lightTheme,
@@ -122,50 +114,54 @@ globalStyles();
 // components/Button.tsx
 import { styled } from "../theme";
 
-export const Button = styled("button", {
-  padding: "$medium $large",
-  borderRadius: "8px",
-  border: "1px solid $border",
-  backgroundColor: "$background",
-  color: "$text",
-  cursor: "pointer",
-  fontFamily: "$body",
-  fontSize: "$medium",
-  transition: "all 0.2s",
-  "&:hover": {
-    backgroundColor: "$border",
+export const Button = styled(
+  "button",
+  {
+    padding: "$medium $large",
+    borderRadius: "8px",
+    border: "1px solid $border",
+    backgroundColor: "$background",
+    color: "$text",
+    cursor: "pointer",
+    fontFamily: "$body",
+    fontSize: "$medium",
+    transition: "all 0.2s",
+    "&:hover": {
+      backgroundColor: "$border",
+    },
+    "&:disabled": {
+      opacity: 0.5,
+      cursor: "not-allowed",
+    },
   },
-  "&:disabled": {
-    opacity: 0.5,
-    cursor: "not-allowed",
-  },
-}, {
-  variant: {
-    primary: {
-      backgroundColor: "$primary",
-      color: "#ffffff",
-      borderColor: "$primary",
-      "&:hover": {
-        backgroundColor: "#0051cc",
+  {
+    variant: {
+      primary: {
+        backgroundColor: "$primary",
+        color: "#ffffff",
+        borderColor: "$primary",
+        "&:hover": {
+          backgroundColor: "#0051cc",
+        },
+      },
+      secondary: {
+        backgroundColor: "$secondary",
+        color: "#ffffff",
+        borderColor: "$secondary",
       },
     },
-    secondary: {
-      backgroundColor: "$secondary",
-      color: "#ffffff",
-      borderColor: "$secondary",
+    size: {
+      small: {
+        padding: "$small $medium",
+        fontSize: "$small",
+      },
+      large: {
+        padding: "$large $xlarge",
+        fontSize: "$large",
+      },
     },
   },
-  size: {
-    small: {
-      padding: "$small $medium",
-      fontSize: "$small",
-    },
-    large: {
-      padding: "$large $xlarge",
-      fontSize: "$large",
-    },
-  },
-});
+);
 ```
 
 ## Step 4: Use Components
@@ -181,8 +177,12 @@ function HomePage() {
   return (
     <div>
       <h1>My App</h1>
-      <Button variant="primary" size="large">Click me</Button>
-      <Button variant="secondary" size="small">Secondary</Button>
+      <Button variant="primary" size="large">
+        Click me
+      </Button>
+      <Button variant="secondary" size="small">
+        Secondary
+      </Button>
       <button onClick={toggleTheme}>
         Switch to {themeName === "light" ? "dark" : "light"} mode
       </button>
@@ -233,21 +233,15 @@ const darkTheme = {
   },
 };
 
-export const {
-  styled,
-  css,
-  globalCss,
-  getCssText,
-  Provider,
-  useTheme,
-  preloadTheme,
-} = createStoop({
-  theme: lightTheme,
-  themes: {
-    light: lightTheme,
-    dark: darkTheme,
+export const { styled, css, globalCss, getCssText, Provider, useTheme, preloadTheme } = createStoop(
+  {
+    theme: lightTheme,
+    themes: {
+      light: lightTheme,
+      dark: darkTheme,
+    },
   },
-});
+);
 
 export const globalStyles = globalCss({
   "*": { margin: 0, padding: 0, boxSizing: "border-box" },
@@ -264,33 +258,51 @@ export const globalStyles = globalCss({
 **With SSR and FOUC Prevention:**
 
 ```tsx
+// app/components/Styles.tsx
+"use client";
+
+import { useServerInsertedHTML } from "next/navigation";
+import { getCssText, globalStyles } from "../theme";
+
+export function Styles({ initialTheme }: { initialTheme: string }) {
+  useServerInsertedHTML(() => {
+    // Inject global styles first
+    globalStyles();
+
+    // Get all CSS including theme variables and component styles
+    const cssText = getCssText(initialTheme);
+
+    return (
+      <style
+        id="stoop-ssr"
+        dangerouslySetInnerHTML={{ __html: cssText }}
+        suppressHydrationWarning
+      />
+    );
+  });
+
+  return null;
+}
+```
+
+```tsx
 // app/layout.tsx
-import { cookies } from 'next/headers';
-import { Provider, getCssText, globalStyles } from './theme';
+import { cookies } from "next/headers";
+import { type ReactNode } from "react";
+import { Provider } from "./theme";
+import { Styles } from "./components/Styles";
 
-// Call globalStyles() at module level
-globalStyles();
-
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   // Detect theme from cookies on server
-  const cookieStore = cookies();
-  const themeCookie = cookieStore.get('theme');
-  const initialTheme = themeCookie?.value || 'light';
-
-  // Generate SSR styles with initial theme
-  const cssText = getCssText(initialTheme);
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("theme");
+  const initialTheme = themeCookie?.value || "light";
 
   return (
     <html lang="en" data-theme={initialTheme}>
-      <head>
-        {/* Inject SSR styles with theme variables - prevents FOUC */}
-        <style dangerouslySetInnerHTML={{ __html: cssText }} />
-      </head>
       <body>
+        {/* Inject SSR styles - prevents FOUC */}
+        <Styles initialTheme={initialTheme} />
         <Provider defaultTheme={initialTheme} storageKey="theme">
           {children}
         </Provider>
@@ -306,7 +318,7 @@ export default function RootLayout({
 // app/components/ThemeToggle.tsx
 "use client";
 
-import { useTheme } from '../theme';
+import { useTheme } from "../theme";
 
 export function ThemeToggle() {
   const { themeName, toggleTheme } = useTheme();
@@ -315,13 +327,13 @@ export function ThemeToggle() {
     toggleTheme();
 
     // Update cookie for SSR
-    const newTheme = themeName === 'light' ? 'dark' : 'light';
+    const newTheme = themeName === "light" ? "dark" : "light";
     document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
   };
 
   return (
     <button onClick={handleToggle}>
-      Switch to {themeName === 'light' ? 'dark' : 'light'} mode
+      Switch to {themeName === "light" ? "dark" : "light"} mode
     </button>
   );
 }
@@ -333,8 +345,8 @@ export function ThemeToggle() {
 
 ```tsx
 // pages/_document.tsx
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import { getCssText } from '../theme';
+import Document, { Html, Head, Main, NextScript, DocumentContext } from "next/document";
+import { getCssText } from "../theme";
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -342,11 +354,11 @@ class MyDocument extends Document {
 
     // Detect theme from cookies
     const themeCookie = ctx.req?.headers.cookie
-      ?.split('; ')
-      .find(c => c.startsWith('theme='))
-      ?.split('=')[1];
+      ?.split("; ")
+      .find((c) => c.startsWith("theme="))
+      ?.split("=")[1];
 
-    const initialTheme = themeCookie || 'light';
+    const initialTheme = themeCookie || "light";
     const cssText = getCssText(initialTheme);
 
     return {
@@ -379,10 +391,9 @@ export default MyDocument;
 
 ```tsx
 // pages/_app.tsx
-import type { AppProps } from 'next/app';
-import { Provider, globalStyles } from '../theme';
+import type { AppProps } from "next/app";
+import { Provider, globalStyles } from "../theme";
 
-// Call globalStyles() at module level
 globalStyles();
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -398,7 +409,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 ```tsx
 // components/ThemeToggle.tsx
-import { useTheme } from '../theme';
+import { useTheme } from "../theme";
 
 export function ThemeToggle() {
   const { themeName, toggleTheme } = useTheme();
@@ -407,13 +418,13 @@ export function ThemeToggle() {
     toggleTheme();
 
     // Update cookie for SSR
-    const newTheme = themeName === 'light' ? 'dark' : 'light';
+    const newTheme = themeName === "light" ? "dark" : "light";
     document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
   };
 
   return (
     <button onClick={handleToggle}>
-      Switch to {themeName === 'light' ? 'dark' : 'light'} mode
+      Switch to {themeName === "light" ? "dark" : "light"} mode
     </button>
   );
 }
@@ -427,7 +438,7 @@ If you don't need SSR, you can use the simpler client-side approach:
 // app/layout.tsx (App Router)
 "use client";
 
-import { Provider, globalStyles } from './theme';
+import { Provider, globalStyles } from "./theme";
 
 globalStyles();
 
@@ -450,19 +461,19 @@ For client-side apps (SPA) or when not using SSR, prevent FOUC by preloading the
 
 ```tsx
 // main.tsx or index.tsx (Vite/CRA)
-import { createRoot } from 'react-dom/client';
-import { preloadTheme } from './theme';
-import App from './App';
+import { createRoot } from "react-dom/client";
+import { preloadTheme } from "./theme";
+import App from "./App";
 
 // Preload saved theme BEFORE React renders - prevents FOUC
 try {
-  const savedTheme = localStorage.getItem('theme');
+  const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     preloadTheme(savedTheme);
   }
 } catch {}
 
-const root = createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
 ```
 
@@ -472,22 +483,22 @@ For more sophisticated theme detection (e.g., respecting system preferences), us
 
 ```tsx
 // middleware.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   // Check if theme cookie exists
-  const themeCookie = request.cookies.get('theme');
+  const themeCookie = request.cookies.get("theme");
 
   if (!themeCookie) {
     // Detect system preference from headers (if available)
-    const colorScheme = request.headers.get('sec-ch-prefers-color-scheme');
-    const defaultTheme = colorScheme === 'dark' ? 'dark' : 'light';
+    const colorScheme = request.headers.get("sec-ch-prefers-color-scheme");
+    const defaultTheme = colorScheme === "dark" ? "dark" : "light";
 
     // Set cookie
-    response.cookies.set('theme', defaultTheme, {
-      path: '/',
+    response.cookies.set("theme", defaultTheme, {
+      path: "/",
       maxAge: 31536000, // 1 year
     });
   }
@@ -553,7 +564,7 @@ const { styled } = createStoop({
 
 const Button = styled("button", {
   px: "$medium", // paddingLeft and paddingRight
-  py: "$small",  // paddingTop and paddingBottom
+  py: "$small", // paddingTop and paddingBottom
 });
 ```
 
@@ -581,28 +592,35 @@ const Text = styled("p", { fontSize: "$medium" });
 ### Boolean Variants
 
 ```tsx
-const Button = styled("button", {}, {
-  disabled: {
-    true: { opacity: 0.5, cursor: "not-allowed" },
+const Button = styled(
+  "button",
+  {},
+  {
+    disabled: {
+      true: { opacity: 0.5, cursor: "not-allowed" },
+    },
   },
-});
+);
 
-<Button disabled={isLoading}>Submit</Button>
+<Button disabled={isLoading}>Submit</Button>;
 ```
 
 ## Troubleshooting
 
 **Styles not applying:**
+
 - Ensure `Provider` wraps your app (when using `themes` config)
 - Verify theme tokens use `$` prefix
 - Check theme structure matches token references
 
 **Type errors:**
+
 - Verify TypeScript configuration
 - Check theme types match usage
 - Use `as` prop for polymorphic components
 
 **Theme not switching:**
+
 - Ensure `themes` config is provided to `createStoop` to enable `Provider` and `useTheme`
 - Check localStorage for stored preference
 - Ensure theme structure matches base theme
