@@ -6,12 +6,6 @@
 import type { ComponentType, ElementType, JSX, ReactNode } from "react";
 import type { PolymorphicPropsWithRef } from "react-polymorphic-types";
 
-import type { createTheme } from "../api/create-theme";
-import type { createCSSFunction } from "../api/css";
-import type { createGlobalCSSFunction } from "../api/global-css";
-import type { createKeyframesFunction } from "../api/keyframes";
-import type { createStyledFunction } from "../api/styled";
-
 export type CSSPropertyValue = string | number;
 
 export interface StyledComponentRef {
@@ -113,6 +107,27 @@ export interface ThemeManagementContextValue {
   availableThemes: readonly string[];
 }
 
+/**
+ * Styled component type - the return type of styled()
+ */
+export type StyledComponent<
+  DefaultElement extends ElementType,
+  VariantsConfig extends Variants = {},
+> = ComponentType<StyledComponentProps<DefaultElement, VariantsConfig>> & {
+  selector: StyledComponentRef;
+};
+
+/**
+ * Styled function type - the main styled() function signature
+ */
+export interface StyledFunction {
+  <DefaultElement extends StylableElement, VariantsConfig extends Variants = {}>(
+    defaultElement: DefaultElement,
+    baseStyles?: CSS,
+    variants?: VariantsConfig,
+  ): StyledComponent<DefaultElement, VariantsConfig>;
+}
+
 export interface GetCssTextOptions {
   theme?: Theme;
   includeThemeVars?: boolean;
@@ -122,7 +137,36 @@ export interface ProviderProps {
   children: ReactNode;
   defaultTheme?: string;
   storageKey?: string;
+  cookieKey?: string;
   attribute?: string;
+}
+
+/**
+ * CSS function type
+ */
+export interface CSSFunction {
+  (styles: CSS): string;
+}
+
+/**
+ * Global CSS function type
+ */
+export interface GlobalCSSFunction {
+  (styles: CSS): () => void;
+}
+
+/**
+ * Keyframes function type
+ */
+export interface KeyframesFunction {
+  (keyframes: Record<string, CSS>): string;
+}
+
+/**
+ * Create theme function type
+ */
+export interface CreateThemeFunction {
+  (theme: Partial<DefaultTheme>): DefaultTheme;
 }
 
 /**
@@ -130,11 +174,11 @@ export interface ProviderProps {
  * Includes all APIs: styled, Provider, useTheme, css, globalCss, keyframes, etc.
  */
 export interface StoopInstance {
-  styled: ReturnType<typeof createStyledFunction>;
-  css: ReturnType<typeof createCSSFunction>;
-  createTheme: ReturnType<typeof createTheme>;
-  globalCss: ReturnType<typeof createGlobalCSSFunction>;
-  keyframes: ReturnType<typeof createKeyframesFunction>;
+  styled: StyledFunction;
+  css: CSSFunction;
+  createTheme: CreateThemeFunction;
+  globalCss: GlobalCSSFunction;
+  keyframes: KeyframesFunction;
   theme: DefaultTheme;
   /**
    * Gets all generated CSS text for server-side rendering.

@@ -1,20 +1,67 @@
-import type { MDXComponents } from "mdx/types";
-import type { ReactNode } from "react";
+"use client";
 
-import {
-  Code,
-  Heading,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from "./ui";
+import type { MDXComponents } from "mdx/types";
+import type { ComponentProps, ReactNode } from "react";
+
+import Link from "next/link";
+
+import { Code, Heading, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Text, styled } from "./ui";
+
+// Styled link component with border-bottom (using Text styling)
+const LinkText = styled("a", {
+  "&:hover": {
+    borderBottomColor: "currentColor",
+    opacity: "$opacities.hover",
+  },
+  borderBottom: "1px solid currentColor",
+  color: "inherit",
+  display: "inline",
+  textDecoration: "none",
+  transition: "$transitions.default",
+});
+
+// Styled wrapper for Next.js Link
+const LinkWrapper = styled("span", {
+  "& a": {
+    "&:hover": {
+      borderBottomColor: "currentColor",
+      opacity: "$opacities.hover",
+    },
+    borderBottom: "1px solid currentColor",
+    color: "inherit",
+    textDecoration: "none",
+    transition: "$transitions.default",
+  },
+  display: "inline",
+});
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
+    a: ({
+      children,
+      href,
+      ...props
+    }: ComponentProps<"a">): ReactNode => {
+      // Check if it's an internal link (starts with /)
+      const isInternal = href?.startsWith("/");
+
+      if (isInternal && href) {
+        return (
+          <LinkWrapper>
+            <Link href={href} {...props}>
+              {children}
+            </Link>
+          </LinkWrapper>
+        );
+      }
+
+      // External link or anchor link
+      return (
+        <LinkText href={href} {...props}>
+          {children}
+        </LinkText>
+      );
+    },
     code: ({
       children,
       className,

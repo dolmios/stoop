@@ -32,7 +32,7 @@ export const APPROVED_THEME_SCALES: ReadonlyArray<ThemeScale> = [
 
 /**
  * Default themeMap mapping CSS properties to theme scales.
- * Covers 150+ common CSS properties for zero-config experience.
+ * Covers common CSS properties for zero-config experience.
  * Missing properties gracefully fallback to pattern-based auto-detection.
  */
 export const DEFAULT_THEME_MAP: Record<string, ThemeScale> = {

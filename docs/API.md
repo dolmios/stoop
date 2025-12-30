@@ -83,11 +83,9 @@ const { theme, themeName, setTheme, toggleTheme, availableThemes } = useTheme();
 
 **Benefits:**
 
-- Automatic theme state management
-- LocalStorage persistence
+- Automatic theme state management with localStorage persistence
 - Centralized theme variable updates (prevents performance issues)
 - Built-in FOUC prevention with `useLayoutEffect`
-- No need to manually create Provider component
 
 If `themes` is not provided, you can still use custom theme management by manually creating your own React Context and using `createTheme()` to create theme variants. Note that `setTheme()` and `toggleTheme()` are only available via `useTheme()` which requires the `themes` config.
 
@@ -95,12 +93,7 @@ If `themes` is not provided, you can still use custom theme management by manual
 
 Prefix for generated CSS class names and CSS variable names. Defaults to `"stoop"`.
 
-When a prefix is provided:
-
-- CSS class names will be prefixed (e.g., `my-app-abc123`)
-- CSS variable names will be prefixed in their names (e.g., `--my-app-colors-primary`)
-- CSS variables are always injected in `:root` selector (prefix does not affect the selector)
-- This enables multiple Stoop instances to coexist without conflicts
+When a prefix is provided, CSS class names and CSS variable names are prefixed (e.g., `my-app-abc123`, `--my-app-colors-primary`). CSS variables are always injected in `:root` selector (prefix does not affect the selector). This enables multiple Stoop instances to coexist without conflicts.
 
 ```tsx
 {
@@ -150,11 +143,11 @@ Custom property-to-scale mapping for theme token resolution. Overrides default m
 **Resolution Priority:**
 
 1. User's custom `themeMap` (if provided)
-2. Default `themeMap` (150+ common CSS properties)
+2. Default `themeMap` (common CSS properties)
 3. Pattern-based auto-detection (fallback for unmapped properties)
 4. Search all categories (backward compatibility)
 
-Most users don't need to configure `themeMap` - the default covers 150+ common CSS properties and pattern matching handles edge cases gracefully.
+Most users don't need to configure `themeMap` - the default covers common CSS properties and pattern matching handles edge cases gracefully.
 
 ### Returns
 
@@ -323,7 +316,7 @@ Partial theme object that will be merged with the base theme:
 
 ### Returns
 
-A new theme object that extends the base theme. When used with the `themes` config in `createStoop`, themes created with `createTheme` are automatically merged with the default theme.
+A new theme object that extends the base theme. When used with the `themes` config in `createStoop`, themes are automatically merged with the default theme.
 
 ### Example
 
@@ -681,7 +674,7 @@ Stoop uses `$` prefix for theme tokens, converted to CSS variables.
 2. **Shorthand with property**: `backgroundColor: "$primary"` → uses `themeMap` → `colors` scale
 3. **Shorthand fallback**: searches all categories (backward compatibility)
 
-Property-aware resolution uses `themeMap` (150+ properties) or pattern matching. Each property maps to a specific scale, eliminating ambiguity.
+Property-aware resolution uses `themeMap` or pattern matching. Each property maps to a specific scale, eliminating ambiguity.
 
 CSS variables are injected once in `:root` selector. Prefix affects CSS variable names (e.g., `--my-app-colors-primary`) and class names, but not the selector. Theme switching updates variables, not CSS classes.
 

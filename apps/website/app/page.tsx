@@ -5,11 +5,7 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
-import { Code } from "../ui/Code";
-import { Stack } from "../ui/Stack";
-import { Text } from "../ui/Text";
+import { Badge, Button, Code, Stack, Text } from "../ui";
 
 /**
  * Home page component with hero section and call-to-action.

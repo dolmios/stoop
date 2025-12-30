@@ -6,10 +6,19 @@
 export { createStoop } from "./create-stoop";
 export type {
   CSS,
+  CSSFunction,
+  CreateThemeFunction,
+  GlobalCSSFunction,
+  KeyframesFunction,
+  ProviderProps,
   StoopConfig,
   StoopInstance,
+  StyledComponent,
   StyledComponentProps,
+  StyledComponentRef,
+  StyledFunction,
   Theme,
+  ThemeManagementContextValue,
   UtilityFunction,
   Variants,
 } from "./types";

@@ -13,7 +13,8 @@
     "next": "16.1.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "stoop": "workspace:*"
+    "stoop": "workspace:*",
+    "stoop-ui": "workspace:*"
   },
   "devDependencies": {
     "@mdx-js/loader": "^3.1.1",

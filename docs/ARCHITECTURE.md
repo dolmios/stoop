@@ -134,15 +134,15 @@ Creates CSS keyframe animations:
 
 ## Performance Optimizations
 
-1. **CSS Variables**: Theme tokens use CSS variables, enabling theme switching without recompiling CSS
-2. **Single Stylesheet**: All CSS is injected into one `<style>` tag
-3. **Style Caching**: Styles are cached by CSS string to avoid duplicate injection
-4. **Memoization**: Styled components use `useMemo` hooks to cache class names
-5. **Hash-based Classes**: Class name generation using hash functions
-6. **Deduplication**: CSS rules are deduplicated to prevent redundant styles
-7. **Theme Updates**: CSS variables update in-place when theme changes
-8. **Token Index Cache**: Theme token lookups use WeakMap-based index for O(1) lookups
-9. **Modular Injection**: CSS injection split into focused modules (browser, SSR, dedup)
+- **CSS Variables**: Theme tokens use CSS variables, enabling theme switching without recompiling CSS
+- **Single Stylesheet**: All CSS is injected into one `<style>` tag
+- **Style Caching**: Styles are cached by CSS string to avoid duplicate injection
+- **Memoization**: Styled components use `useMemo` hooks to cache class names
+- **Hash-based Classes**: Class name generation using hash functions
+- **Deduplication**: CSS rules are deduplicated to prevent redundant styles
+- **Theme Updates**: CSS variables update in-place when theme changes
+- **Token Index Cache**: Theme token lookups use WeakMap-based index for O(1) lookups
+- **Modular Injection**: CSS injection split into focused modules (browser, SSR, dedup)
 
 ## SSR Support
 
@@ -197,15 +197,15 @@ export default function RootLayout({ children }) {
 
 ### Key Features
 
-- **No FOUC**: Styles are included in initial HTML
-- **Streaming SSR**: Works with React 18 streaming
-- **Theme Detection**: Server can detect theme from cookies
-- **Automatic Hydration**: Client reuses SSR-generated styles
+- No FOUC: Styles are included in initial HTML
+- Streaming SSR: Works with React 18 streaming
+- Theme Detection: Server can detect theme from cookies
+- Automatic Hydration: Client reuses SSR-generated styles
 
 ## Limitations
 
-1. **No Compound Variants**: Unlike stitches, Stoop doesn't support compound variants (variants that depend on multiple props)
-2. **CSS-in-JS Runtime**: All styles are generated at runtime (no build-time extraction)
+- **No Compound Variants**: Unlike stitches, Stoop doesn't support compound variants (variants that depend on multiple props)
+- **CSS-in-JS Runtime**: All styles are generated at runtime (no build-time extraction)
 
 ## Utility Functions
 
@@ -238,9 +238,9 @@ const Button = styled("button", {
 
 Stoop uses CSS variables (CSS custom properties) for theme tokens:
 
-1. **Theme Switching**: Changing themes updates CSS variables, not CSS classes
-2. **No Recompilation**: Components don't need to recompile when theme changes
-3. **Browser Native**: Browser handles theme updates natively
+- **Theme Switching**: Changing themes updates CSS variables, not CSS classes
+- **No Recompilation**: Components don't need to recompile when theme changes
+- **Browser Native**: Browser handles theme updates natively
 
 ### How It Works
 

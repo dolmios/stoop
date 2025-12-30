@@ -1,16 +1,15 @@
 /**
- * Global styles configuration.
- * Demonstrates the `globalCss` API for applying styles globally.
- * These styles use theme tokens and automatically update when the theme changes.
+ * ThemeProvider component for stoop-ui.
+ * Consumers should wrap their app with this provider.
+ * Automatically applies global styles/reset.
  */
 
-import { globalCss } from "../stoop.theme";
+import { useEffect, type ReactNode } from "react";
 
-/**
- * Global styles using theme tokens.
- * Call once in your app entry point to inject these styles.
- */
-export const globalStyles = globalCss({
+import { Provider, useTheme as useStoopTheme, globalCss } from "./stoop.theme";
+
+// Global styles/reset - automatically applied when ThemeProvider mounts
+const globalStyles = globalCss({
   "*": {
     boxSizing: "border-box",
     margin: 0,
@@ -27,12 +26,12 @@ export const globalStyles = globalCss({
   },
   a: {
     "&:focus-visible": {
-      borderRadius: "$radii.small",
+      borderRadius: "$small",
       outline: "2px solid $text",
       outlineOffset: "2px",
     },
     "&:hover": {
-      opacity: "$opacities.hover",
+      opacity: "$hover",
     },
     color: "$text",
     textDecoration: "none",
@@ -41,9 +40,9 @@ export const globalStyles = globalCss({
   body: {
     backgroundColor: "$background",
     color: "$text",
-    fontFamily: "$fonts.body",
-    fontSize: "$fontSizes.default",
-    fontWeight: "$fontWeights.default",
+    fontFamily: "$body",
+    fontSize: "$default",
+    fontWeight: "$default",
     lineHeight: "1.6",
     margin: 0,
     minHeight: "100vh",
@@ -54,7 +53,7 @@ export const globalStyles = globalCss({
   },
   button: {
     "&:focus-visible": {
-      borderRadius: "$radii.small",
+      borderRadius: "$small",
       outline: "2px solid $text",
       outlineOffset: "2px",
     },
@@ -71,25 +70,25 @@ export const globalStyles = globalCss({
   },
   code: {
     backgroundColor: "$hover",
-    borderRadius: "$radii.small",
-    fontFamily: "$fonts.mono",
-    fontSize: "$fontSizes.small",
+    borderRadius: "$small",
+    fontFamily: "$mono",
+    fontSize: "$small",
     padding: "2px 6px",
   },
   h1: {
-    fontSize: "$fontSizes.h1",
+    fontSize: "$h1",
   },
   "h1, h2, h3, h4, h5, h6": {
-    fontFamily: "$fonts.heading",
-    fontWeight: "$fontWeights.bold",
+    fontFamily: "$heading",
+    fontWeight: "$bold",
     lineHeight: "1.2",
     margin: 0,
   },
   h2: {
-    fontSize: "$fontSizes.h2",
+    fontSize: "$h2",
   },
   h3: {
-    fontSize: "$fontSizes.h3",
+    fontSize: "$h3",
   },
   html: {
     MozOsxFontSmoothing: "grayscale",
@@ -103,7 +102,7 @@ export const globalStyles = globalCss({
   },
   "input, select, textarea": {
     "&:focus-visible": {
-      borderRadius: "$radii.small",
+      borderRadius: "$small",
       outline: "2px solid $text",
       outlineOffset: "2px",
     },
@@ -112,10 +111,10 @@ export const globalStyles = globalCss({
     margin: 0,
   },
   "p, span, div, a, button, input, select, textarea, li, td, th": {
-    fontWeight: "$fontWeights.default",
+    fontWeight: "$default",
   },
   pre: {
-    fontFamily: "$fonts.mono",
+    fontFamily: "$mono",
     margin: 0,
   },
   "pre code": {
@@ -132,3 +131,45 @@ export const globalStyles = globalCss({
     padding: 0,
   },
 });
+
+export interface ThemeProviderProps {
+  children: ReactNode;
+  defaultTheme?: string;
+  storageKey?: string;
+  cookieKey?: string;
+  attribute?: string;
+}
+
+/**
+ * ThemeProvider component that wraps the stoop Provider.
+ * Automatically applies global styles/reset.
+ * Consumers should wrap their app with this component.
+ */
+export function ThemeProvider({
+  attribute = "data-theme",
+  children,
+  cookieKey,
+  defaultTheme = "light",
+  storageKey = "stoop-ui-theme",
+}: ThemeProviderProps): ReactNode {
+  // Apply global styles once when ThemeProvider mounts
+  useEffect(() => {
+    globalStyles();
+  }, []);
+
+  return (
+    <Provider
+      attribute={attribute}
+      cookieKey={cookieKey}
+      defaultTheme={defaultTheme}
+      storageKey={storageKey}>
+      {children}
+    </Provider>
+  );
+}
+
+/**
+ * Hook to access theme management.
+ * Use this to toggle themes, get current theme, etc.
+ */
+export const useTheme: typeof useStoopTheme = useStoopTheme;

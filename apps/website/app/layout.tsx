@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import localFont from "next/font/local";
 import { cookies } from "next/headers";
 
-import { Stack } from "../ui/Stack";
+import { Stack } from "../ui";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
@@ -121,9 +121,10 @@ export default async function RootLayout({
               mobile: {
                 padding: "$medium $small",
               },
+              overflowX: "hidden",
               overflowY: "auto",
               padding: "$large $medium",
-              paddingTop: "calc(48px + 48px)",
+              width: "100%",
             }}>
             <Breadcrumbs />
             {children}

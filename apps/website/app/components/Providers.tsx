@@ -2,7 +2,7 @@
 
 import type { ReactElement, ReactNode } from "react";
 
-import { Provider } from "../../stoop.theme";
+import { ThemeProvider } from "stoop-ui";
 
 /**
  * Providers component that wraps the app with theme management.
@@ -19,8 +19,8 @@ export function Providers({
   initialTheme: string;
 }): ReactElement {
   return (
-    <Provider defaultTheme={initialTheme} storageKey="stoop-theme">
+    <ThemeProvider cookieKey="stoop-theme" defaultTheme={initialTheme} storageKey="stoop-theme">
       {children}
-    </Provider>
+    </ThemeProvider>
   );
 }

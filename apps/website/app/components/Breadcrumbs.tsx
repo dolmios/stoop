@@ -5,8 +5,7 @@ import type { ReactElement } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Stack } from "../../ui/Stack";
-import { Text } from "../../ui/Text";
+import { Button, Stack, Text } from "../../ui";
 
 const baseUrl = "https://stoop.dolmios.com";
 
@@ -91,48 +90,42 @@ export function Breadcrumbs(): ReactElement | null {
         {breadcrumbs.map((crumb, index) => (
           <Stack key={crumb.href} align="center" direction="row" gap="small">
             {index > 0 && (
-              <Text
-                as="span"
+              <Stack
+                align="center"
                 css={{
-                  color: "$textSecondary",
-                  fontSize: "$small",
-                  margin: 0,
-                }}>
-                /
-              </Text>
-            )}
-            {index === breadcrumbs.length - 1 ? (
-              <Text
-                as="span"
-                css={{
-                  color: "$text",
-                  fontSize: "$small",
-                  margin: 0,
-                }}>
-                {crumb.label}
-              </Text>
-            ) : (
-              <Link
-                href={crumb.href}
-                style={{
-                  color: "inherit",
-                  fontSize: "var(--font-sizes-small)",
-                  textDecoration: "none",
-                }}>
+                  height: "100%",
+                  padding: "$smaller $small",
+                }}
+                direction="row">
                 <Text
                   as="span"
                   css={{
-                    "&:hover": {
-                      color: "$text",
-                      textDecoration: "underline",
-                    },
                     color: "$textSecondary",
                     fontSize: "$small",
+                    lineHeight: "1",
                     margin: 0,
                   }}>
-                  {crumb.label}
+                  /
                 </Text>
-              </Link>
+              </Stack>
+            )}
+            {index === breadcrumbs.length - 1 ? (
+              <Button
+                css={{
+                  cursor: "default",
+                }}
+                disabled
+                size="small">
+                {crumb.label}
+              </Button>
+             
+            ) : (
+              <Button
+                as={Link}
+                href={crumb.href}
+                size="small">
+                {crumb.label}
+              </Button>
             )}
           </Stack>
         ))}

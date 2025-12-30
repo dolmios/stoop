@@ -6,11 +6,7 @@ Comprehensive guide to the Stoop test suite, including how to run tests, test st
 
 The Stoop test suite provides comprehensive coverage of all public APIs, edge cases, error handling, and internal behaviors. All tests use [Bun's built-in test runner](https://bun.sh/docs/cli/test) and React's `renderToString` for SSR testing.
 
-**Test Statistics:**
-
-- **Total Tests:** 138
-- **Test Files:** 7
-- **Coverage:** All public APIs, edge cases, and internal behaviors
+The test suite is organized into focused test files covering core functionality, edge cases, animations, stability, theme management, validation, and CSS injection.
 
 ## Running Tests
 
@@ -319,7 +315,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 
 ### Core APIs
 
-✅ **Fully Covered:**
+**Fully Covered:**
 
 - `createStoop` factory function
 - `css` function with all token types
@@ -337,10 +333,10 @@ const stoop = createStoop({ theme: createMockTheme() });
 
 ### Theme System
 
-✅ **Fully Covered:**
+**Fully Covered:**
 
 - Theme structure validation
-- All 13 approved theme scales
+- All approved theme scales
 - Theme token resolution (shorthand and explicit)
 - Theme merging and extension
 - Multiple themes support
@@ -349,7 +345,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 
 ### Edge Cases
 
-✅ **Fully Covered:**
+**Fully Covered:**
 
 - Invalid inputs
 - Null/undefined values
@@ -364,7 +360,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 
 ### Performance
 
-✅ **Fully Covered:**
+**Fully Covered:**
 
 - Cache behavior (hits, misses, eviction)
 - CSS deduplication
@@ -373,7 +369,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 
 ### SSR Support
 
-✅ **Fully Covered:**
+**Fully Covered:**
 
 - `getCssText` in SSR context
 - Theme variable inclusion
@@ -382,7 +378,7 @@ const stoop = createStoop({ theme: createMockTheme() });
 
 ### Browser Behavior
 
-✅ **Fully Covered:**
+**Fully Covered:**
 
 - Stylesheet injection
 - Theme variable updates
@@ -524,14 +520,7 @@ bun test
 
 ## Coverage Goals
 
-The test suite aims for:
-
-- ✅ **100% coverage** of public APIs
-- ✅ **Comprehensive edge case coverage**
-- ✅ **Error handling coverage**
-- ✅ **SSR behavior coverage**
-- ✅ **Browser behavior coverage**
-- ✅ **Performance characteristics**
+The test suite aims for comprehensive coverage of public APIs, edge cases, error handling, SSR behavior, browser behavior, and performance characteristics.
 
 ## Contributing Tests
 

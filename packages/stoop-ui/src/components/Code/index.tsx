@@ -2,7 +2,7 @@
 
 import { useState, type ComponentProps, type ReactNode } from "react";
 
-import { styled } from "../stoop.theme";
+import { styled } from "../../stoop.theme";
 
 function extractText(children: ReactNode): string {
   if (typeof children === "string") {
@@ -26,7 +26,7 @@ function extractText(children: ReactNode): string {
 }
 
 // Inline code styling
-const InlineCode = styled("code", {
+const InlineCode = styled("code" as const, {
   backgroundColor: "$hover",
   borderRadius: "$small",
   fontFamily: "$mono",
@@ -83,7 +83,8 @@ const CopyButton = styled("button", {
   transition: "$default",
 });
 
-interface CodeProps extends ComponentProps<typeof InlineCode> {
+export interface CodeProps extends ComponentProps<typeof InlineCode> {
+  children?: ReactNode;
   block?: boolean;
 }
 
@@ -113,5 +114,3 @@ export function Code({ block, children, ...props }: CodeProps): ReactNode {
 
   return <InlineCode {...props}>{children}</InlineCode>;
 }
-
-export type { CodeProps };

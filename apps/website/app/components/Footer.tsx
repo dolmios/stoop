@@ -2,10 +2,7 @@
 
 import type { ReactElement } from "react";
 
-import { useTheme } from "../../stoop.theme";
-import { Button } from "../../ui/Button";
-import { Stack } from "../../ui/Stack";
-import { Text } from "../../ui/Text";
+import { Button, Stack, Text, useTheme } from "../../ui";
 
 /**
  * Footer component with theme toggle and copyright information.
@@ -15,15 +12,6 @@ import { Text } from "../../ui/Text";
 export function Footer(): ReactElement {
   const { themeName, toggleTheme } = useTheme();
 
-  const handleToggle = (): void => {
-    toggleTheme();
-
-    // Update cookie for SSR theme persistence
-    const newTheme = themeName === "light" ? "dark" : "light";
-
-    document.cookie = `stoop-theme=${newTheme}; path=/; max-age=31536000`;
-  };
-
   return (
     <Stack
       align="center"
@@ -31,6 +19,7 @@ export function Footer(): ReactElement {
       css={{
         borderTop: "1px solid $border",
         marginTop: "$larger",
+        maxWidth: "100%",
         padding: 0,
         paddingLeft: "$medium",
         paddingRight: "$medium",
@@ -71,8 +60,8 @@ export function Footer(): ReactElement {
           MIT License
         </Text>
       </Stack>
-      <Button size="small" variant="minimal" onClick={handleToggle}>
-        {themeName === "light" ? "🌙" : "☀️"}
+      <Button size="small" variant="minimal" onClick={toggleTheme}>
+        {themeName === "light" ? "Dark" : "Light"}
       </Button>
     </Stack>
   );

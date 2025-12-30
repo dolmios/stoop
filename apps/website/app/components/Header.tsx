@@ -4,9 +4,7 @@ import type { ReactElement } from "react";
 
 import Link from "next/link";
 
-import { Button } from "../../ui/Button";
-import { Stack } from "../../ui/Stack";
-import { Text } from "../../ui/Text";
+import { Button, Stack, Text } from "../../ui";
 
 /**
  * Header component with logo and navigation links.
@@ -25,10 +23,6 @@ export function Header(): ReactElement {
         padding: 0,
         paddingLeft: "$medium",
         paddingRight: "$medium",
-        position: "fixed",
-        top: 0,
-        width: "100%",
-        zIndex: "100",
       }}
       direction="row"
       justify="between">
@@ -38,23 +32,21 @@ export function Header(): ReactElement {
           textDecoration: "none",
         }}>
         <Text
-          as="h1"
+          as="h5"
           css={{
-            fontFamily: "$mono",
+            fontWeight: "$bold",
             margin: 0,
-          }}
-          variant="h1">
+          }}>
           Stoop
         </Text>
       </Link>
-      <Stack align="center" direction="row" gap="small">
+      <Stack>
         <Button
           as={Link}
           href="https://github.com/dolmios/stoop"
           rel="noopener noreferrer"
           size="small"
-          target="_blank"
-          variant="secondary">
+          target="_blank">
           GitHub
         </Button>
       </Stack>

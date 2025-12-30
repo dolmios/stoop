@@ -2,10 +2,10 @@
 
 import type { ComponentProps } from "react";
 
-import { styled } from "../stoop.theme";
+import { styled } from "../../stoop.theme";
 
 export const Stack = styled(
-  "div",
+  "div" as const,
   {
     display: "flex",
     flexDirection: "column",

@@ -184,10 +184,12 @@ This is a monorepo using Bun workspaces. The project structure:
 ```
 stoop/
 ├── packages/
-│   └── stoop/          # Main library package
+│   ├── stoop/          # Main library package
+│   └── stoop-ui/       # UI component library built with stoop
 ├── apps/
-│   └── website/       # Website/documentation site (Next.js)
-└── scripts/           # Shared scripts
+│   ├── website/        # Website/documentation site (Next.js)
+│   └── playground/     # Component playground (Vite)
+└── scripts/            # Shared scripts
 ```
 
 ### Setup
@@ -196,45 +198,63 @@ stoop/
 # Install all dependencies (for all workspaces)
 bun install
 
-# Build the library
-bun run build
+# Build all packages
+bun run build:all
 
-# Build the website
-bun run build:website
+# Build individual packages
+bun run build              # Build stoop
+bun run build:stoop-ui     # Build stoop-ui
+bun run build:website      # Build website (includes all packages)
 ```
 
 ### Development Commands
 
 ```sh
-# Start website dev server
-bun run dev
+# Development servers
+bun run dev                # Build all packages + start website dev server
+bun run dev:playground     # Build all packages + start playground dev server
 
-# Build library
-bun run build
+# Build commands
+bun run build              # Build stoop package
+bun run build:stoop-ui     # Build stoop-ui package
+bun run build:all          # Build both stoop and stoop-ui packages
+bun run build:website      # Build all packages + website
 
-# Build website
-bun run build:website
+# Publishing
+bun run publish            # Publish stoop package to npm
+bun run publish:stoop-ui   # Publish stoop-ui package to npm
 
-# Run tests
-bun run test
+# Code quality
+bun run lint               # Lint all packages
+bun run format             # Format code
+bun run tidy               # Run lint + format
 
-# Lint all packages
-bun run lint
-
-# Format code
-bun run format
+# Testing
+bun run test               # Run tests
+bun run test:coverage      # Run tests with coverage
+bun run test:watch         # Run tests in watch mode
 ```
 
 ### Working with Packages
 
 ```sh
-# Work in a specific package
+# Work in stoop package
 cd packages/stoop
+bun run build
+bun run test
+
+# Work in stoop-ui package
+cd packages/stoop-ui
 bun run build
 bun run test
 
 # Work in website app
 cd apps/website
+bun run dev
+bun run build
+
+# Work in playground app
+cd apps/playground
 bun run dev
 bun run build
 ```
@@ -244,12 +264,22 @@ bun run build
 - **`packages/stoop`** - The main Stoop library
   - Build: `bun run build`
   - Test: `bun run test`
+  - Publish: `bun run publish`
 
-- **`apps/website`** - Website and documentation site
+- **`packages/stoop-ui`** - UI component library built with stoop
+  - Build: `bun run build:stoop-ui`
+  - Test: `bun run test` (from package directory)
+  - Publish: `bun run publish:stoop-ui`
+
+- **`apps/website`** - Website and documentation site (Next.js)
   - Dev: `bun run dev`
-  - Build: `bun run build`
+  - Build: `bun run build:website`
 
-The website app uses `stoop` as a workspace dependency, so changes to the library are automatically available in the website app.
+- **`apps/playground`** - Component playground for testing stoop-ui (Vite)
+  - Dev: `bun run dev:playground`
+  - Build: `bun run build` (from app directory)
+
+All apps use `stoop` and `stoop-ui` as workspace dependencies, so changes to the packages are automatically available in the apps after rebuilding.
 
 ## Contributing
 
