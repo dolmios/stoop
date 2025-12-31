@@ -4,8 +4,7 @@ import type { ReactNode } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
-
-import { Badge, Button, Code, Stack, Text } from "../ui";
+import { Badge, Button, Code, Stack, Text } from "stoop-ui";
 
 /**
  * Home page component with hero section and call-to-action.

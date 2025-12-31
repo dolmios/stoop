@@ -8,7 +8,7 @@
 import type { Theme } from "../types";
 
 import { injectThemeVariables } from "../inject";
-import { isBrowser } from "../utils/environment";
+import { isBrowser } from "../utils/helpers";
 import { generateCSSVariables, themesAreEqual } from "../utils/theme";
 
 const defaultThemes = new Map<string, Theme>();

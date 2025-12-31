@@ -4,8 +4,7 @@ import type { ReactElement } from "react";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { Button, Stack, Text } from "../../ui";
+import { Button, Stack, Text } from "stoop-ui";
 
 const baseUrl = "https://stoop.dolmios.com";
 
@@ -118,12 +117,8 @@ export function Breadcrumbs(): ReactElement | null {
                 size="small">
                 {crumb.label}
               </Button>
-             
             ) : (
-              <Button
-                as={Link}
-                href={crumb.href}
-                size="small">
+              <Button as={Link} href={crumb.href} size="small">
                 {crumb.label}
               </Button>
             )}

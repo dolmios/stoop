@@ -85,28 +85,7 @@ export const { styled, css, createTheme, globalCss, keyframes, Provider, useThem
 
 ## Step 2: Set Up Global Styles
 
-Create global styles in your app entry point:
-
-```tsx
-// app.tsx or _app.tsx
-import { globalCss } from "./theme";
-
-const globalStyles = globalCss({
-  "*": {
-    margin: 0,
-    padding: 0,
-    boxSizing: "border-box",
-  },
-  body: {
-    fontFamily: "$body",
-    backgroundColor: "$background",
-    color: "$text",
-    lineHeight: 1.5,
-  },
-});
-
-globalStyles();
-```
+Global styles are now configured directly in your theme config (see Step 1). The Provider automatically injects them, so no manual setup is required!
 
 ## Step 3: Create Styled Components
 
@@ -240,17 +219,16 @@ export const { styled, css, globalCss, getCssText, Provider, useTheme, preloadTh
       light: lightTheme,
       dark: darkTheme,
     },
+    globalCss: {
+      "*": { margin: 0, padding: 0, boxSizing: "border-box" },
+      body: {
+        fontFamily: "system-ui, sans-serif",
+        backgroundColor: "$background",
+        color: "$text",
+      },
+    },
   },
 );
-
-export const globalStyles = globalCss({
-  "*": { margin: 0, padding: 0, boxSizing: "border-box" },
-  body: {
-    fontFamily: "system-ui, sans-serif",
-    backgroundColor: "$background",
-    color: "$text",
-  },
-});
 ```
 
 ### App Router (Recommended)
@@ -262,14 +240,12 @@ export const globalStyles = globalCss({
 "use client";
 
 import { useServerInsertedHTML } from "next/navigation";
-import { getCssText, globalStyles } from "../theme";
+import { getCssText } from "../theme";
 
 export function Styles({ initialTheme }: { initialTheme: string }) {
   useServerInsertedHTML(() => {
-    // Inject global styles first
-    globalStyles();
-
-    // Get all CSS including theme variables and component styles
+    // Global styles are automatically included from theme config
+    // No need to call them manually - Provider handles this automatically
     const cssText = getCssText(initialTheme);
 
     return (
@@ -392,9 +368,7 @@ export default MyDocument;
 ```tsx
 // pages/_app.tsx
 import type { AppProps } from "next/app";
-import { Provider, globalStyles } from "../theme";
-
-globalStyles();
+import { Provider } from "../theme";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -438,9 +412,7 @@ If you don't need SSR, you can use the simpler client-side approach:
 // app/layout.tsx (App Router)
 "use client";
 
-import { Provider, globalStyles } from "./theme";
-
-globalStyles();
+import { Provider } from "./theme";
 
 export default function RootLayout({ children }) {
   return (

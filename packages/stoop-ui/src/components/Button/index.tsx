@@ -131,6 +131,10 @@ const LoadingSpinner = styled("div", {
   width: "16px",
 });
 
+const IconWrapper = styled("span", {
+  display: "inline-flex",
+});
+
 export interface ButtonProps extends Omit<ComponentProps<typeof ButtonStyled>, "loading"> {
   children?: ReactNode;
   disabled?: boolean;
@@ -162,9 +166,9 @@ export function Button({
           <LoadingSpinner />
         </ButtonLoading>
       )}
-      {showLeftIcon && <span style={{ marginRight: "8px" }}>{icon}</span>}
+      {showLeftIcon && <IconWrapper css={{ marginRight: "$small" }}>{icon}</IconWrapper>}
       {children}
-      {showRightIcon && <span style={{ marginLeft: "8px" }}>{icon}</span>}
+      {showRightIcon && <IconWrapper css={{ marginLeft: "$small" }}>{icon}</IconWrapper>}
     </ButtonStyled>
   );
 }

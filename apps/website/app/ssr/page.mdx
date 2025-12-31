@@ -21,14 +21,12 @@ Create a client component that handles SSR style injection:
 "use client";
 
 import { useServerInsertedHTML } from "next/navigation";
-import { getCssText, globalStyles } from "../../stoop.theme";
+import { getCssText } from "../../stoop.theme";
 
 export function Styles({ initialTheme }: { initialTheme: string }) {
   useServerInsertedHTML(() => {
-    // Inject global styles first (CSS reset, base styles)
-    globalStyles();
-
-    // Get all CSS including theme variables and component styles
+    // Global styles are automatically included from theme config
+    // No need to call them manually - Provider handles this automatically
     const cssText = getCssText(initialTheme);
 
     if (!cssText) return null;

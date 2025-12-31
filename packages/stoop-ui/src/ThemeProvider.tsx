@@ -4,133 +4,9 @@
  * Automatically applies global styles/reset.
  */
 
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
-import { Provider, useTheme as useStoopTheme, globalCss } from "./stoop.theme";
-
-// Global styles/reset - automatically applied when ThemeProvider mounts
-const globalStyles = globalCss({
-  "*": {
-    boxSizing: "border-box",
-    margin: 0,
-    padding: 0,
-  },
-  "*, *::before, *::after": {
-    boxSizing: "inherit",
-  },
-  "[aria-hidden='true']": {
-    display: "none",
-  },
-  "[hidden]": {
-    display: "none",
-  },
-  a: {
-    "&:focus-visible": {
-      borderRadius: "$small",
-      outline: "2px solid $text",
-      outlineOffset: "2px",
-    },
-    "&:hover": {
-      opacity: "$hover",
-    },
-    color: "$text",
-    textDecoration: "none",
-    transition: "$default",
-  },
-  body: {
-    backgroundColor: "$background",
-    color: "$text",
-    fontFamily: "$body",
-    fontSize: "$default",
-    fontWeight: "$default",
-    lineHeight: "1.6",
-    margin: 0,
-    minHeight: "100vh",
-    MozOsxFontSmoothing: "grayscale",
-    padding: 0,
-    transition: "$default",
-    WebkitFontSmoothing: "antialiased",
-  },
-  button: {
-    "&:focus-visible": {
-      borderRadius: "$small",
-      outline: "2px solid $text",
-      outlineOffset: "2px",
-    },
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    padding: 0,
-  },
-  "button, input, select, textarea": {
-    fontFamily: "inherit",
-    fontSize: "inherit",
-    lineHeight: "inherit",
-    margin: 0,
-  },
-  code: {
-    backgroundColor: "$hover",
-    borderRadius: "$small",
-    fontFamily: "$mono",
-    fontSize: "$small",
-    padding: "2px 6px",
-  },
-  h1: {
-    fontSize: "$h1",
-  },
-  "h1, h2, h3, h4, h5, h6": {
-    fontFamily: "$heading",
-    fontWeight: "$bold",
-    lineHeight: "1.2",
-    margin: 0,
-  },
-  h2: {
-    fontSize: "$h2",
-  },
-  h3: {
-    fontSize: "$h3",
-  },
-  html: {
-    MozOsxFontSmoothing: "grayscale",
-    scrollBehavior: "smooth",
-    WebkitFontSmoothing: "antialiased",
-  },
-  img: {
-    display: "block",
-    height: "auto",
-    maxWidth: "100%",
-  },
-  "input, select, textarea": {
-    "&:focus-visible": {
-      borderRadius: "$small",
-      outline: "2px solid $text",
-      outlineOffset: "2px",
-    },
-  },
-  p: {
-    margin: 0,
-  },
-  "p, span, div, a, button, input, select, textarea, li, td, th": {
-    fontWeight: "$default",
-  },
-  pre: {
-    fontFamily: "$mono",
-    margin: 0,
-  },
-  "pre code": {
-    backgroundColor: "transparent",
-    padding: 0,
-  },
-  table: {
-    borderCollapse: "collapse",
-    width: "100%",
-  },
-  "ul, ol": {
-    listStyle: "none",
-    margin: 0,
-    padding: 0,
-  },
-});
+import { Provider, useTheme as useStoopTheme } from "./stoop.theme";
 
 export interface ThemeProviderProps {
   children: ReactNode;
@@ -152,11 +28,6 @@ export function ThemeProvider({
   defaultTheme = "light",
   storageKey = "stoop-ui-theme",
 }: ThemeProviderProps): ReactNode {
-  // Apply global styles once when ThemeProvider mounts
-  useEffect(() => {
-    globalStyles();
-  }, []);
-
   return (
     <Provider
       attribute={attribute}
@@ -172,4 +43,4 @@ export function ThemeProvider({
  * Hook to access theme management.
  * Use this to toggle themes, get current theme, etc.
  */
-export const useTheme: typeof useStoopTheme = useStoopTheme;
+export { useStoopTheme as useTheme };

@@ -64,6 +64,46 @@ export const Stack = styled(
         justifyContent: "flex-start",
       },
     },
+    left: {
+      large: {
+        paddingLeft: "$large",
+      },
+      larger: {
+        paddingLeft: "$larger",
+      },
+      medium: {
+        paddingLeft: "$medium",
+      },
+      small: {
+        paddingLeft: "$small",
+      },
+      smaller: {
+        paddingLeft: "$smaller",
+      },
+      smallest: {
+        paddingLeft: "$smallest",
+      },
+    },
+    right: {
+      large: {
+        paddingRight: "$large",
+      },
+      larger: {
+        paddingRight: "$larger",
+      },
+      medium: {
+        paddingRight: "$medium",
+      },
+      small: {
+        paddingRight: "$small",
+      },
+      smaller: {
+        paddingRight: "$smaller",
+      },
+      smallest: {
+        paddingRight: "$smallest",
+      },
+    },
     wrap: {
       false: {
         flexWrap: "nowrap",

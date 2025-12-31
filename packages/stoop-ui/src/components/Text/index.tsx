@@ -65,6 +65,11 @@ export const Text = styled(
     marginBottom: "$medium",
   },
   {
+    bottom: {
+      none: {
+        marginBottom: 0,
+      },
+    },
     size: {
       large: {
         fontSize: "$large",

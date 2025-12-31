@@ -1,46 +1,67 @@
-"use client";
-
 /**
- * Client-side factory function that creates a Stoop instance.
- * Includes all APIs: styled, Provider, useTheme, etc.
- * For server-side getCssText, import from "stoop/ssr" instead.
+ * Factory function that creates a Stoop instance.
+ * Supports both client-side (with React APIs) and server-side (without React) usage.
+ * Automatically detects environment and includes appropriate APIs.
  */
 
 import type { ComponentType, Context } from "react";
 
 import type {
   CSS,
+  ProviderProps,
   StoopConfig,
   StoopInstance,
   Theme,
   ThemeContextValue,
+  ThemeManagementContextValue,
   ThemeScale,
 } from "./types";
 
-import { createTheme as createThemeFactory } from "./api/create-theme";
-import { createCSSFunction } from "./api/css";
+import {
+  createTheme as createThemeFactory,
+  createCSSFunction,
+  createKeyframesFunction,
+} from "./api/core-api";
 import { createGlobalCSSFunction } from "./api/global-css";
-import { createKeyframesFunction } from "./api/keyframes";
-import { createProvider } from "./api/provider";
 import { createStyledFunction } from "./api/styled";
-import { createUseThemeHook } from "./api/use-theme";
+import { createProvider, createUseThemeHook } from "./api/theme-provider";
 import { DEFAULT_THEME_MAP } from "./constants";
 import { compileCSS } from "./core/compiler";
 import { registerDefaultTheme, updateThemeVariables } from "./core/theme-manager";
 import { getCssText as getCssTextBase, registerTheme } from "./inject";
-import { getRootRegex, sanitizePrefix } from "./utils/string";
+import { validateTheme } from "./utils/helpers";
 import { generateCSSVariables } from "./utils/theme";
-import { validateTheme } from "./utils/theme-validation";
+import { getRootRegex, sanitizePrefix } from "./utils/theme-utils";
 
 /**
- * Creates a Stoop instance with the provided configuration.
- * Includes all APIs: styled, Provider, useTheme, etc.
- *
- * @param config - Configuration object containing theme, media queries, utilities, and optional prefix/themeMap
- * @returns StoopInstance with all API functions
+ * Shared implementation for creating Stoop instances.
+ * Handles common setup logic for both client and server instances.
  */
-export function createStoop(config: StoopConfig): StoopInstance {
-  const { media: configMedia, prefix = "stoop", theme, themeMap: userThemeMap, utils } = config;
+function createStoopBase(config: StoopConfig): {
+  config: StoopConfig;
+  createTheme: (overrides?: Partial<Theme>) => Theme;
+  css: ReturnType<typeof createCSSFunction>;
+  getCssText: (theme?: string | Theme) => string;
+  globalCss: ReturnType<typeof createGlobalCSSFunction>;
+  globalCssConfig: StoopConfig["globalCss"];
+  keyframes: ReturnType<typeof createKeyframesFunction>;
+  media: StoopConfig["media"];
+  mergedThemeMap: Record<string, ThemeScale>;
+  preloadTheme: (theme: string | Theme) => void;
+  sanitizedPrefix: string;
+  theme: Theme;
+  utils: StoopConfig["utils"];
+  validatedTheme: Theme;
+  warmCache: (styles: CSS[]) => void;
+} {
+  const {
+    globalCss: globalCssConfig,
+    media: configMedia,
+    prefix = "stoop",
+    theme,
+    themeMap: userThemeMap,
+    utils,
+  } = config;
   const sanitizedPrefix = sanitizePrefix(prefix);
 
   const validatedTheme = validateTheme(theme);
@@ -156,23 +177,72 @@ export function createStoop(config: StoopConfig): StoopInstance {
     return result;
   }
 
+  return {
+    config: { ...config, prefix: sanitizedPrefix },
+    createTheme,
+    css,
+    getCssText,
+    globalCss,
+    globalCssConfig,
+    keyframes,
+    media,
+    mergedThemeMap,
+    preloadTheme,
+    sanitizedPrefix,
+    theme: themeObject,
+    utils,
+    // Internal values for React API creation
+    validatedTheme,
+    warmCache,
+  };
+}
+
+/**
+ * Creates a Stoop instance with the provided configuration.
+ * Includes all APIs: styled, Provider, useTheme, etc.
+ * In server contexts without React, React APIs will be undefined.
+ *
+ * @param config - Configuration object containing theme, media queries, utilities, and optional prefix/themeMap
+ * @returns StoopInstance with all API functions
+ */
+// Re-export commonly used types
+export type {
+  CSS,
+  Theme,
+  StoopConfig,
+  StoopInstance,
+  UtilityFunction,
+  ThemeScale,
+  DefaultTheme,
+} from "./types";
+
+export function createStoop(config: StoopConfig): StoopInstance {
+  const base = createStoopBase(config);
+
+  // Create full client instance (React APIs may be undefined in SSR contexts)
   // Create Provider and useTheme if themes are configured
-  let Provider: ComponentType<import("./types").ProviderProps> | undefined;
-  let useTheme: (() => import("./types").ThemeManagementContextValue) | undefined;
+  let Provider: ComponentType<ProviderProps> | undefined;
+  let useTheme: (() => ThemeManagementContextValue) | undefined;
   let themeContext: Context<ThemeContextValue | null> | undefined;
 
   if (config.themes) {
     const mergedThemesForProvider: Record<string, Theme> = {};
 
     for (const [themeName, themeOverride] of Object.entries(config.themes)) {
-      mergedThemesForProvider[themeName] = createTheme(themeOverride);
+      mergedThemesForProvider[themeName] = base.createTheme(themeOverride);
     }
 
     const {
       Provider: ProviderComponent,
       ThemeContext,
       ThemeManagementContext,
-    } = createProvider(mergedThemesForProvider, validatedTheme, sanitizedPrefix);
+    } = createProvider(
+      mergedThemesForProvider,
+      base.validatedTheme,
+      base.sanitizedPrefix,
+      base.globalCssConfig,
+      base.globalCss,
+    );
 
     themeContext = ThemeContext;
     Provider = ProviderComponent;
@@ -181,27 +251,27 @@ export function createStoop(config: StoopConfig): StoopInstance {
 
   // Create styled function
   const styled = createStyledFunction(
-    validatedTheme,
-    sanitizedPrefix,
-    media,
-    utils,
-    mergedThemeMap,
+    base.validatedTheme,
+    base.sanitizedPrefix,
+    base.media,
+    base.utils,
+    base.mergedThemeMap,
     themeContext,
   );
 
   // Return instance with all APIs
   return {
-    config: { ...config, prefix: sanitizedPrefix },
-    createTheme,
-    css,
-    getCssText,
-    globalCss,
-    keyframes,
-    preloadTheme,
+    config: base.config,
+    createTheme: base.createTheme,
+    css: base.css,
+    getCssText: base.getCssText,
+    globalCss: base.globalCss,
+    keyframes: base.keyframes,
+    preloadTheme: base.preloadTheme,
     Provider,
     styled,
-    theme: themeObject,
+    theme: base.theme,
     useTheme,
-    warmCache,
+    warmCache: base.warmCache,
   } as StoopInstance;
 }

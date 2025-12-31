@@ -1,20 +1,99 @@
 /**
- * CSS keyframes animation API.
- * Creates a function that generates and injects @keyframes rules.
- * Caches animations by content hash to prevent duplicates.
+ * Core API functions.
+ * Consolidates theme creation, CSS class generation, and keyframes animation APIs.
  */
 
-import type { CSS, Theme, ThemeScale } from "../types";
+import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { LRUCache } from "../core/cache";
+import { compileCSS } from "../core/compiler";
 import { injectCSS } from "../inject";
+import { validateTheme, isThemeObject } from "../utils/helpers";
+import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   hashObject,
   sanitizeCSSPropertyName,
   sanitizePrefix,
   validateKeyframeKey,
-} from "../utils/string";
-import { replaceThemeTokensWithVars } from "../utils/theme";
+} from "../utils/theme-utils";
+
+// ============================================================================
+// Theme Creation API
+// ============================================================================
+
+/**
+ * Creates a function that extends a base theme with overrides.
+ * The returned function deep merges theme overrides with the base theme.
+ *
+ * @param baseTheme - Base theme to extend
+ * @returns Function that accepts theme overrides and returns a merged theme
+ */
+export function createTheme(baseTheme: Theme): (themeOverrides?: Partial<Theme>) => Theme {
+  return function createTheme(themeOverrides: Partial<Theme> = {}): Theme {
+    const validatedOverrides = validateTheme(themeOverrides);
+
+    function deepMerge(target: Theme, source: Partial<Theme>): Theme {
+      const result = { ...target };
+      const sourceKeys = Object.keys(source) as Array<ThemeScale>;
+
+      for (const key of sourceKeys) {
+        const sourceValue = source[key];
+        const targetValue = target[key];
+
+        if (isThemeObject(sourceValue) && isThemeObject(targetValue)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (result as any)[key] = { ...targetValue, ...sourceValue };
+        } else if (sourceValue !== undefined) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (result as any)[key] = sourceValue;
+        }
+      }
+
+      const targetKeys = Object.keys(target) as Array<ThemeScale>;
+
+      for (const key of targetKeys) {
+        if (!(key in result)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (result as any)[key] = target[key];
+        }
+      }
+
+      return result;
+    }
+
+    return deepMerge(baseTheme, validatedOverrides);
+  };
+}
+
+// ============================================================================
+// CSS Class Generation API
+// ============================================================================
+
+/**
+ * Creates a CSS function that compiles CSS objects into class names.
+ *
+ * @param defaultTheme - Default theme for token resolution
+ * @param prefix - Optional prefix for generated class names
+ * @param media - Optional media query breakpoints
+ * @param utils - Optional utility functions
+ * @param themeMap - Optional theme scale mappings
+ * @returns Function that accepts CSS objects and returns class names
+ */
+export function createCSSFunction(
+  defaultTheme: Theme,
+  prefix = "stoop",
+  media?: Record<string, string>,
+  utils?: Record<string, UtilityFunction>,
+  themeMap?: Record<string, ThemeScale>,
+): (styles: CSS) => string {
+  return function css(styles: CSS): string {
+    return compileCSS(styles, defaultTheme, prefix, media, utils, themeMap);
+  };
+}
+
+// ============================================================================
+// Keyframes Animation API
+// ============================================================================
 
 /**
  * Converts a keyframes object to a CSS @keyframes rule string.
@@ -105,7 +184,6 @@ const KEYFRAME_CACHE_LIMIT = 500;
  * @param themeMap - Optional theme scale mappings
  * @returns Function that accepts keyframes objects and returns animation names
  */
-
 export function createKeyframesFunction(
   prefix = "stoop",
   theme?: Theme,

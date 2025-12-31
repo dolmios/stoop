@@ -78,12 +78,27 @@ export interface StoopConfig {
   utils?: Record<string, UtilityFunction>;
   prefix?: string;
   themeMap?: Record<string, ThemeScale>;
+  globalCss?: CSS;
 }
 
 export type VariantKeys<T extends Variants> = keyof T;
 
+// Extract the keys from a variant object, preserving literal types when possible
+// Uses CSS constraint instead of 'any' to properly type variant values
+// This preserves literal string/number/boolean types from variant definitions
+type ExtractVariantKeys<T> =
+  T extends Record<infer K, CSS>
+    ? K extends string | number | boolean
+      ? K
+      : T extends Record<string, CSS>
+        ? string
+        : never
+    : T extends Record<string, CSS>
+      ? keyof T
+      : never;
+
 export type VariantPropsFromConfig<T extends Variants> = {
-  [K in VariantKeys<T>]?: keyof T[K] | boolean | number;
+  [K in VariantKeys<T>]?: ExtractVariantKeys<T[K]>;
 };
 
 type StyledOwnProps<VariantsConfig extends Variants> = StyledBaseProps &
@@ -105,6 +120,115 @@ export interface ThemeManagementContextValue {
   setTheme: (themeName: string) => void;
   toggleTheme: () => void;
   availableThemes: readonly string[];
+}
+
+/**
+ * Server-side Stoop instance.
+ * Only includes APIs that work without React dependencies.
+ */
+export interface StoopServerInstance {
+  config: StoopConfig & { prefix: string };
+  createTheme: (themeOverride: Partial<Theme>) => Theme;
+  css: (styles: CSS) => string;
+  getCssText: (theme?: string | Theme) => string;
+  globalCss: (...args: CSS[]) => () => void;
+  keyframes: (definition: Record<string, CSS>) => string;
+  preloadTheme: (theme: string | Theme) => void;
+  theme: Theme;
+  warmCache: (styles: CSS[]) => void;
+}
+
+// ===== UTILITY TYPES =====
+
+/**
+ * Theme detection options for automatic theme selection.
+ */
+export interface ThemeDetectionOptions {
+  /** localStorage key to check for stored theme preference */
+  localStorage?: string;
+  /** Cookie name to check for stored theme preference */
+  cookie?: string;
+  /** Whether to check system color scheme preference */
+  systemPreference?: boolean;
+  /** Default theme name to fall back to */
+  default?: string;
+  /** Available themes map for validation */
+  themes?: Record<string, Theme>;
+}
+
+/**
+ * Result of theme detection.
+ */
+export interface ThemeDetectionResult {
+  /** Detected theme name */
+  theme: string;
+  /** Source of the theme detection */
+  source: "cookie" | "localStorage" | "system" | "default";
+  /** Confidence level (0-1) of the detection */
+  confidence: number;
+}
+
+/**
+ * Storage type enumeration.
+ */
+export type StorageType = "localStorage" | "cookie";
+
+/**
+ * Options for storage operations.
+ */
+export interface StorageOptions {
+  /** Storage type */
+  type?: StorageType;
+  /** Cookie max age in seconds (only for cookies) */
+  maxAge?: number;
+  /** Cookie path (only for cookies) */
+  path?: string;
+  /** Whether to use secure cookies (only for cookies) */
+  secure?: boolean;
+}
+
+/**
+ * Storage result with metadata.
+ */
+export interface StorageResult<T = string> {
+  /** The stored value */
+  value: T;
+  /** Whether the operation succeeded */
+  success: boolean;
+  /** Error message if operation failed */
+  error?: string;
+  /** Source of the value */
+  source?: StorageType;
+}
+
+/**
+ * Options for auto-preloading.
+ */
+export interface AutoPreloadOptions {
+  /** Theme detection options */
+  themeDetection?: ThemeDetectionOptions;
+  /** Common styles to warm the cache with */
+  commonStyles?: CSS[];
+  /** Whether to enable automatic theme preloading */
+  enableThemePreload?: boolean;
+  /** Whether to enable automatic cache warming */
+  enableCacheWarm?: boolean;
+  /** Whether to run in SSR context (limits available APIs) */
+  ssr?: boolean;
+}
+
+/**
+ * Result of auto-preloading operations.
+ */
+export interface AutoPreloadResult {
+  /** Detected theme information */
+  themeDetection: ThemeDetectionResult;
+  /** Whether cache was warmed */
+  cacheWarmed: boolean;
+  /** Whether theme was preloaded */
+  themePreloaded: boolean;
+  /** Any errors that occurred */
+  errors: string[];
 }
 
 /**

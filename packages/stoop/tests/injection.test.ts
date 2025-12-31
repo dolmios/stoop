@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 
 import { createStoop } from "../src/create-stoop";
 import { clearStylesheet, getCssText } from "../src/inject";
-import { isInjectedRule } from "../src/inject/dedup";
+import { isInjectedRule } from "../src/inject";
 
 import { createMockTheme } from "./helpers";
 

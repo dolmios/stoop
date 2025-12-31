@@ -14,16 +14,16 @@
   },
   "homepage": "https://github.com/dolmios/stoop#readme",
   "dependencies": {
-    "@floating-ui/dom": "^1.7.0",
+    "@floating-ui/dom": "^1.7.4",
     "react-polymorphic-types": "^2.0.0",
     "stoop": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
-    "@types/react": "^19.0.6",
-    "@types/react-dom": "^19.0.2",
-    "bun-types": "^1.2.6",
-    "typescript": "^5.7.2"
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "bun-types": "^1.3.5",
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": {
@@ -51,16 +51,14 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@floating-ui/dom": "^1.7.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },
   "scripts": {
-    "build": "bun run build:clean && bun run build:types",
+    "build": "bun run build:clean && bun run build:js && bun run build:types",
     "build:clean": "rm -rf dist",
     "build:js": "NODE_ENV=production bun build ./src/index.ts --outdir ./dist --target node --minify --jsx=automatic --splitting --external react --external react-dom --external react/jsx-runtime --external stoop --external @floating-ui/dom --define process.env.NODE_ENV='\"production\"'",
     "build:types": "bunx tsc --project tsconfig.build.json",
-    "prepare": "bun run build",
     "test": "bun test"
   },
   "sideEffects": false,

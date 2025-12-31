@@ -8,6 +8,8 @@ import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { MAX_CSS_NESTING_DEPTH, STOOP_COMPONENT_SYMBOL } from "../constants";
 import { injectCSS } from "../inject";
+import { isValidCSSObject, applyUtilities } from "../utils/helpers";
+import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   escapeCSSValue,
   hash,
@@ -15,10 +17,7 @@ import {
   sanitizeCSSSelector,
   sanitizeMediaQuery,
   sanitizePrefix,
-} from "../utils/string";
-import { replaceThemeTokensWithVars } from "../utils/theme";
-import { isValidCSSObject } from "../utils/type-guards";
-import { applyUtilities } from "../utils/utilities";
+} from "../utils/theme-utils";
 import { classNameCache, cssStringCache } from "./cache";
 
 /**

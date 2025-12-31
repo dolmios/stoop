@@ -2,78 +2,122 @@
 
 Apply global styles using theme tokens
 
-## Usage
+## Configuration-based Usage (Recommended)
+
+Global CSS can now be defined directly in your Stoop config for automatic injection:
 
 ```typescript
-import { globalCss } from "./theme";
+import { createStoop } from "stoop";
 
-const globalStyles = globalCss({
-  body: {
-    fontFamily: "$body",
-    backgroundColor: "$background",
-    color: "$text",
+const stoop = createStoop({
+  theme: {
+    colors: { background: "#fff", text: "#000" },
+    fonts: { body: "system-ui, sans-serif" },
   },
-  a: {
-    color: "$text",
-    textDecoration: "none",
-    "&:hover": {
-      opacity: "$opacities.hover",
+  globalCss: {
+    "*": {
+      boxSizing: "border-box",
+      margin: 0,
+      padding: 0,
+    },
+    body: {
+      fontFamily: "$body",
+      backgroundColor: "$background",
+      color: "$text",
+      lineHeight: 1.6,
+    },
+    a: {
+      color: "$text",
+      textDecoration: "none",
+      "&:hover": {
+        opacity: 0.8,
+      },
     },
   },
 });
 
-globalStyles();
+// Global styles are automatically injected by the Provider
+```
+
+## Manual Usage (Advanced)
+
+For advanced use cases, you can still use the globalCss function directly:
+
+```typescript
+import { globalCss } from "./theme";
+
+const customGlobalStyles = globalCss({
+  ".custom-class": {
+    backgroundColor: "$background",
+    color: "$text",
+  },
+});
+
+// Call manually when needed
+customGlobalStyles();
 ```
 
 ## CSS Reset Example
 
-Here's a comprehensive CSS reset example:
+Here's a comprehensive CSS reset example for your config:
 
 ```typescript
-import { globalCss } from "./theme";
-
-const globalStyles = globalCss({
-  "*": {
-    boxSizing: "border-box",
-    margin: 0,
-    padding: 0,
-  },
-  body: {
-    fontFamily: "$body",
-    backgroundColor: "$background",
-    color: "$text",
-    lineHeight: 1.6,
-  },
-  // Typography
-  "h1, h2, h3, h4, h5, h6": {
-    fontFamily: "$heading",
-    fontWeight: "$bold",
-    lineHeight: 1.2,
-    margin: 0,
-  },
-  // Links
-  a: {
-    color: "$text",
-    textDecoration: "none",
-    "&:hover": {
-      opacity: "$opacities.hover",
+const stoopConfig = {
+  theme: { /* your theme */ },
+  globalCss: {
+    "*": {
+      boxSizing: "border-box",
+      margin: 0,
+      padding: 0,
+    },
+    "*, *::before, *::after": {
+      boxSizing: "inherit",
+    },
+    "[aria-hidden='true']": {
+      display: "none",
+    },
+    "[hidden]": {
+      display: "none",
+    },
+    body: {
+      fontFamily: "$body",
+      backgroundColor: "$background",
+      color: "$text",
+      lineHeight: 1.6,
+      minHeight: "100vh",
+    },
+    // Typography
+    "h1, h2, h3, h4, h5, h6": {
+      fontFamily: "$heading",
+      fontWeight: "$bold",
+      lineHeight: 1.2,
+      margin: 0,
+    },
+    // Links
+    a: {
+      color: "$text",
+      textDecoration: "none",
+      transition: "opacity 0.2s ease",
+      "&:hover": {
+        opacity: 0.8,
+      },
+    },
+    // Form elements
+    "button, input, select, textarea": {
+      fontFamily: "inherit",
+      fontSize: "inherit",
     },
   },
-  // Form elements
-  "button, input, select, textarea": {
-    fontFamily: "inherit",
-    fontSize: "inherit",
-  },
-});
-
-globalStyles();
+};
 ```
 
 ## Best Practices
 
-- Call `globalStyles()` in your app entry point
+- Use the `globalCss` config property for theme-related global styles
+- Use the `globalCss()` function for dynamic or conditional global styles
 - Use theme tokens for colors, spacing, and typography
 - Keep global styles minimal - prefer component-level styles
 - Use nested selectors for pseudo-classes (`&:hover`, etc.)
 - Global styles automatically update when the theme changes
+- No layout shift - styles are injected before React renders
 

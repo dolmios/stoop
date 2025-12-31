@@ -4,7 +4,7 @@
  * shorthand properties into full CSS objects.
  */
 
-import type { CSS, UtilityFunction } from "stoop";
+import type { CSS, UtilityFunction } from "stoop/types";
 
 type CSSPropertyValue = string | number;
 

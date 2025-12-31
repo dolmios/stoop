@@ -53,6 +53,26 @@ export const { styled, css, Provider, useTheme } = createStoop({
     light: lightTheme,
     dark: darkTheme,
   },
+  globalCss: {
+    "*": {
+      boxSizing: "border-box",
+      margin: 0,
+      padding: 0,
+    },
+    body: {
+      fontFamily: "$body",
+      backgroundColor: "$background",
+      color: "$text",
+      lineHeight: 1.5,
+    },
+    a: {
+      color: "$text",
+      textDecoration: "none",
+      "&:hover": {
+        opacity: 0.8,
+      },
+    },
+  },
 });
 ```
 
@@ -68,6 +88,7 @@ export const { styled, css, Provider, useTheme } = createStoop({
 | media | `Record<string, string>` | undefined | Media query breakpoints for responsive styles |
 | utils | `Record<string, UtilityFunction>` | undefined | Custom utility functions |
 | themeMap | `Record<string, ThemeScale>` | undefined | Custom theme scale mapping for property-aware token resolution |
+| globalCss | CSS | undefined | Global styles to inject automatically (recommended over manual globalCss calls) |
 
 ## Media Queries
 

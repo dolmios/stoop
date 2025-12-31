@@ -14,6 +14,7 @@ const TabsContainer = styled("div", {
   display: "flex",
   flexWrap: "nowrap",
   gap: 0,
+  minWidth: 0,
   overflowX: "auto",
   padding: 0,
   scrollbarWidth: "none",
@@ -58,8 +59,8 @@ const TabButton = styled(ButtonComponent, {
 });
 
 export type TabItem = {
-  value: string;
-  label: string;
+  readonly value: string;
+  readonly label: string;
 };
 
 export type TabsProps = {
@@ -69,7 +70,12 @@ export type TabsProps = {
   value?: string;
 };
 
-export function Tabs({ defaultValue, items, onTabChange, value: controlledValue }: TabsProps): ReactNode {
+export function Tabs({
+  defaultValue,
+  items,
+  onTabChange,
+  value: controlledValue,
+}: TabsProps): ReactNode {
   const [internalValue, setInternalValue] = useState(defaultValue || items[0]?.value);
 
   // Use controlled value if provided, otherwise use internal state

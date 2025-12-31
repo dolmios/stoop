@@ -7,7 +7,9 @@
 import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { MAX_CSS_NESTING_DEPTH } from "../constants";
-import { injectCSS } from "../inject";
+import { injectCSS, registerGlobalStylesForSSR } from "../inject";
+import { isCSSObject, applyUtilities } from "../utils/helpers";
+import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   escapeCSSValue,
   hashObject,
@@ -15,10 +17,7 @@ import {
   sanitizeCSSSelector,
   sanitizeMediaQuery,
   sanitizePrefix,
-} from "../utils/string";
-import { replaceThemeTokensWithVars } from "../utils/theme";
-import { isCSSObject } from "../utils/type-guards";
-import { applyUtilities } from "../utils/utilities";
+} from "../utils/theme-utils";
 
 /**
  * Creates a global CSS injection function.
@@ -111,6 +110,10 @@ export function createGlobalCSSFunction(
     }
 
     const sanitizedPrefix = sanitizePrefix(prefix);
+
+    // Register global styles for SSR so they're included in getCssText() even if not injected yet
+    registerGlobalStylesForSSR(styles, sanitizedPrefix);
+
     const stylesWithUtils = applyUtilities(styles, utils);
     const themedStyles = replaceThemeTokensWithVars(stylesWithUtils, defaultTheme, themeMap);
 

@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 import localFont from "next/font/local";
 import { cookies } from "next/headers";
+import { Stack } from "stoop-ui";
 
-import { Stack } from "../ui";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
@@ -91,6 +91,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 5,
+  width: "device-width",
+};
+
 export default async function RootLayout({
   children,
 }: {
@@ -119,13 +125,18 @@ export default async function RootLayout({
               margin: "0 auto",
               maxWidth: "1000px",
               mobile: {
-                padding: "$medium $small",
+                paddingBottom: "$medium",
+                paddingLeft: "$small",
+                paddingRight: "$small",
+                paddingTop: "$medium",
               },
-              overflowX: "hidden",
               overflowY: "auto",
-              padding: "$large $medium",
+              paddingBottom: "$large",
+              paddingTop: "$large",
               width: "100%",
-            }}>
+            }}
+            left="medium"
+            right="medium">
             <Breadcrumbs />
             {children}
           </Stack>

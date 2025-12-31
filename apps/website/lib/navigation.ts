@@ -1,4 +1,4 @@
-import type { TabItem } from "../ui";
+import type { TabItem } from "stoop-ui";
 
 /**
  * Main navigation tabs configuration for the website.

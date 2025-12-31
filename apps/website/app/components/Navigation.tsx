@@ -3,9 +3,9 @@
 import type { ReactElement } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
+import { Stack, Tabs } from "stoop-ui";
 
 import { mainNavTabs } from "../../lib/navigation";
-import { Stack, Tabs } from "../../ui";
 
 /**
  * Navigation component that renders the main navigation tabs.

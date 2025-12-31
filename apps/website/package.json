@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "bun run build:deps && next build",
+    "build:deps": "cd ../../packages/stoop && bun run build && cd ../stoop-ui && bun run build",
     "start": "next start",
     "lint": "next lint"
   },

@@ -6,9 +6,12 @@
 
 import type { CSS, Theme, ThemeScale } from "../types";
 
-import { escapeCSSVariableValue, sanitizeCSSVariableName } from "./string";
-import { getScaleForProperty } from "./theme-map";
-import { isCSSObject, isThemeObject } from "./type-guards";
+import { isCSSObject, isThemeObject } from "./helpers";
+import {
+  escapeCSSVariableValue,
+  getScaleForProperty,
+  sanitizeCSSVariableName,
+} from "./theme-utils";
 
 const tokenIndexCache = new WeakMap<Theme, Map<string, string[][]>>();
 

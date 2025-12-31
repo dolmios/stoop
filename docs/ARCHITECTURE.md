@@ -171,11 +171,11 @@ export const { styled, Provider, useTheme, getCssText, globalCss } = createStoop
 // app/components/Styles.tsx (client component)
 ("use client");
 import { useServerInsertedHTML } from "next/navigation";
-import { getCssText, globalStyles } from "../stoop.theme";
+import { getCssText } from "../stoop.theme";
 
 export function Styles({ initialTheme }) {
   useServerInsertedHTML(() => {
-    globalStyles(); // Inject global CSS first
+    // Global styles are automatically included from theme config
     const cssText = getCssText(initialTheme);
     return <style id="stoop-ssr" dangerouslySetInnerHTML={{ __html: cssText }} />;
   });

@@ -18,6 +18,7 @@ import {
 
 import type {
   CSS,
+  CSSPropertyValue,
   StyledComponentProps,
   StyledComponentRef,
   StylableElement,
@@ -31,7 +32,7 @@ import type {
 import { EMPTY_CSS, STOOP_COMPONENT_SYMBOL } from "../constants";
 import { compileCSS } from "../core/compiler";
 import { applyVariants } from "../core/variants";
-import { hash, sanitizeClassName } from "../utils/string";
+import { hash, sanitizeClassName } from "../utils/theme-utils";
 
 let defaultThemeContext: Context<ThemeContextValue | null> | null = null;
 
@@ -76,37 +77,283 @@ function isStyledComponent(value: unknown): value is StyledComponentRef {
 }
 
 /**
- * Separates component props into variant props and element props.
- * Variant props are used for style variants, element props are passed to the DOM element.
+ * Set of common CSS properties that should not be passed to DOM elements.
+ * These are camelCase CSS properties that React doesn't recognize as valid DOM attributes.
+ */
+const CSS_PROPERTIES = new Set([
+  "alignContent",
+  "alignItems",
+  "alignSelf",
+  "animation",
+  "animationDelay",
+  "animationDirection",
+  "animationDuration",
+  "animationFillMode",
+  "animationIterationCount",
+  "animationName",
+  "animationPlayState",
+  "animationTimingFunction",
+  "aspectRatio",
+  "backdropFilter",
+  "backfaceVisibility",
+  "background",
+  "backgroundAttachment",
+  "backgroundBlendMode",
+  "backgroundClip",
+  "backgroundColor",
+  "backgroundImage",
+  "backgroundOrigin",
+  "backgroundPosition",
+  "backgroundRepeat",
+  "backgroundSize",
+  "border",
+  "borderBottom",
+  "borderBottomColor",
+  "borderBottomLeftRadius",
+  "borderBottomRightRadius",
+  "borderBottomStyle",
+  "borderBottomWidth",
+  "borderCollapse",
+  "borderColor",
+  "borderImage",
+  "borderImageOutset",
+  "borderImageRepeat",
+  "borderImageSlice",
+  "borderImageSource",
+  "borderImageWidth",
+  "borderLeft",
+  "borderLeftColor",
+  "borderLeftStyle",
+  "borderLeftWidth",
+  "borderRadius",
+  "borderRight",
+  "borderRightColor",
+  "borderRightStyle",
+  "borderRightWidth",
+  "borderSpacing",
+  "borderStyle",
+  "borderTop",
+  "borderTopColor",
+  "borderTopLeftRadius",
+  "borderTopRightRadius",
+  "borderTopStyle",
+  "borderTopWidth",
+  "borderWidth",
+  "bottom",
+  "boxShadow",
+  "boxSizing",
+  "captionSide",
+  "caretColor",
+  "clear",
+  "clip",
+  "clipPath",
+  "color",
+  "columnCount",
+  "columnFill",
+  "columnGap",
+  "columnRule",
+  "columnRuleColor",
+  "columnRuleStyle",
+  "columnRuleWidth",
+  "columnSpan",
+  "columnWidth",
+  "columns",
+  "content",
+  "counterIncrement",
+  "counterReset",
+  "cursor",
+  "direction",
+  "display",
+  "emptyCells",
+  "filter",
+  "flex",
+  "flexBasis",
+  "flexDirection",
+  "flexFlow",
+  "flexGrow",
+  "flexShrink",
+  "flexWrap",
+  "float",
+  "font",
+  "fontFamily",
+  "fontFeatureSettings",
+  "fontKerning",
+  "fontLanguageOverride",
+  "fontSize",
+  "fontSizeAdjust",
+  "fontStretch",
+  "fontStyle",
+  "fontSynthesis",
+  "fontVariant",
+  "fontVariantAlternates",
+  "fontVariantCaps",
+  "fontVariantEastAsian",
+  "fontVariantLigatures",
+  "fontVariantNumeric",
+  "fontVariantPosition",
+  "fontWeight",
+  "gap",
+  "grid",
+  "gridArea",
+  "gridAutoColumns",
+  "gridAutoFlow",
+  "gridAutoRows",
+  "gridColumn",
+  "gridColumnEnd",
+  "gridColumnGap",
+  "gridColumnStart",
+  "gridGap",
+  "gridRow",
+  "gridRowEnd",
+  "gridRowGap",
+  "gridRowStart",
+  "gridTemplate",
+  "gridTemplateAreas",
+  "gridTemplateColumns",
+  "gridTemplateRows",
+  "height",
+  "hyphens",
+  "imageOrientation",
+  "imageRendering",
+  "imageResolution",
+  "imeMode",
+  "inlineSize",
+  "isolation",
+  "justifyContent",
+  "justifyItems",
+  "justifySelf",
+  "left",
+  "letterSpacing",
+  "lineHeight",
+  "listStyle",
+  "listStyleImage",
+  "listStylePosition",
+  "listStyleType",
+  "margin",
+  "marginBottom",
+  "marginLeft",
+  "marginRight",
+  "marginTop",
+  "maxHeight",
+  "maxWidth",
+  "minHeight",
+  "minWidth",
+  "objectFit",
+  "objectPosition",
+  "opacity",
+  "order",
+  "orphans",
+  "outline",
+  "outlineColor",
+  "outlineOffset",
+  "outlineStyle",
+  "outlineWidth",
+  "overflow",
+  "overflowWrap",
+  "overflowX",
+  "overflowY",
+  "padding",
+  "paddingBottom",
+  "paddingLeft",
+  "paddingRight",
+  "paddingTop",
+  "pageBreakAfter",
+  "pageBreakBefore",
+  "pageBreakInside",
+  "perspective",
+  "perspectiveOrigin",
+  "placeContent",
+  "placeItems",
+  "placeSelf",
+  "pointerEvents",
+  "position",
+  "quotes",
+  "resize",
+  "right",
+  "rowGap",
+  "scrollBehavior",
+  "tabSize",
+  "tableLayout",
+  "textAlign",
+  "textAlignLast",
+  "textDecoration",
+  "textDecorationColor",
+  "textDecorationLine",
+  "textDecorationStyle",
+  "textIndent",
+  "textJustify",
+  "textOverflow",
+  "textShadow",
+  "textTransform",
+  "textUnderlinePosition",
+  "top",
+  "transform",
+  "transformOrigin",
+  "transformStyle",
+  "transition",
+  "transitionDelay",
+  "transitionDuration",
+  "transitionProperty",
+  "transitionTimingFunction",
+  "unicodeBidi",
+  "userSelect",
+  "verticalAlign",
+  "visibility",
+  "whiteSpace",
+  "width",
+  "wordBreak",
+  "wordSpacing",
+  "wordWrap",
+  "writingMode",
+  "zIndex",
+]);
+
+/**
+ * Checks if a prop name is a CSS property that should be converted to CSS styles.
+ *
+ * @param propName - The prop name to check
+ * @returns True if the prop is a CSS property
+ */
+function isCSSProperty(propName: string): boolean {
+  return CSS_PROPERTIES.has(propName);
+}
+
+/**
+ * Separates component props into variant props, CSS props, and element props.
+ * Variant props are used for style variants.
+ * CSS props are converted to CSS styles.
+ * Element props are passed to the DOM element.
  *
  * @param props - All component props
  * @param variants - Variant configuration
- * @returns Object with separated elementProps and variantProps
+ * @returns Object with separated elementProps, variantProps, and cssProps
  */
 function extractVariantProps<V extends Variants>(
   props: Record<string, unknown>,
   variants: V | undefined,
 ): {
+  cssProps: CSS;
   elementProps: Record<string, unknown>;
   variantProps: Record<string, string | boolean | undefined>;
 } {
-  if (!variants) {
-    return { elementProps: props, variantProps: {} };
-  }
-
-  const variantKeys = new Set(Object.keys(variants));
+  const variantKeys = variants ? new Set(Object.keys(variants)) : new Set<string>();
   const variantProps: Record<string, string | boolean | undefined> = {};
+  const cssProps: CSS = {};
   const elementProps: Record<string, unknown> = {};
 
   for (const key in props) {
     if (variantKeys.has(key)) {
       variantProps[key] = props[key] as string | boolean | undefined;
+    } else if (isCSSProperty(key)) {
+      // Convert CSS properties to CSS styles
+      cssProps[key] = props[key] as CSSPropertyValue | CSS | undefined;
     } else {
+      // Only include non-CSS, non-variant properties in elementProps
       elementProps[key] = props[key];
     }
   }
 
-  return { elementProps, variantProps };
+  return { cssProps, elementProps, variantProps };
 }
 
 type CSSWithVariants = {
@@ -214,7 +461,10 @@ export function createStyledFunction(
           [cssStyles],
         );
 
-        const { elementProps, variantProps } = extractVariantProps(restProps, actualVariants);
+        const { cssProps, elementProps, variantProps } = extractVariantProps(
+          restProps,
+          actualVariants,
+        );
 
         const contextValue = useContext(themeContext || getDefaultThemeContext());
         const currentTheme = contextValue?.theme || defaultTheme;
@@ -244,12 +494,18 @@ export function createStyledFunction(
             componentStyles = applyVariants(actualVariants, variantProps, actualBaseStyles);
           }
 
+          // Merge CSS props (CSS properties passed as props) into styles
+          if (Object.keys(cssProps).length > 0) {
+            componentStyles = Object.assign({}, componentStyles, cssProps);
+          }
+
+          // Merge explicit css prop into styles
           if (cssObject !== EMPTY_CSS) {
             componentStyles = Object.assign({}, componentStyles, cssObject);
           }
 
           return componentStyles;
-        }, [variantKey, cssObject, actualBaseStyles, actualVariants, variantProps]);
+        }, [variantKey, cssObject, cssProps, actualBaseStyles, actualVariants, variantProps]);
 
         const finalClassName = useMemo(() => {
           const classNames: string[] = [];

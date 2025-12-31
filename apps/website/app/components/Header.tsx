@@ -3,8 +3,7 @@
 import type { ReactElement } from "react";
 
 import Link from "next/link";
-
-import { Button, Stack, Text } from "../../ui";
+import { Button, Stack, Text } from "stoop-ui";
 
 /**
  * Header component with logo and navigation links.
@@ -21,14 +20,16 @@ export function Header(): ReactElement {
         borderBottom: "1px solid $border",
         height: "48px",
         padding: 0,
-        paddingLeft: "$medium",
-        paddingRight: "$medium",
       }}
       direction="row"
-      justify="between">
+      justify="between"
+      left="medium"
+      right="medium">
       <Link
         href="/"
         style={{
+          flexShrink: 0,
+          minWidth: 0,
           textDecoration: "none",
         }}>
         <Text
@@ -36,6 +37,7 @@ export function Header(): ReactElement {
           css={{
             fontWeight: "$bold",
             margin: 0,
+            whiteSpace: "nowrap",
           }}>
           Stoop
         </Text>

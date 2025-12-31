@@ -1,5 +1,7 @@
 # API Reference
 
+## Core API
+
 ## `createStoop(config)`
 
 Creates a Stoop instance with your theme configuration.
@@ -804,3 +806,234 @@ Using @media syntax:
   },
 }
 ```
+
+## Utility Functions
+
+Stoop provides several utility functions to reduce boilerplate and improve developer experience. These are available as named exports from the main `stoop` package.
+
+### Theme Detection
+
+#### `detectTheme(options?)`
+
+Automatically detects the best theme to use based on various sources with priority ordering.
+
+```typescript
+import { detectTheme } from "stoop";
+
+const result = detectTheme({
+  localStorage: "stoop-theme",
+  cookie: "stoop-theme",
+  systemPreference: true, // Detect dark/light mode
+  default: "light",
+  themes: { light: lightTheme, dark: darkTheme },
+});
+
+console.log(result.theme); // 'dark'
+console.log(result.source); // 'system'
+console.log(result.confidence); // 0.6
+```
+
+**Parameters:**
+
+- `localStorage` (optional): localStorage key to check
+- `cookie` (optional): Cookie name to check
+- `systemPreference` (optional): Whether to check system color scheme
+- `default` (optional): Default theme name
+- `themes` (optional): Available themes for validation
+
+**Returns:** `ThemeDetectionResult` with theme name, source, and confidence level.
+
+#### `detectThemeForSSR(options?)`
+
+Theme detection optimized for server-side rendering contexts.
+
+```typescript
+import { detectThemeForSSR } from "stoop";
+
+const theme = detectThemeForSSR({
+  cookie: "stoop-theme",
+  default: "light",
+});
+```
+
+#### `onSystemThemeChange(callback)`
+
+Listen for system theme changes.
+
+```typescript
+import { onSystemThemeChange } from "stoop";
+
+onSystemThemeChange((theme) => {
+  console.log("System theme changed to:", theme); // 'dark' or 'light'
+});
+```
+
+### Storage Management
+
+#### `getStorage(key, options?)`
+
+Unified API for getting values from localStorage or cookies.
+
+```typescript
+import { getStorage } from "stoop";
+
+const result = getStorage("theme", { type: "localStorage" });
+if (result.success) {
+  console.log(result.value);
+}
+```
+
+#### `setStorage(key, value, options?)`
+
+Unified API for setting values in localStorage or cookies.
+
+```typescript
+import { setStorage } from "stoop";
+
+setStorage("theme", "dark", {
+  type: "cookie",
+  maxAge: 31536000, // 1 year
+});
+```
+
+#### `createStorage(key, options?)`
+
+Creates a typed storage interface for a specific key.
+
+```typescript
+import { createStorage } from "stoop";
+
+const themeStorage = createStorage<string>("theme");
+themeStorage.set("dark");
+const currentTheme = themeStorage.get();
+```
+
+### Auto-Preloading
+
+#### `autoPreload(warmCacheFn, preloadThemeFn, options?)`
+
+Automatically warms cache and preloads themes to eliminate FOUC.
+
+```typescript
+import { autoPreload, COMMON_UI_STYLES } from "stoop";
+
+autoPreload(stoop.warmCache, stoop.preloadTheme, {
+  themeDetection: {
+    localStorage: "stoop-theme",
+    systemPreference: true,
+  },
+  commonStyles: COMMON_UI_STYLES,
+}).then((result) => {
+  console.log("Cache warmed:", result.cacheWarmed);
+  console.log("Theme preloaded:", result.themePreloaded);
+});
+```
+
+**Parameters:**
+
+- `warmCacheFn`: The `warmCache` function from your Stoop instance
+- `preloadThemeFn`: The `preloadTheme` function from your Stoop instance
+- `options.themeDetection`: Theme detection options
+- `options.commonStyles`: Array of common CSS objects to warm
+- `options.enableThemePreload`: Whether to enable theme preloading (default: true)
+- `options.enableCacheWarm`: Whether to enable cache warming (default: true)
+
+### Development Tools
+
+#### `initDevTools(config?)`
+
+Initialize development tools for performance monitoring.
+
+```typescript
+import { initDevTools } from "stoop";
+
+if (process.env.NODE_ENV === "development") {
+  initDevTools({
+    enableMetrics: true,
+    warnOptimizations: true,
+    cacheWarningThreshold: 1000,
+  });
+}
+```
+
+#### `getMetrics()`
+
+Get current performance metrics.
+
+```typescript
+import { getMetrics } from "stoop";
+
+const metrics = getMetrics();
+// Access compilation stats, theme operations, cache sizes, etc.
+```
+
+#### `createPerformanceMonitor(operationName)`
+
+Create a performance monitor for timing operations.
+
+```typescript
+import { createPerformanceMonitor } from "stoop";
+
+const monitor = createPerformanceMonitor("theme-change");
+const timer = monitor.start();
+// ... do work ...
+timer.end(); // Logs timing automatically
+```
+
+### Build-Time Tools
+
+#### `createStoopBuildPlugin(options)`
+
+Vite plugin for automatic style analysis and optimization.
+
+```typescript
+// vite.config.ts
+import { createStoopBuildPlugin } from "stoop";
+
+export default {
+  plugins: [
+    createStoopBuildPlugin({
+      sourceDirs: ["./src"],
+      outputFile: "./src/generated-styles.ts",
+      minOccurrences: 3,
+    }),
+  ],
+};
+```
+
+#### `analyzeStyles(options)`
+
+Manually analyze styles for optimization opportunities.
+
+```typescript
+import { analyzeStyles } from "stoop";
+
+const result = await analyzeStyles({
+  sourceDirs: ["./src"],
+  minOccurrences: 3,
+  maxStyles: 100,
+});
+
+console.log(`${result.commonStyles.length} common styles found`);
+```
+
+### Common UI Styles
+
+#### `COMMON_UI_STYLES`
+
+Pre-defined array of commonly used UI component styles for cache warming.
+
+```typescript
+import { COMMON_UI_STYLES } from "stoop";
+
+stoop.warmCache(COMMON_UI_STYLES);
+```
+
+Includes styles for:
+
+- Layout primitives (flex, position)
+- Spacing utilities
+- Typography
+- Colors (theme tokens)
+- Interactive states
+- Borders and radii

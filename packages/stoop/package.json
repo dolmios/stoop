@@ -3,8 +3,8 @@
   "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
   "version": "0.3.0",
   "author": "Jackson Dolman <mail@dolmios.com>",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/create-stoop.js",
+  "types": "./dist/create-stoop.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/dolmios/stoop.git"
@@ -17,24 +17,48 @@
     "react-polymorphic-types": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
-    "@types/react": "^19.0.6",
-    "@types/react-dom": "^19.0.2",
-    "bun-types": "^1.2.6",
-    "typescript": "^5.7.2"
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "bun-types": "^1.3.5",
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/create-stoop.d.ts",
+      "import": "./dist/create-stoop.js",
+      "require": "./dist/create-stoop.js",
+      "default": "./dist/create-stoop.js"
+    },
+    "./utils/storage": {
+      "types": "./dist/utils/storage.d.ts",
+      "import": "./dist/utils/storage.js",
+      "require": "./dist/utils/storage.js",
+      "default": "./dist/utils/storage.js"
+    },
+    "./utils/auto-preload": {
+      "types": "./dist/utils/auto-preload.d.ts",
+      "import": "./dist/utils/auto-preload.js",
+      "require": "./dist/utils/auto-preload.js",
+      "default": "./dist/utils/auto-preload.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.js",
+      "default": "./dist/types/index.js"
+    },
+    "./inject": {
+      "types": "./dist/inject.d.ts",
+      "import": "./dist/inject.js",
+      "require": "./dist/inject.js",
+      "default": "./dist/inject.js"
     },
     "./ssr": {
-      "types": "./dist/ssr.d.ts",
-      "import": "./dist/ssr.js",
-      "require": "./dist/ssr.js",
-      "default": "./dist/ssr.js"
+      "types": "./dist/create-stoop.d.ts",
+      "import": "./dist/create-stoop.js",
+      "require": "./dist/create-stoop.js",
+      "default": "./dist/create-stoop.js"
     }
   },
   "files": [
@@ -73,10 +97,10 @@
     "react-dom": ">=16.8.0"
   },
   "scripts": {
-    "build": "bun run build:clean && bun run build:types",
+    "build": "bun run build:clean && bun run build:js && bun run build:types",
     "build:clean": "rm -rf dist",
     "build:copy-declarations": "mkdir -p dist/types && cp src/types/react-polymorphic-types.d.ts dist/types/react-polymorphic-types.d.ts 2>/dev/null || :",
-    "build:js": "NODE_ENV=production bun build ./src/index.ts --outdir ./dist --target node --minify --jsx=automatic --splitting --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='\"production\"'",
+    "build:js": "NODE_ENV=production bun build ./src/create-stoop.ts --outdir ./dist --target node --minify --jsx=automatic --splitting --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='\"production\"'",
     "build:types": "bunx tsc --project tsconfig.build.json && bun run build:copy-declarations",
     "prepare": "bun run build",
     "test": "bun test",
