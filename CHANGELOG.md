@@ -5,6 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-01-05
+
+### Added
+
+- Multi-theme injection system using attribute selectors (`[data-theme="..."]`) for instant theme switching
+- SSR entry point (`stoop/ssr`) for server-safe usage without React type imports
+- `generateAllThemeVariables()` function to generate CSS for all themes simultaneously
+- `injectAllThemes()` function to inject all themes at once
+- `mergeThemes()` shared utility function for consistent theme merging
+- `isStyledComponentRef()` shared helper for styled component detection
+- `cssObjectToString()` exported from compiler for reuse
+- `isProduction()` helper function for consistent production checks
+- `getFromStorage()` and `setInStorage()` safe storage utilities
+- Package-specific lint script for `packages/stoop/`
+- Comprehensive documentation in `packages/stoop/docs/` (API, Architecture, Guide, Testing)
+- `stoop-swc` package (WIP - build-time CSS-in-JS compiler, not ready for use)
+
+### Changed
+
+- **BREAKING**: `getCssText(theme?)` now always includes all configured themes - theme parameter is deprecated but kept for backward compatibility
+- **BREAKING**: `preloadTheme(theme?)` now injects all themes - theme parameter is deprecated but kept for backward compatibility
+- Theme switching now uses attribute selectors instead of replacing CSS variables, eliminating layout shifts
+- All themes are injected simultaneously, allowing instant switching by changing `data-theme` attribute
+- `Provider` now injects all themes on mount instead of updating CSS variables on theme change
+- Improved SSR hydration: always start with default theme to prevent hydration mismatch
+- Consolidated theme merging logic into shared `mergeThemes()` function
+- Extracted storage utilities (cookie/localStorage) to separate `utils/storage.ts` module
+- Moved constants (`KEYFRAME_CACHE_LIMIT`, `SANITIZE_CACHE_SIZE_LIMIT`, cookie defaults) to `constants.ts`
+- Improved browser detection using `document.createElement` instead of `requestAnimationFrame` for better test compatibility
+- Updated variant merging logic for better performance
+- `stoop-ui`: Removed `./client` export, consolidated API - `styled` and `keyframes` now exported from main index
+- `stoop-ui`: Removed `react-polymorphic-types` dependency
+- Documentation moved from root `docs/` to `packages/stoop/docs/`
+- Updated all documentation to reflect multi-theme system changes
+
+### Fixed
+
+- Prevented FOUC (Flash of Unstyled Content) by injecting all themes upfront
+- Fixed hydration mismatch issues by starting with default theme in SSR
+- Improved theme switching performance by eliminating CSS variable replacement
+- Better cache management with LRUCache consistently used throughout
+- Early exit optimization in `replaceThemeTokensWithVars()` when no tokens found
+
+### Removed
+
+- Removed WeakMap cache for token index (memory concerns)
+- Removed `registerGlobalStylesForSSR()` function (no longer needed)
+- Removed `registerTheme()` function (replaced by `injectAllThemes()`)
+- Removed `updateThemeVariables()` function (replaced by attribute selector system)
+- Removed `stoop-ui/src/client.ts` file (consolidated into main index)
+- Removed root `docs/` directory (moved to `packages/stoop/docs/`)
+- Removed `CODE_REVIEW.md` file
+
+### Other
+
+- Code organization improvements: better separation of concerns, shared utilities
+- Performance optimizations: removed unnecessary caching, early exits
+- Improved error handling and type safety
+- Updated playground to use Tabs component instead of react-router
+- Simplified Modal demo component
+- Added README files for `stoop-ui` and playground
+- Cleaned up publish script console output (removed emojis)
+- Added `stoop-swc` to eslint ignore patterns
+
 ## [0.3.0] - 2025-12-29
 
 ### Added
