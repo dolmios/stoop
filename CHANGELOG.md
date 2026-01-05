@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-01-05
+
+### Changed
+
+- update CHANGELOG for v0.4.0 release
+- update documentation paths and clean up publish script
+
+### Other
+
+- chore(stoop-ui): update stoop dependency to published version for release
+- feat(stoop-ui): add top and bottom padding variants to Stack
+- feat(stoop-swc): add build-time CSS-in-JS compiler (WIP)
+- docs(website): update documentation for multi-theme system
+- refactor(stoop-ui): simplify API and improve playground
+
 ## [0.4.0] - 2026-01-05
 
 ### Added
