@@ -25,6 +25,26 @@ export const Stack = styled(
         alignItems: "stretch",
       },
     },
+    bottom: {
+      large: {
+        paddingBottom: "$large",
+      },
+      larger: {
+        paddingBottom: "$larger",
+      },
+      medium: {
+        paddingBottom: "$medium",
+      },
+      small: {
+        paddingBottom: "$small",
+      },
+      smaller: {
+        paddingBottom: "$smaller",
+      },
+      smallest: {
+        paddingBottom: "$smallest",
+      },
+    },
     direction: {
       column: {
         flexDirection: "column",
@@ -102,6 +122,26 @@ export const Stack = styled(
       },
       smallest: {
         paddingRight: "$smallest",
+      },
+    },
+    top: {
+      large: {
+        paddingTop: "$large",
+      },
+      larger: {
+        paddingTop: "$larger",
+      },
+      medium: {
+        paddingTop: "$medium",
+      },
+      small: {
+        paddingTop: "$small",
+      },
+      smaller: {
+        paddingTop: "$smaller",
+      },
+      smallest: {
+        paddingTop: "$smallest",
       },
     },
     wrap: {

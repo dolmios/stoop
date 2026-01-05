@@ -16,7 +16,7 @@ export function Footer(): ReactElement {
     <Stack
       align="center"
       as="footer"
-      bottom="medium"
+      bottom="large"
       css={{
         backgroundColor: "$background",
         borderTop: "1px solid $border",
@@ -25,7 +25,7 @@ export function Footer(): ReactElement {
       justify="between"
       left="medium"
       right="medium"
-      top="medium">
+      top="large">
       <Text
         as="small"
         bottom="none"
