@@ -18,7 +18,7 @@ preloadTheme(customTheme);
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| theme | `string \| Theme` | Theme name (string) or theme object to preload |
+| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. The function always injects CSS variables for **all** themes configured in `themes` config. |
 
 ## Preventing FOUC
 
@@ -82,8 +82,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ## Notes
 
-- Use `preloadTheme()` for non-default themes to prevent FOUC
+- Use `preloadTheme()` to prevent FOUC when loading themes from localStorage
 - Must be called before React renders (use `beforeInteractive` script strategy or in a script tag)
-- Injects theme CSS variables synchronously
-- If a theme name is provided, ensure it exists in your `themes` config
+- Injects CSS variables for **all** configured themes synchronously using attribute selectors
+- The `theme` parameter is deprecated and ignored - all themes are always injected
+- Only works when `themes` config is provided to `createStoop`
 

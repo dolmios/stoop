@@ -112,7 +112,7 @@ export default async function RootLayout({
       data-theme={initialTheme}
       lang="en"
       suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         <StructuredData />
         <Styles initialTheme={initialTheme} />
         <Providers initialTheme={initialTheme}>

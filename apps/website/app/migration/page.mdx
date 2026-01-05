@@ -52,13 +52,22 @@ const { styled, css } = createStoop({
 Component API is mostly the same:
 
 ```typescript
-// Works the same in both
+// Stitches
 const Button = styled("button", {
   padding: "$medium",
   variants: {
     size: {
       small: { padding: "$small" },
     },
+  },
+});
+
+// Stoop (variants are the third parameter)
+const Button = styled("button", {
+  padding: "$medium",
+}, {
+  size: {
+    small: { padding: "$small" },
   },
 });
 ```

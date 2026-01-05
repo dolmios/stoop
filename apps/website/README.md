@@ -75,3 +75,7 @@ This site is configured for deployment on Vercel with Next.js.
 - `components/` - Structural components (Layout, Header, Footer, Navigation)
 - `lib/` - Utilities and configuration
 - `stoop.theme.ts` - Stoop theme configuration (used for documentation examples)
+
+## License
+
+MIT

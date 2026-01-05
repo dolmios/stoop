@@ -27,7 +27,8 @@ export function Styles({ initialTheme }: { initialTheme: string }) {
   useServerInsertedHTML(() => {
     // Global styles are automatically included from theme config
     // No need to call them manually - Provider handles this automatically
-    const cssText = getCssText(initialTheme);
+    // Note: getCssText() always includes all themes, the parameter is ignored
+    const cssText = getCssText();
 
     if (!cssText) return null;
 
@@ -202,9 +203,9 @@ For complete API documentation, see:
 ## Best Practices
 
 1. **Always call `getCssText()` in your document/layout** - This ensures styles are available on initial render
-2. **Use `preloadTheme()` for non-default themes** - Prevents FOUC when loading saved theme preferences
-3. **Include theme variables** - `getCssText()` automatically includes theme CSS variables
-4. **Use consistent theme names** - When using `getCssText("theme-name")`, ensure the theme exists in your config
+2. **Use `preloadTheme()` to prevent FOUC** - Prevents FOUC when loading saved theme preferences from localStorage
+3. **Include theme variables** - `getCssText()` automatically includes CSS variables for all configured themes
+4. **No theme parameter needed** - `getCssText()` always includes all themes, so no need to pass a theme name
 
 ## Common Issues
 
@@ -218,7 +219,7 @@ Use `preloadTheme()` before React renders to inject theme variables synchronousl
 
 ### Theme not found warning
 
-Ensure the theme name passed to `getCssText()` exists in your `themes` config object.
+This warning should not occur since `getCssText()` doesn't use the theme parameter. If you see this, ensure your `themes` config is properly set up in `createStoop`.
 
 ## Related Pages
 

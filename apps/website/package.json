@@ -8,7 +8,7 @@
     "build": "bun run build:deps && next build",
     "build:deps": "cd ../../packages/stoop && bun run build && cd ../stoop-ui && bun run build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
   },
   "dependencies": {
     "next": "16.1.1",
