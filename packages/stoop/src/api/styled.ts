@@ -32,6 +32,7 @@ import type {
 import { EMPTY_CSS, STOOP_COMPONENT_SYMBOL } from "../constants";
 import { compileCSS } from "../core/compiler";
 import { applyVariants } from "../core/variants";
+import { isStyledComponentRef } from "../utils/helpers";
 import { hash, sanitizeClassName } from "../utils/theme-utils";
 
 let defaultThemeContext: Context<ThemeContextValue | null> | null = null;
@@ -63,17 +64,13 @@ export function createStyledComponentRef(className: string): StyledComponentRef 
 
 /**
  * Type guard for styled component references.
+ * Uses shared isStyledComponentRef helper for consistency.
  *
  * @param value - Value to check
  * @returns True if value is a styled component reference
  */
 function isStyledComponent(value: unknown): value is StyledComponentRef {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "__isStoopStyled" in value &&
-    (value as { __isStoopStyled?: boolean }).__isStoopStyled === true
-  );
+  return isStyledComponentRef(value);
 }
 
 /**
@@ -360,7 +357,6 @@ type CSSWithVariants = {
   [K in keyof CSS]: CSS[K];
 } & {
   variants: Variants;
-  compoundVariants?: unknown[];
 };
 
 /**
@@ -425,7 +421,7 @@ export function createStyledFunction(
       typeof baseStylesOrVariants.variants === "object"
     ) {
       actualVariants = baseStylesOrVariants.variants as VariantsConfig;
-      const { compoundVariants: __, variants: _, ...rest } = baseStylesOrVariants;
+      const { variants: _, ...rest } = baseStylesOrVariants;
 
       actualBaseStyles = rest as CSS;
     }

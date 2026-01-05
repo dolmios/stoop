@@ -12,6 +12,18 @@ export const MAX_CLASS_NAME_CACHE_SIZE = 5000;
 export const MAX_CSS_NESTING_DEPTH = 10;
 
 /**
+ * Cache size limits for various LRU caches.
+ */
+export const KEYFRAME_CACHE_LIMIT = 500;
+export const SANITIZE_CACHE_SIZE_LIMIT = 1000;
+
+/**
+ * Cookie defaults.
+ */
+export const DEFAULT_COOKIE_MAX_AGE = 31536000; // 1 year in seconds
+export const DEFAULT_COOKIE_PATH = "/";
+
+/**
  * Approved theme scales - only these scales are allowed in theme objects.
  */
 export const APPROVED_THEME_SCALES: ReadonlyArray<ThemeScale> = [

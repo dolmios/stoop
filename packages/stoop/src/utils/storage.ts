@@ -12,6 +12,7 @@ import type {
   StorageResult,
 } from "../types";
 
+import { DEFAULT_COOKIE_MAX_AGE, DEFAULT_COOKIE_PATH } from "../constants";
 import { isBrowser } from "./helpers";
 
 // ============================================================================
@@ -140,7 +141,7 @@ export function setCookie(
 ): boolean {
   if (!isBrowser()) return false;
 
-  const { maxAge = 31536000, path = "/", secure = false } = options; // 1 year default
+  const { maxAge = DEFAULT_COOKIE_MAX_AGE, path = DEFAULT_COOKIE_PATH, secure = false } = options;
 
   try {
     document.cookie = `${name}=${value}; path=${path}; max-age=${maxAge}${secure ? "; secure" : ""}`;

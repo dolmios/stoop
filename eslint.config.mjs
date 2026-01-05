@@ -17,6 +17,7 @@ export default [
       "**/*.d.ts",
       "scripts/**",
       "temp/**",
+      "packages/stoop-swc/**",
     ],
   },
 ];

@@ -743,7 +743,7 @@ describe("Stoop", () => {
       expect(cssText).toContain("@keyframes");
     });
 
-    it("should accept theme name parameter", () => {
+    it("should include all themes in getCssText", () => {
       const lightTheme = createMockTheme();
       const darkTheme = {
         colors: { primary: "#ffffff", background: "#000000" },
@@ -755,15 +755,14 @@ describe("Stoop", () => {
 
       stoop.css({ color: "$colors.primary" });
 
-      const lightCss = stoop.getCssText("light");
-      const darkCss = stoop.getCssText("dark");
+      // getCssText now always includes all themes using attribute selectors
+      // Theme parameter is deprecated but kept for backward compatibility
+      const css = stoop.getCssText();
 
-      expect(typeof lightCss).toBe("string");
-      expect(typeof darkCss).toBe("string");
-      expect(lightCss.length).toBeGreaterThan(0);
-      expect(darkCss.length).toBeGreaterThan(0);
-      expect(lightCss).toContain(":root");
-      expect(darkCss).toContain(":root");
+      expect(typeof css).toBe("string");
+      expect(css.length).toBeGreaterThan(0);
+      expect(css).toContain('[data-theme="light"]');
+      expect(css).toContain('[data-theme="dark"]');
     });
 
     it("should accept theme object parameter", () => {

@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "private": true,
   "workspaces": [

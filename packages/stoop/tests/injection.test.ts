@@ -110,7 +110,7 @@ describe("CSS Injection and Deduplication", () => {
       expect(cssText).toContain("--colors-primary");
     });
 
-    it("should update theme variables when theme changes", () => {
+    it("should include all theme variables in getCssText", () => {
       const lightTheme = createMockTheme();
       const darkTheme = {
         colors: { primary: "#ffffff", background: "#000000" },
@@ -122,12 +122,12 @@ describe("CSS Injection and Deduplication", () => {
 
       stoop.css({ color: "$colors.primary" });
 
-      const lightCss = stoop.getCssText("light");
-      const darkCss = stoop.getCssText("dark");
+      // getCssText now always includes all themes using attribute selectors
+      const css = stoop.getCssText();
 
-      expect(lightCss).toContain("--colors-primary");
-      expect(darkCss).toContain("--colors-primary");
-      expect(lightCss).not.toBe(darkCss);
+      expect(css).toContain("--colors-primary");
+      expect(css).toContain('[data-theme="light"]');
+      expect(css).toContain('[data-theme="dark"]');
     });
   });
 

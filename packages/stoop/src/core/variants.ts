@@ -34,7 +34,16 @@ export function applyVariants(variants: Variants, props: VariantProps, baseStyle
     }
   }
 
-  return hasVariants
-    ? { ...baseStyles, ...appliedVariantStyles.reduce((acc, style) => ({ ...acc, ...style }), {}) }
-    : baseStyles;
+  if (!hasVariants) {
+    return baseStyles;
+  }
+
+  // Merge all variant styles into a single object using spread for consistency
+  const mergedVariants = { ...appliedVariantStyles[0] };
+
+  for (let i = 1; i < appliedVariantStyles.length; i++) {
+    Object.assign(mergedVariants, appliedVariantStyles[i]);
+  }
+
+  return { ...baseStyles, ...mergedVariants };
 }

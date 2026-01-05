@@ -26,81 +26,9 @@ import type {
   ThemeManagementContextValue,
 } from "../types";
 
-import { updateThemeVariables } from "../core/theme-manager";
-import { isBrowser } from "../utils/helpers";
-
-/**
- * Gets a cookie value by name.
- *
- * @param name - Cookie name
- * @returns Cookie value or null if not found
- */
-function getCookie(name: string): string | null {
-  if (!isBrowser()) {
-    return null;
-  }
-
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-
-  if (parts.length === 2) {
-    return parts.pop()?.split(";").shift() || null;
-  }
-
-  return null;
-}
-
-/**
- * Sets a cookie value.
- *
- * @param name - Cookie name
- * @param value - Cookie value
- * @param maxAge - Max age in seconds (defaults to 1 year)
- */
-function setCookie(name: string, value: string, maxAge = 31536000): void {
-  if (!isBrowser()) {
-    return;
-  }
-
-  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}`;
-}
-
-/**
- * Gets a value from localStorage safely.
- *
- * @param key - Storage key
- * @returns Stored value or null if not found or access failed
- */
-function getLocalStorage(key: string): string | null {
-  if (!isBrowser()) {
-    return null;
-  }
-
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    // localStorage access failed (e.g., in private browsing mode)
-    return null;
-  }
-}
-
-/**
- * Sets a value in localStorage safely.
- *
- * @param key - Storage key
- * @param value - Value to store
- */
-function setLocalStorage(key: string, value: string): void {
-  if (!isBrowser()) {
-    return;
-  }
-
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // localStorage access failed (e.g., in private browsing mode)
-  }
-}
+import { injectAllThemes } from "../core/theme-manager";
+import { isBrowser, isProduction } from "../utils/helpers";
+import { getCookie, setCookie, getFromStorage, setInStorage } from "../utils/storage";
 
 /**
  * Syncs a theme value between cookie and localStorage.
@@ -116,11 +44,12 @@ function syncThemeStorage(value: string, cookieKey: string | undefined, storageK
   }
 
   const cookieValue = cookieKey ? getCookie(cookieKey) : null;
-  const localStorageValue = getLocalStorage(storageKey);
+  const localStorageResult = getFromStorage(storageKey);
+  const localStorageValue = localStorageResult.success ? localStorageResult.value : null;
 
   // Sync cookie -> localStorage
   if (cookieValue === value && localStorageValue !== value) {
-    setLocalStorage(storageKey, value);
+    setInStorage(storageKey, value);
   }
 
   // Sync localStorage -> cookie
@@ -156,7 +85,8 @@ function readThemeFromStorage(
   }
 
   // Fall back to localStorage
-  const stored = getLocalStorage(storageKey);
+  const storageResult = getFromStorage(storageKey);
+  const stored = storageResult.success ? storageResult.value : null;
 
   if (stored && themes[stored]) {
     return stored;
@@ -215,25 +145,10 @@ export function createProvider(
     defaultTheme: defaultThemeProp,
     storageKey = "stoop-theme",
   }: ProviderProps): JSX.Element {
-    // SSR-safe initialization: always start with default, then hydrate from cookie/localStorage
-    const [themeName, setThemeNameState] = useState<string>(() => {
-      // During SSR, always return the default theme
-      if (!isBrowser()) {
-        return defaultThemeProp || firstThemeName;
-      }
-
-      // On client, try to read from storage
-      const stored = readThemeFromStorage(cookieKey, storageKey, themes);
-
-      if (stored) {
-        // Sync between cookie and localStorage
-        syncThemeStorage(stored, cookieKey, storageKey);
-
-        return stored;
-      }
-
-      return defaultThemeProp || firstThemeName;
-    });
+    // SSR-safe initialization: always start with default theme to match SSR
+    // This prevents hydration mismatch - server always renders with default theme
+    // Hydration will happen in useLayoutEffect to update to stored theme
+    const [themeName, setThemeNameState] = useState<string>(defaultThemeProp || firstThemeName);
 
     // Track if hydration has occurred to prevent re-running hydration effect
     const hasHydratedRef = useRef(false);
@@ -247,12 +162,18 @@ export function createProvider(
 
       const stored = readThemeFromStorage(cookieKey, storageKey, themes);
 
-      if (stored && stored !== themeName) {
-        setThemeNameState(stored);
+      if (stored) {
+        // Sync between cookie and localStorage
+        syncThemeStorage(stored, cookieKey, storageKey);
+
+        // Only update if different from initial state to avoid unnecessary re-render
+        if (stored !== themeName) {
+          setThemeNameState(stored);
+        }
       }
 
       hasHydratedRef.current = true;
-    }, [cookieKey, storageKey, themes, themeName]);
+    }, [cookieKey, storageKey, themes]); // Removed themeName from deps - only run once on mount
 
     // Listen for storage changes from other tabs/windows
     useLayoutEffect(() => {
@@ -279,50 +200,57 @@ export function createProvider(
       return themes[themeName] || themes[defaultThemeProp || firstThemeName] || defaultTheme;
     }, [themeName, defaultThemeProp, firstThemeName, themes, defaultTheme]);
 
-    // Track if global styles have been injected
+    // Track if themes and global styles have been injected
+    const themesInjectedRef = useRef(false);
     const globalStylesInjectedRef = useRef(false);
 
-    // Inject global styles once on mount (before any theme updates)
+    // Inject all theme CSS variables once on mount (before global styles and theme switching)
+    // This ensures all themes are available simultaneously via attribute selectors
+    useLayoutEffect(() => {
+      if (!isBrowser() || themesInjectedRef.current) {
+        return;
+      }
+
+      // Inject all themes using attribute selectors
+      // This allows instant theme switching by only changing the data-theme attribute
+      injectAllThemes(themes, prefix, attribute);
+      themesInjectedRef.current = true;
+    }, [themes, prefix, attribute]);
+
+    // Inject global styles once on mount (after themes are injected)
     useLayoutEffect(() => {
       if (!isBrowser() || globalStylesInjectedRef.current) {
         return;
       }
 
       // Inject global styles from config
+      // These use CSS variables, so they'll automatically work with all themes
       if (configGlobalStyles) {
         configGlobalStyles();
         globalStylesInjectedRef.current = true;
       }
     }, [configGlobalStyles]);
 
-    // Synchronously update CSS variables and data-theme attribute together to prevent FOUC
-    // This runs whenever the theme changes
+    // Update data-theme attribute when theme changes
+    // No need to update CSS variables since all themes are already injected
     useLayoutEffect(() => {
-      if (!isBrowser() || !currentTheme) {
+      if (!isBrowser()) {
         return;
       }
 
-      // Update data-theme attribute FIRST to ensure CSS selectors match immediately
+      // Simply update the data-theme attribute - CSS variables are already available
       if (attribute) {
         document.documentElement.setAttribute(attribute, themeName);
       }
-
-      // Then update CSS variables - this ensures both happen synchronously
-      // Global styles are already injected and use CSS variables, so they'll update automatically
-      updateThemeVariables(currentTheme, prefix);
-
-      // Force a synchronous reflow to ensure browser applies changes immediately
-      // This prevents any delay between CSS variable update and visual change
-      void document.documentElement.offsetHeight;
-    }, [currentTheme, themeName, attribute, prefix]);
+    }, [themeName, attribute]);
 
     const setTheme = useCallback(
       (newThemeName: string) => {
         if (themes[newThemeName]) {
           setThemeNameState(newThemeName);
-          setLocalStorage(storageKey, newThemeName);
+          setInStorage(storageKey, newThemeName);
           syncThemeStorage(newThemeName, cookieKey, storageKey);
-        } else if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+        } else if (!isProduction()) {
           // eslint-disable-next-line no-console
           console.warn(
             `[Stoop] Theme "${newThemeName}" not found. Available themes: ${availableThemeNames.join(", ")}`,

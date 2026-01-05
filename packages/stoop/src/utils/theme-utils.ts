@@ -5,20 +5,18 @@
 
 import type { ThemeScale } from "../types";
 
-import { DEFAULT_THEME_MAP } from "../constants";
-import { LRUCache } from "../core/cache";
-
+import { DEFAULT_THEME_MAP, SANITIZE_CACHE_SIZE_LIMIT } from "../constants";
 // ============================================================================
 // String Utilities
 // ============================================================================
+import { LRUCache } from "../core/cache";
 
-const sanitizeCacheSizeLimit = 1000;
 let cachedRootRegex: RegExp | null = null;
 
-const selectorCache = new LRUCache<string, string>(sanitizeCacheSizeLimit);
-const propertyNameCache = new LRUCache<string, string>(sanitizeCacheSizeLimit);
-const sanitizeClassNameCache = new LRUCache<string, string>(sanitizeCacheSizeLimit);
-const variableNameCache = new LRUCache<string, string>(sanitizeCacheSizeLimit);
+const selectorCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
+const propertyNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
+const sanitizeClassNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
+const variableNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
 
 /**
  * Generates a hash string from an input string using FNV-1a algorithm.

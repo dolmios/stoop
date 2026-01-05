@@ -4,12 +4,11 @@
  * Handles stylesheet management, theme variable injection, deduplication, and SSR caching.
  */
 
-import type { CSS, Theme } from "./types";
+import type { Theme } from "./types";
 
 import { MAX_CSS_CACHE_SIZE } from "./constants";
-import { clearStyleCache } from "./core/cache";
+import { LRUCache, clearStyleCache } from "./core/cache";
 import { isBrowser } from "./utils/helpers";
-import { generateCSSVariables } from "./utils/theme";
 import { getRootRegex, sanitizePrefix } from "./utils/theme-utils";
 
 // ============================================================================
@@ -42,31 +41,18 @@ export function markRuleAsInjected(key: string, css: string): void {
 // SSR Cache Management
 // ============================================================================
 
-const cssTextCache = new Map<string, boolean>();
-
-// Registry for global styles that should always be included in getCssText()
-// Maps prefix -> Set of CSS objects
-const registeredGlobalStyles = new Map<string, Set<CSS>>();
+// Use LRUCache for reliable FIFO eviction (Map iteration order not guaranteed)
+const cssTextCache = new LRUCache<string, boolean>(MAX_CSS_CACHE_SIZE);
 
 /**
- * Adds CSS to the SSR cache with FIFO eviction.
+ * Adds CSS to the SSR cache with LRU eviction.
  *
  * @param css - CSS string to cache
  */
 export function addToSSRCache(css: string): void {
-  if (cssTextCache.has(css)) {
-    return;
+  if (!cssTextCache.has(css)) {
+    cssTextCache.set(css, true);
   }
-
-  if (cssTextCache.size >= MAX_CSS_CACHE_SIZE) {
-    const firstKey = cssTextCache.keys().next().value;
-
-    if (firstKey !== undefined) {
-      cssTextCache.delete(firstKey);
-    }
-  }
-
-  cssTextCache.set(css, true);
 }
 
 /**
@@ -95,45 +81,19 @@ export function isInSSRCache(css: string): boolean {
   return cssTextCache.has(css);
 }
 
-/**
- * Registers global styles that should always be included in getCssText().
- * This allows global styles to be included in SSR output even if they haven't been injected yet.
- *
- * @param styles - CSS object to register
- * @param prefix - Optional prefix for scoping
- */
-export function registerGlobalStylesForSSR(styles: CSS, prefix = "stoop"): void {
-  let stylesSet = registeredGlobalStyles.get(prefix);
-
-  if (!stylesSet) {
-    stylesSet = new Set();
-    registeredGlobalStyles.set(prefix, stylesSet);
-  }
-
-  stylesSet.add(styles);
-}
-
-/**
- * Gets all registered global styles for a given prefix.
- *
- * @param prefix - Optional prefix for scoping
- * @returns Set of registered CSS objects
- */
-export function getRegisteredGlobalStyles(prefix = "stoop"): Set<CSS> {
-  return registeredGlobalStyles.get(prefix) || new Set();
-}
-
 // ============================================================================
 // Browser-Specific Injection
 // ============================================================================
 
-let stylesheetElement: HTMLStyleElement | null = null;
+// Map of prefix -> stylesheet element to support multiple Stoop instances
+const stylesheetElements = new Map<string, HTMLStyleElement>();
 const lastInjectedThemes = new Map<string, Theme>();
 const lastInjectedCSSVars = new Map<string, string>();
 
 /**
  * Gets or creates the stylesheet element for CSS injection.
  * Reuses the SSR stylesheet if it exists to prevent FOUC.
+ * Supports multiple Stoop instances with different prefixes.
  *
  * @param prefix - Optional prefix for stylesheet identification
  * @returns HTMLStyleElement
@@ -145,143 +105,135 @@ export function getStylesheet(prefix = "stoop"): HTMLStyleElement {
   }
 
   const sanitizedPrefix = sanitizePrefix(prefix);
+  let stylesheetElement = stylesheetElements.get(sanitizedPrefix);
 
   if (!stylesheetElement || !stylesheetElement.parentNode) {
+    // Check if SSR stylesheet exists and matches this prefix
     const ssrStylesheet = document.getElementById("stoop-ssr") as HTMLStyleElement | null;
 
     if (ssrStylesheet) {
-      stylesheetElement = ssrStylesheet;
-      stylesheetElement.setAttribute("data-stoop", sanitizedPrefix || "stoop");
-    } else {
-      stylesheetElement = document.createElement("style");
-      stylesheetElement.setAttribute("data-stoop", sanitizedPrefix || "stoop");
-      document.head.appendChild(stylesheetElement);
+      const existingPrefix = ssrStylesheet.getAttribute("data-stoop");
+
+      // Only reuse if prefix matches or no prefix set yet
+      if (!existingPrefix || existingPrefix === sanitizedPrefix) {
+        stylesheetElement = ssrStylesheet;
+        stylesheetElement.setAttribute("data-stoop", sanitizedPrefix);
+        stylesheetElements.set(sanitizedPrefix, stylesheetElement);
+
+        return stylesheetElement;
+      }
     }
+
+    // Create new stylesheet for this prefix
+    stylesheetElement = document.createElement("style");
+    stylesheetElement.setAttribute("data-stoop", sanitizedPrefix);
+    stylesheetElement.setAttribute("id", `stoop-${sanitizedPrefix}`);
+    document.head.appendChild(stylesheetElement);
+    stylesheetElements.set(sanitizedPrefix, stylesheetElement);
   }
 
   return stylesheetElement;
 }
 
 /**
- * Injects theme CSS variables into the stylesheet.
- * Automatically ensures stylesheet exists before injection.
+ * Removes all theme variable blocks (both :root and attribute selectors) from CSS.
  *
- * @param cssVars - CSS variables string
- * @param theme - Theme object
+ * @param css - CSS string to clean
+ * @returns CSS string without theme variable blocks
+ */
+export function removeThemeVariableBlocks(css: string): string {
+  let result = css;
+
+  // Remove :root blocks using regex
+  const rootRegex = getRootRegex("");
+
+  result = result.replace(rootRegex, "").trim();
+
+  // Remove attribute selector blocks manually (handles nested braces)
+  let startIndex = result.indexOf("[data-theme=");
+
+  while (startIndex !== -1) {
+    const openBrace = result.indexOf("{", startIndex);
+
+    if (openBrace === -1) {
+      break;
+    }
+
+    let braceCount = 1;
+    let closeBrace = openBrace + 1;
+
+    while (closeBrace < result.length && braceCount > 0) {
+      if (result[closeBrace] === "{") {
+        braceCount++;
+      } else if (result[closeBrace] === "}") {
+        braceCount--;
+      }
+      closeBrace++;
+    }
+
+    if (braceCount === 0) {
+      const before = result.substring(0, startIndex).trim();
+      const after = result.substring(closeBrace).trim();
+
+      result = (before + "\n" + after).trim();
+    } else {
+      break;
+    }
+
+    startIndex = result.indexOf("[data-theme=");
+  }
+
+  return result.trim();
+}
+
+/**
+ * Injects CSS variables for all themes using attribute selectors.
+ * This allows all themes to be available simultaneously, with theme switching
+ * handled by changing the data-theme attribute.
+ *
+ * @param allThemeVars - CSS string containing all theme CSS variables
  * @param prefix - Optional prefix for CSS variables
  */
-export function injectThemeVariables(cssVars: string, theme: Theme, prefix = "stoop"): void {
-  if (!cssVars) {
+export function injectAllThemeVariables(allThemeVars: string, prefix = "stoop"): void {
+  if (!allThemeVars) {
     return;
   }
 
   const sanitizedPrefix = sanitizePrefix(prefix);
-  const key = `__theme_vars_${sanitizedPrefix}`;
+  const key = `__all_theme_vars_${sanitizedPrefix}`;
   const lastCSSVars = lastInjectedCSSVars.get(key) ?? null;
 
   // Only skip if CSS vars string is exactly the same
-  // CSS vars string comparison is used instead of theme object comparison
-  // because theme objects may be cached/merged, making object comparison unreliable
-  if (lastCSSVars === cssVars) {
+  if (lastCSSVars === allThemeVars) {
     return;
   }
 
-  lastInjectedThemes.set(key, theme);
-  lastInjectedCSSVars.set(key, cssVars);
+  lastInjectedCSSVars.set(key, allThemeVars);
 
   if (!isBrowser()) {
-    addToSSRCache(cssVars);
+    addToSSRCache(allThemeVars);
 
     return;
   }
 
   const sheet = getStylesheet(sanitizedPrefix);
   const currentCSS = sheet.textContent || "";
-  const rootRegex = getRootRegex(sanitizedPrefix);
-  // Check if :root block exists (handles SSR case where CSS vars were injected but not marked in dedup)
-  const hasRootBlock = currentCSS.includes(":root");
 
-  // Always replace if :root block exists (either from previous injection or SSR)
-  // This prevents duplicates and ensures theme vars are always at the top
-  if (isInjectedRule(key) || hasRootBlock) {
-    // Find and replace the :root block by properly matching braces
-    // This handles nested braces in CSS values (e.g., calc(), var())
-    let withoutVars = currentCSS;
-    const rootStart = withoutVars.indexOf(":root");
+  // Check if theme variable blocks exist
+  const hasThemeBlocks = currentCSS.includes(":root") || currentCSS.includes("[data-theme=");
 
-    if (rootStart !== -1) {
-      // Find the opening brace after :root
-      const openBrace = withoutVars.indexOf("{", rootStart);
+  if (isInjectedRule(key) || hasThemeBlocks) {
+    // Remove all existing theme variable blocks
+    const withoutVars = removeThemeVariableBlocks(currentCSS);
 
-      if (openBrace !== -1) {
-        // Count braces to find the matching closing brace
-        let braceCount = 1;
-        let closeBrace = openBrace + 1;
+    // Update stylesheet synchronously - prepend all theme vars, then append rest
+    sheet.textContent = allThemeVars + (withoutVars ? "\n\n" + withoutVars : "");
 
-        while (closeBrace < withoutVars.length && braceCount > 0) {
-          if (withoutVars[closeBrace] === "{") {
-            braceCount++;
-          } else if (withoutVars[closeBrace] === "}") {
-            braceCount--;
-          }
-          closeBrace++;
-        }
-
-        if (braceCount === 0) {
-          // Remove the :root block (including any whitespace before it)
-          const beforeRoot = withoutVars.substring(0, rootStart).trim();
-          const afterRoot = withoutVars.substring(closeBrace).trim();
-
-          withoutVars = (beforeRoot + "\n" + afterRoot).trim();
-        } else {
-          // Fallback to regex if brace counting fails
-          withoutVars = currentCSS.replace(rootRegex, "").trim();
-        }
-      } else {
-        // Fallback to regex if no opening brace found
-        withoutVars = currentCSS.replace(rootRegex, "").trim();
-      }
-    } else {
-      // No :root block found, use original CSS
-      withoutVars = currentCSS.trim();
-    }
-
-    // Update stylesheet synchronously - prepend new theme vars, then append rest
-    sheet.textContent = cssVars + (withoutVars ? "\n" + withoutVars : "");
-
-    // Force browser to recalculate styles immediately
-    // This ensures CSS variables are applied before React re-renders
-    if (sheet.parentNode && typeof requestAnimationFrame === "function") {
-      // Use requestAnimationFrame for proper reflow timing
-      requestAnimationFrame(() => {
-        // Access offsetHeight to trigger reflow
-        void sheet.offsetHeight;
-      });
-    }
-
-    markRuleAsInjected(key, cssVars);
+    markRuleAsInjected(key, allThemeVars);
   } else {
-    // First injection - no existing :root block
-    sheet.textContent = cssVars + (currentCSS ? "\n" + currentCSS : "");
-    markRuleAsInjected(key, cssVars);
-  }
-}
-
-/**
- * Registers a theme for injection (browser-specific).
- * Automatically ensures stylesheet exists and injects theme variables.
- *
- * @param theme - Theme object to register
- * @param prefix - Optional prefix for CSS variables
- */
-export function registerTheme(theme: Theme, prefix = "stoop"): void {
-  const sanitizedPrefix = sanitizePrefix(prefix);
-
-  if (isBrowser()) {
-    getStylesheet(sanitizedPrefix);
-    const cssVars = generateCSSVariables(theme, sanitizedPrefix);
-
-    injectThemeVariables(cssVars, theme, sanitizedPrefix);
+    // First injection - no existing theme blocks
+    sheet.textContent = allThemeVars + (currentCSS ? "\n\n" + currentCSS : "");
+    markRuleAsInjected(key, allThemeVars);
   }
 }
 
@@ -328,23 +280,29 @@ export function injectBrowserCSS(css: string, ruleKey: string, prefix = "stoop")
 }
 
 /**
- * Gets the current stylesheet element.
+ * Gets the current stylesheet element for a given prefix.
  *
+ * @param prefix - Optional prefix for stylesheet identification
  * @returns HTMLStyleElement or null if not created
  */
-export function getStylesheetElement(): HTMLStyleElement | null {
-  return stylesheetElement;
+export function getStylesheetElement(prefix = "stoop"): HTMLStyleElement | null {
+  const sanitizedPrefix = sanitizePrefix(prefix);
+
+  return stylesheetElements.get(sanitizedPrefix) || null;
 }
 
 /**
  * Clears the stylesheet and all caches (internal).
  */
 function clearStylesheetInternal(): void {
-  if (stylesheetElement && stylesheetElement.parentNode) {
-    stylesheetElement.parentNode.removeChild(stylesheetElement);
+  // Remove all stylesheet elements
+  for (const [, element] of stylesheetElements.entries()) {
+    if (element && element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
   }
 
-  stylesheetElement = null;
+  stylesheetElements.clear();
   lastInjectedThemes.clear();
   lastInjectedCSSVars.clear();
   injectedRules.clear();
@@ -389,9 +347,10 @@ export function injectCSS(css: string, prefix = "stoop", ruleKey?: string): void
  *
  * @returns CSS text string
  */
-export function getCssText(): string {
+export function getCssText(prefix = "stoop"): string {
   if (isBrowser()) {
-    const sheetElement = getStylesheetElement();
+    const sanitizedPrefix = sanitizePrefix(prefix);
+    const sheetElement = getStylesheetElement(sanitizedPrefix);
 
     if (sheetElement && sheetElement.parentNode) {
       const sheetCSS = sheetElement.textContent || "";

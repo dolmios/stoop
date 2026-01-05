@@ -6,14 +6,12 @@
 
 import type { CSS, Theme, ThemeScale } from "../types";
 
-import { isCSSObject, isThemeObject } from "./helpers";
+import { isCSSObject, isThemeObject, isProduction } from "./helpers";
 import {
   escapeCSSVariableValue,
   getScaleForProperty,
   sanitizeCSSVariableName,
 } from "./theme-utils";
-
-const tokenIndexCache = new WeakMap<Theme, Map<string, string[][]>>();
 
 // Pre-compiled regex for token replacement (matches $primary, -$medium, $colors.primary, etc.)
 const TOKEN_REGEX =
@@ -21,18 +19,11 @@ const TOKEN_REGEX =
 
 /**
  * Builds an index of all tokens in a theme for fast lookups.
- * Caches the result to avoid rebuilding on every token resolution.
  *
  * @param theme - Theme to index
  * @returns Map of token names to their paths in the theme
  */
 function buildTokenIndex(theme: Theme): Map<string, string[][]> {
-  const cached = tokenIndexCache.get(theme);
-
-  if (cached) {
-    return cached;
-  }
-
   const index = new Map<string, string[][]>();
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
@@ -74,8 +65,6 @@ function buildTokenIndex(theme: Theme): Map<string, string[][]> {
       });
     }
   }
-
-  tokenIndexCache.set(theme, index);
 
   return index;
 }
@@ -215,7 +204,7 @@ export function tokenToCSSVar(
     const paths = index.get(tokenName);
 
     if (paths && paths.length > 1) {
-      if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+      if (!isProduction()) {
         const scaleInfo = scale
           ? `Property "${property}" maps to "${scale}" scale, but token not found there. `
           : `No scale mapping found for property "${property}". `;
@@ -243,7 +232,7 @@ export function tokenToCSSVar(
     const paths = index.get(tokenName);
 
     if (paths && paths.length > 1) {
-      if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+      if (!isProduction()) {
         // eslint-disable-next-line no-console
         console.warn(
           `[Stoop] Ambiguous token "$${tokenName}" found in multiple categories: ${paths.map((p) => p.join(".")).join(", ")}. ` +
@@ -274,10 +263,15 @@ export function tokenToCSSVar(
  *
  * @param theme - Theme object to convert to CSS variables
  * @param prefix - Optional prefix for CSS variable names
- * @returns CSS string with :root selector and CSS variables
+ * @param attributeSelector - Optional attribute selector (e.g., '[data-theme="light"]'). Defaults to ':root'
+ * @returns CSS string with selector and CSS variables
  */
-export function generateCSSVariables(theme: Theme, prefix = "stoop"): string {
-  const rootSelector = ":root";
+export function generateCSSVariables(
+  theme: Theme,
+  prefix = "stoop",
+  attributeSelector?: string,
+): string {
+  const rootSelector = attributeSelector || ":root";
   const variables: string[] = [];
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
@@ -317,6 +311,35 @@ export function generateCSSVariables(theme: Theme, prefix = "stoop"): string {
 }
 
 /**
+ * Generates CSS custom properties for all themes using attribute selectors.
+ * This allows all themes to be available simultaneously, with theme switching
+ * handled by changing the data-theme attribute.
+ *
+ * @param themes - Map of theme names to theme objects
+ * @param prefix - Optional prefix for CSS variable names
+ * @param attribute - Attribute name for theme selection (defaults to 'data-theme')
+ * @returns CSS string with all theme CSS variables
+ */
+export function generateAllThemeVariables(
+  themes: Record<string, Theme>,
+  prefix = "stoop",
+  attribute = "data-theme",
+): string {
+  const themeBlocks: string[] = [];
+
+  for (const [themeName, theme] of Object.entries(themes)) {
+    const attributeSelector = `[${attribute}="${themeName}"]`;
+    const cssVars = generateCSSVariables(theme, prefix, attributeSelector);
+
+    if (cssVars) {
+      themeBlocks.push(cssVars);
+    }
+  }
+
+  return themeBlocks.join("\n\n");
+}
+
+/**
  * Recursively replaces theme tokens with CSS variable references in a CSS object.
  *
  * @param obj - CSS object to process
@@ -336,6 +359,7 @@ export function replaceThemeTokensWithVars(
   }
 
   const result: CSS = {};
+  let hasTokens = false;
 
   const keys = Object.keys(obj).sort();
 
@@ -343,8 +367,15 @@ export function replaceThemeTokensWithVars(
     const value = obj[key];
 
     if (isCSSObject(value)) {
-      result[key] = replaceThemeTokensWithVars(value, theme, themeMap, undefined);
+      const processed = replaceThemeTokensWithVars(value, theme, themeMap, undefined);
+
+      result[key] = processed;
+      // Check if processing changed anything (indicates tokens were found)
+      if (processed !== value) {
+        hasTokens = true;
+      }
     } else if (typeof value === "string" && value.includes("$")) {
+      hasTokens = true;
       const cssProperty = property || key;
 
       result[key] = value.replace(TOKEN_REGEX, (token) => {
@@ -360,6 +391,11 @@ export function replaceThemeTokensWithVars(
     } else {
       result[key] = value;
     }
+  }
+
+  // Early exit: if no tokens were found, return original object to avoid unnecessary copying
+  if (!hasTokens) {
+    return obj;
   }
 
   return result;

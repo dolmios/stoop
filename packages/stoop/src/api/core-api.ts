@@ -7,8 +7,9 @@ import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { LRUCache } from "../core/cache";
 import { compileCSS } from "../core/compiler";
+import { mergeThemes } from "../core/theme-manager";
 import { injectCSS } from "../inject";
-import { validateTheme, isThemeObject } from "../utils/helpers";
+import { validateTheme } from "../utils/helpers";
 import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   hashObject,
@@ -32,36 +33,8 @@ export function createTheme(baseTheme: Theme): (themeOverrides?: Partial<Theme>)
   return function createTheme(themeOverrides: Partial<Theme> = {}): Theme {
     const validatedOverrides = validateTheme(themeOverrides);
 
-    function deepMerge(target: Theme, source: Partial<Theme>): Theme {
-      const result = { ...target };
-      const sourceKeys = Object.keys(source) as Array<ThemeScale>;
-
-      for (const key of sourceKeys) {
-        const sourceValue = source[key];
-        const targetValue = target[key];
-
-        if (isThemeObject(sourceValue) && isThemeObject(targetValue)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (result as any)[key] = { ...targetValue, ...sourceValue };
-        } else if (sourceValue !== undefined) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (result as any)[key] = sourceValue;
-        }
-      }
-
-      const targetKeys = Object.keys(target) as Array<ThemeScale>;
-
-      for (const key of targetKeys) {
-        if (!(key in result)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (result as any)[key] = target[key];
-        }
-      }
-
-      return result;
-    }
-
-    return deepMerge(baseTheme, validatedOverrides);
+    // Use shared mergeThemes function instead of duplicate deepMerge
+    return mergeThemes(baseTheme, validatedOverrides);
   };
 }
 
@@ -173,7 +146,7 @@ function keyframesToCSS(
   return css;
 }
 
-const KEYFRAME_CACHE_LIMIT = 500;
+import { KEYFRAME_CACHE_LIMIT } from "../constants";
 
 /**
  * Creates a keyframes animation function.

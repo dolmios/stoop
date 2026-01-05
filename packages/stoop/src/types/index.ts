@@ -308,7 +308,7 @@ export interface StoopInstance {
    * Gets all generated CSS text for server-side rendering.
    * Always includes theme CSS variables.
    *
-   * @param theme - Optional theme (name or object) to include vars for (defaults to default theme)
+   * @param theme - Deprecated parameter, kept for backward compatibility but ignored
    * @returns CSS text string with theme variables and component styles
    */
   getCssText: (theme?: string | Theme) => string;

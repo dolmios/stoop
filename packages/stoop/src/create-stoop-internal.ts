@@ -1,21 +1,12 @@
 /**
- * Factory function that creates a Stoop instance.
- * Supports both client-side (with React APIs) and server-side (without React) usage.
- * Automatically detects environment and includes appropriate APIs.
+ * Internal implementation for creating Stoop instances.
+ * This file is used by the SSR entry point and does NOT import React types at module level.
+ * React types are only imported conditionally when creating client instances.
  */
 
-import type { ComponentType, Context } from "react";
+// Note: This file does NOT import React types to allow SSR-safe usage
 
-import type {
-  CSS,
-  ProviderProps,
-  StoopConfig,
-  StoopInstance,
-  Theme,
-  ThemeContextValue,
-  ThemeManagementContextValue,
-  ThemeScale,
-} from "./types";
+import type { CSS, StoopConfig, Theme, ThemeScale } from "./types";
 
 import {
   createTheme as createThemeFactory,
@@ -23,8 +14,7 @@ import {
   createKeyframesFunction,
 } from "./api/core-api";
 import { createGlobalCSSFunction } from "./api/global-css";
-import { createStyledFunction } from "./api/styled";
-import { createProvider, createUseThemeHook } from "./api/theme-provider";
+// Note: React APIs (styled, Provider) are NOT imported here for SSR safety
 import { DEFAULT_THEME_MAP } from "./constants";
 import { compileCSS } from "./core/compiler";
 import { mergeWithDefaultTheme, registerDefaultTheme, injectAllThemes } from "./core/theme-manager";
@@ -184,81 +174,6 @@ export function createStoopBase(config: StoopConfig): {
   };
 }
 
-/**
- * Creates a Stoop instance with the provided configuration.
- * Includes all APIs: styled, Provider, useTheme, etc.
- * In server contexts without React, React APIs will be undefined.
- *
- * @param config - Configuration object containing theme, media queries, utilities, and optional prefix/themeMap
- * @returns StoopInstance with all API functions
- */
-// Re-export commonly used types
-export type {
-  CSS,
-  Theme,
-  StoopConfig,
-  StoopInstance,
-  UtilityFunction,
-  ThemeScale,
-  DefaultTheme,
-} from "./types";
-
-export function createStoop(config: StoopConfig): StoopInstance {
-  const base = createStoopBase(config);
-
-  // Create full client instance (React APIs may be undefined in SSR contexts)
-  // Create Provider and useTheme if themes are configured
-  let Provider: ComponentType<ProviderProps> | undefined;
-  let useTheme: (() => ThemeManagementContextValue) | undefined;
-  let themeContext: Context<ThemeContextValue | null> | undefined;
-
-  if (config.themes) {
-    const mergedThemesForProvider: Record<string, Theme> = {};
-
-    for (const [themeName, themeOverride] of Object.entries(config.themes)) {
-      mergedThemesForProvider[themeName] = base.createTheme(themeOverride);
-    }
-
-    const {
-      Provider: ProviderComponent,
-      ThemeContext,
-      ThemeManagementContext,
-    } = createProvider(
-      mergedThemesForProvider,
-      base.validatedTheme,
-      base.sanitizedPrefix,
-      base.globalCssConfig,
-      base.globalCss,
-    );
-
-    themeContext = ThemeContext;
-    Provider = ProviderComponent;
-    useTheme = createUseThemeHook(ThemeManagementContext);
-  }
-
-  // Create styled function
-  const styled = createStyledFunction(
-    base.validatedTheme,
-    base.sanitizedPrefix,
-    base.media,
-    base.utils,
-    base.mergedThemeMap,
-    themeContext,
-  );
-
-  // Return instance with all APIs
-  return {
-    config: base.config,
-    createTheme: base.createTheme,
-    css: base.css,
-    getCssText: base.getCssText,
-    globalCss: base.globalCss,
-    keyframes: base.keyframes,
-    preloadTheme: base.preloadTheme,
-    Provider,
-    styled,
-    theme: base.theme,
-    useTheme,
-    warmCache: base.warmCache,
-  } as StoopInstance;
-}
+// Export createStoopBase for use in SSR entry point
+// Note: This file does NOT export createStoop() - that's in create-stoop.ts
+// This separation allows SSR entry point to avoid bundling React code

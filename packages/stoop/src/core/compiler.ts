@@ -8,7 +8,7 @@ import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { MAX_CSS_NESTING_DEPTH, STOOP_COMPONENT_SYMBOL } from "../constants";
 import { injectCSS } from "../inject";
-import { isValidCSSObject, applyUtilities } from "../utils/helpers";
+import { isValidCSSObject, applyUtilities, isStyledComponentRef } from "../utils/helpers";
 import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   escapeCSSValue,
@@ -22,20 +22,24 @@ import { classNameCache, cssStringCache } from "./cache";
 
 /**
  * Checks if a key/value pair represents a styled component reference.
+ * Uses shared isStyledComponentRef helper for consistency.
  *
  * @param key - Property key to check
  * @param value - Property value to check
  * @returns True if key/value represents a styled component reference
  */
 function isStyledComponentKey(key: string | symbol, value: unknown): boolean {
+  // Check symbol key
   if (typeof key === "symbol" && key === STOOP_COMPONENT_SYMBOL) {
     return true;
   }
 
-  if (typeof value === "object" && value !== null && STOOP_COMPONENT_SYMBOL in value) {
+  // Check if value is a styled component ref (consolidated check)
+  if (isStyledComponentRef(value)) {
     return true;
   }
 
+  // Check string key prefix
   if (typeof key === "string" && key.startsWith("__STOOP_COMPONENT_")) {
     return true;
   }
@@ -77,7 +81,7 @@ function getClassNameFromKeyOrValue(key: string | symbol, value: unknown): strin
  * @param media - Media query breakpoints
  * @returns CSS string
  */
-function cssObjectToString(
+export function cssObjectToString(
   obj: CSS,
   selector = "",
   depth = 0,
@@ -206,9 +210,16 @@ function cssObjectToString(
     }
   }
 
-  const rule = cssProperties.length > 0 ? `${selector} { ${cssProperties.join(" ")} }` : "";
+  // Use array join pattern for better performance with large stylesheets
+  const parts: string[] = [];
 
-  return rule + nestedRulesList.join("");
+  if (cssProperties.length > 0) {
+    parts.push(`${selector} { ${cssProperties.join(" ")} }`);
+  }
+
+  parts.push(...nestedRulesList);
+
+  return parts.join("");
 }
 
 /**
