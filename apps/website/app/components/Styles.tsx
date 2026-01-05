@@ -2,6 +2,7 @@
 
 import { useServerInsertedHTML } from "next/navigation";
 import { getCssText } from "stoop-ui";
+import { useRef } from "react";
 
 /**
  * Injects SSR-generated CSS into the document head.
@@ -18,7 +19,16 @@ import { getCssText } from "stoop-ui";
  * @param initialTheme - The initial theme name (e.g., "light" or "dark")
  */
 export function Styles({ initialTheme }: { initialTheme: string }): null {
+  const isInjected = useRef(false);
+
   useServerInsertedHTML(() => {
+    // Prevent multiple injections during SSR streaming
+    if (isInjected.current) {
+      return null;
+    }
+    
+    isInjected.current = true;
+    
     // Global styles are automatically included from theme config
     // Provider handles injection automatically
     // Note: getCssText() always includes all themes, the parameter is ignored
