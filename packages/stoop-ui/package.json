@@ -15,7 +15,7 @@
   "homepage": "https://github.com/dolmios/stoop#readme",
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
-    "stoop": "workspace:*"
+    "stoop": "^0.4.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
