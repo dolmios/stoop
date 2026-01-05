@@ -1,5 +1,5 @@
-import { type JSX } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useState, type JSX } from "react";
+import { Stack, Tabs } from "stoop-ui";
 
 import BadgeDemo from "./pages/Badge";
 import ButtonDemo from "./pages/Button";
@@ -14,24 +14,34 @@ import TabsDemo from "./pages/Tabs";
 import TextDemo from "./pages/Text";
 import TooltipDemo from "./pages/Tooltip";
 
+const components = [
+  { component: BadgeDemo, label: "Badge", value: "badge" },
+  { component: ButtonDemo, label: "Button", value: "button" },
+  { component: CardDemo, label: "Card", value: "card" },
+  { component: CodeDemo, label: "Code", value: "code" },
+  { component: InputDemo, label: "Input", value: "input" },
+  { component: MenuDemo, label: "Menu", value: "menu" },
+  { component: ModalDemo, label: "Modal", value: "modal" },
+  { component: StackDemo, label: "Stack", value: "stack" },
+  { component: TableDemo, label: "Table", value: "table" },
+  { component: TabsDemo, label: "Tabs", value: "tabs" },
+  { component: TextDemo, label: "Text", value: "text" },
+  { component: TooltipDemo, label: "Tooltip", value: "tooltip" },
+];
+
 export default function App(): JSX.Element {
+  const [activeTab, setActiveTab] = useState("button");
+
+  const ActiveComponent = components.find((c) => c.value === activeTab)?.component ?? ButtonDemo;
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<BadgeDemo />} path="/badge" />
-        <Route element={<ButtonDemo />} path="/button" />
-        <Route element={<CardDemo />} path="/card" />
-        <Route element={<CodeDemo />} path="/code" />
-        <Route element={<InputDemo />} path="/input" />
-        <Route element={<MenuDemo />} path="/menu" />
-        <Route element={<ModalDemo />} path="/modal" />
-        <Route element={<StackDemo />} path="/stack" />
-        <Route element={<TableDemo />} path="/table" />
-        <Route element={<TabsDemo />} path="/tabs" />
-        <Route element={<TextDemo />} path="/text" />
-        <Route element={<TooltipDemo />} path="/tooltip" />
-        <Route element={<ButtonDemo />} path="/" />
-      </Routes>
-    </BrowserRouter>
+    <Stack gap="large" style={{ padding: "2rem" }}>
+      <Tabs
+        items={components.map((c) => ({ label: c.label, value: c.value }))}
+        value={activeTab}
+        onTabChange={setActiveTab}
+      />
+      <ActiveComponent />
+    </Stack>
   );
 }

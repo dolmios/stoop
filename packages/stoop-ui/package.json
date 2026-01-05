@@ -15,7 +15,6 @@
   "homepage": "https://github.com/dolmios/stoop#readme",
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
-    "react-polymorphic-types": "^2.0.0",
     "stoop": "workspace:*"
   },
   "devDependencies": {
@@ -31,12 +30,6 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.js",
-      "require": "./dist/client.js",
-      "default": "./dist/client.js"
     }
   },
   "files": [

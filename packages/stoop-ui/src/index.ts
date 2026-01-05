@@ -8,8 +8,10 @@ export { ThemeProvider, useTheme, type ThemeProviderProps } from "./ThemeProvide
 // Export SSR utilities (server-safe)
 export { getCssText } from "./stoop.theme";
 
-// Note: styled, keyframes, and globalCss are NOT exported from main index
-// to prevent server component issues. Import them from "stoop-ui/client" instead.
+// Export client-only APIs (these require "use client" directive in consuming files)
+// Note: These come from stoop.theme.ts which has "use client" directive
+// globalCss is NOT exported - it's automatically handled by ThemeProvider
+export { styled, keyframes } from "./stoop.theme";
 
 // Export hooks
 export { useEventListener } from "./hooks/useEventListener";
