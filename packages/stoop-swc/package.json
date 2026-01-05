@@ -1,0 +1,39 @@
+{
+  "name": "stoop-swc",
+  "version": "0.1.0",
+  "description": "Build-time CSS-in-JS library using Rust SWC plugin",
+  "author": "Jackson Dolman <mail@dolmios.com>",
+  "private": true,
+  "main": "./runtime/dist/index.js",
+  "types": "./runtime/dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./runtime/dist/index.js",
+      "types": "./runtime/dist/index.d.ts"
+    },
+    "./runtime": {
+      "import": "./runtime/dist/index.js",
+      "types": "./runtime/dist/index.d.ts"
+    },
+    "./compiler": "./compiler/target/release/libstoop_swc_compiler.dylib"
+  },
+  "files": [
+    "runtime/dist",
+    "compiler/target/release"
+  ],
+  "scripts": {
+    "build:rust": "cd compiler && cargo build --release",
+    "build:runtime": "cd runtime && npm run build",
+    "build": "npm run build:rust && npm run build:runtime",
+    "test:rust": "cd compiler && cargo test",
+    "test:runtime": "cd runtime && npm test"
+  },
+  "keywords": [
+    "css-in-js",
+    "swc",
+    "build-time",
+    "zero-runtime",
+    "stitches-alternative"
+  ],
+  "license": "MIT"
+}

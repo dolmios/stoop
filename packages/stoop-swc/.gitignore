@@ -1,0 +1,18 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# TypeScript
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Generated CSS
+.stoop/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
