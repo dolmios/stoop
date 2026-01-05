@@ -81,14 +81,14 @@ const Button = styled(
 <Button variant="primary">Click me</Button>;
 ```
 
-See [GUIDE.md](./docs/GUIDE.md) for complete setup instructions.
+See [packages/stoop/docs/GUIDE.md](./packages/stoop/docs/GUIDE.md) for complete setup instructions.
 
 ## Documentation
 
-- **[GUIDE.md](./docs/GUIDE.md)** - Step-by-step setup and usage guide
-- **[API.md](./docs/API.md)** - Complete API reference
-- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Internal implementation details
-- **[TESTING.md](./docs/TESTING.md)** - Testing guide and test suite documentation
+- **[GUIDE.md](./packages/stoop/docs/GUIDE.md)** - Step-by-step setup and usage guide
+- **[API.md](./packages/stoop/docs/API.md)** - Complete API reference
+- **[ARCHITECTURE.md](./packages/stoop/docs/ARCHITECTURE.md)** - Internal implementation details
+- **[TESTING.md](./packages/stoop/docs/TESTING.md)** - Testing guide and test suite documentation
 
 ## API Overview
 
@@ -96,7 +96,7 @@ See [GUIDE.md](./docs/GUIDE.md) for complete setup instructions.
 
 Creates a Stoop instance. Returns: `styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`, `theme`, `config`. If `themes` config is provided, also returns `Provider` and `useTheme`.
 
-See [API.md](./docs/API.md) for complete API documentation.
+See [API.md](./packages/stoop/docs/API.md) for complete API documentation.
 
 ### Theme Tokens
 
@@ -143,7 +143,7 @@ Stoop provides a similar API for the features it implements. Key differences:
 - Simple theme system with `createTheme()`
 - Full TypeScript inference
 
-See [GUIDE.md](./docs/GUIDE.md) for migration examples.
+See [GUIDE.md](./packages/stoop/docs/GUIDE.md) for migration examples.
 
 ## Related Projects
 
