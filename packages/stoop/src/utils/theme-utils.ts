@@ -14,7 +14,6 @@ import { LRUCache } from "../core/cache";
 let cachedRootRegex: RegExp | null = null;
 
 const selectorCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
-const propertyNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
 const sanitizeClassNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
 const variableNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
 
@@ -239,33 +238,6 @@ export function sanitizeClassName(className: string): string {
   const result = sanitizedClasses.join(" ");
 
   sanitizeClassNameCache.set(className, result);
-
-  return result;
-}
-
-/**
- * Sanitizes CSS property names to prevent injection attacks.
- * Uses memoization for performance.
- *
- * @param propertyName - Property name to sanitize
- * @returns Sanitized property name
- */
-export function sanitizeCSSPropertyName(propertyName: string): string {
-  if (!propertyName || typeof propertyName !== "string") {
-    return "";
-  }
-
-  const cached = propertyNameCache.get(propertyName);
-
-  if (cached !== undefined) {
-    return cached;
-  }
-
-  const kebab = toKebabCase(propertyName);
-  const sanitized = kebab.replace(/[^a-zA-Z0-9-]/g, "").replace(/^-+|-+$/g, "");
-  const result = sanitized.replace(/^\d+/, "") || "";
-
-  propertyNameCache.set(propertyName, result);
 
   return result;
 }

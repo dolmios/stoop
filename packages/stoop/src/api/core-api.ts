@@ -7,13 +7,13 @@ import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { LRUCache } from "../core/cache";
 import { compileCSS } from "../core/compiler";
+import { sanitizeCSSPropertyName } from "../core/stringify";
 import { mergeThemes } from "../core/theme-manager";
 import { injectCSS } from "../inject";
 import { validateTheme } from "../utils/helpers";
 import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   hashObject,
-  sanitizeCSSPropertyName,
   sanitizePrefix,
   validateKeyframeKey,
 } from "../utils/theme-utils";

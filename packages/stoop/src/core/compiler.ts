@@ -13,12 +13,12 @@ import { replaceThemeTokensWithVars } from "../utils/theme";
 import {
   escapeCSSValue,
   hash,
-  sanitizeCSSPropertyName,
   sanitizeCSSSelector,
   sanitizeMediaQuery,
   sanitizePrefix,
 } from "../utils/theme-utils";
 import { classNameCache, cssStringCache } from "./cache";
+import { sanitizeCSSPropertyName } from "./stringify";
 
 /**
  * Checks if a key/value pair represents a styled component reference.
