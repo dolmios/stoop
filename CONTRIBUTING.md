@@ -68,6 +68,33 @@ chore: update dependencies
 4. Submit a PR with a clear description
 5. Ensure commit messages follow the conventional commits format
 
+## Releasing
+
+To publish a new release:
+
+1. **Update CHANGELOG.md** - Add a new version entry documenting all changes
+2. **Ensure clean git tree** - All changes must be committed before publishing
+3. **Build packages** - Run `bun run build` to ensure everything compiles
+4. **Bump version** - Update version in `package.json` for the package(s) being released
+5. **Publish stoop** (if releasing):
+   ```bash
+   cd packages/stoop
+   bun run build
+   npm publish
+   ```
+6. **Publish stoop-ui** (if releasing):
+   ```bash
+   cd packages/stoop-ui
+   bun run build
+   npm publish
+   ```
+
+**Important:**
+- Always build before publishing to ensure the latest code is published
+- You must be logged into npm (`npm login`)
+- For 2FA, you'll be prompted for an OTP code during publish
+- Publish packages in dependency order: `stoop` first, then `stoop-ui`
+
 ## Questions?
 
 Feel free to open an issue for questions or discussions.

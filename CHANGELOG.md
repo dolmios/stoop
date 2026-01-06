@@ -5,20 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.1] - 2026-01-05
+## [0.5.0] - 2026-01-06
+
+### Added
+
+- Comprehensive CSS duplication tests to ensure CSS is not duplicated in SSR or browser contexts
+- Dedicated `core/stringify.ts` module for CSS property name conversion with vendor prefix support
 
 ### Changed
 
-- update CHANGELOG for v0.4.0 release
-- update documentation paths and clean up publish script
+- **BREAKING**: `getCssText()` no longer accepts theme parameter - always returns all themes
+- **BREAKING**: `preloadTheme()` no longer accepts theme parameter - always preloads all themes
+- **BREAKING**: `styled()` API now matches Stitches - variants must be embedded in baseStyles object (no third parameter)
+- Consolidated `variants.ts` into `styled.ts` for better code organization
+- Consolidated `global-css.ts` into `core-api.ts` for better code organization
+- All types now centralized in `types/index.ts` (no local type definitions allowed)
+- Updated READMEs to link to website documentation
 
-### Other
+### Fixed
 
-- chore(stoop-ui): update stoop dependency to published version for release
-- feat(stoop-ui): add top and bottom padding variants to Stack
-- feat(stoop-swc): add build-time CSS-in-JS compiler (WIP)
-- docs(website): update documentation for multi-theme system
-- refactor(stoop-ui): simplify API and improve playground
+- Fixed vendor prefix handling in CSS property names (e.g., `MozAppearance` now correctly converts to `-moz-appearance`)
+- Improved vendor prefix support for all case variations (camelCase, lowercase, all-caps)
+
+### Removed
+
+- Removed deprecated theme parameter from `getCssText()` and `preloadTheme()`
+- Removed unused `auto-preload` module (`utils/auto-preload.ts`)
+- Removed unused storage utilities (unified storage API, JSON storage, theme detection)
+- Removed third parameter support from `styled()` function
+
 
 ## [0.4.0] - 2026-01-05
 
@@ -33,9 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `cssObjectToString()` exported from compiler for reuse
 - `isProduction()` helper function for consistent production checks
 - `getFromStorage()` and `setInStorage()` safe storage utilities
-- Package-specific lint script for `packages/stoop/`
 - Comprehensive documentation in `packages/stoop/docs/` (API, Architecture, Guide, Testing)
-- `stoop-swc` package (WIP - build-time CSS-in-JS compiler, not ready for use)
 
 ### Changed
 
@@ -50,10 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved constants (`KEYFRAME_CACHE_LIMIT`, `SANITIZE_CACHE_SIZE_LIMIT`, cookie defaults) to `constants.ts`
 - Improved browser detection using `document.createElement` instead of `requestAnimationFrame` for better test compatibility
 - Updated variant merging logic for better performance
-- `stoop-ui`: Removed `./client` export, consolidated API - `styled` and `keyframes` now exported from main index
-- `stoop-ui`: Removed `react-polymorphic-types` dependency
-- Documentation moved from root `docs/` to `packages/stoop/docs/`
-- Updated all documentation to reflect multi-theme system changes
 
 ### Fixed
 
@@ -69,44 +78,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed `registerGlobalStylesForSSR()` function (no longer needed)
 - Removed `registerTheme()` function (replaced by `injectAllThemes()`)
 - Removed `updateThemeVariables()` function (replaced by attribute selector system)
-- Removed `stoop-ui/src/client.ts` file (consolidated into main index)
-- Removed root `docs/` directory (moved to `packages/stoop/docs/`)
-- Removed `CODE_REVIEW.md` file
-
-### Other
-
-- Code organization improvements: better separation of concerns, shared utilities
-- Performance optimizations: removed unnecessary caching, early exits
-- Improved error handling and type safety
-- Updated playground to use Tabs component instead of react-router
-- Simplified Modal demo component
-- Added README files for `stoop-ui` and playground
-- Cleaned up publish script console output (removed emojis)
-- Added `stoop-swc` to eslint ignore patterns
 
 ## [0.3.0] - 2025-12-29
 
 ### Added
 
-- add Next.js website with MDX documentation
-- add SSR support with dedicated server entry point
-
-### Changed
-
-- update CHANGELOG for v0.3.0
-- bump version to 0.3.0 for release
-- add infrastructure for monorepo publishing and deployment
-- restructure project into monorepo
+- SSR support with dedicated server entry point (`stoop/ssr`)
 
 ### Fixed
 
-- resolve critical CSS injection bugs and improve performance
-
-### Other
-
-- docs: update documentation for monorepo structure and SSR features
-- docs: update documentation for API changes and add testing guide
-- test: add comprehensive test coverage for core functionality
+- Resolved critical CSS injection bugs and improved performance
 
 ## [0.2.1] - 2025-11-19
 
