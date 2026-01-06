@@ -1,3 +1,4 @@
+"use client";
 /**
  * stoop-ui - UI component library built with stoop
  */
