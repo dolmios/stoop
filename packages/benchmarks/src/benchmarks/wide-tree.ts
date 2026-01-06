@@ -1,15 +1,14 @@
 import { createStitches } from "@stitches/react";
 import { createStoop } from "stoop";
 
-import type { BenchmarkResult } from "../utils";
-
 import { sharedTheme } from "../shared-theme";
-import { measureTime } from "../utils";
+import { measureTime, type BenchmarkResult } from "../utils";
 
 export function benchmarkWideTree(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
   const stoop = createStoop({ theme: sharedTheme });
 
   const stitches = createStitches({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     theme: sharedTheme as any,
   });
 

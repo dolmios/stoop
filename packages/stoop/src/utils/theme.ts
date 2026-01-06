@@ -271,10 +271,10 @@ export function generateCSSVariables(
   const variables: string[] = [];
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
-      const keys = Object.keys(obj).sort() as Array<ThemeScale>;
+    const keys = Object.keys(obj).sort() as Array<ThemeScale>;
 
-      for (const key of keys) {
-        if (key === "media") {
+    for (const key of keys) {
+      if (key === "media") {
         continue;
       }
 

@@ -55,6 +55,26 @@ mkdirSync(TEMP_DIR, { recursive: true });
 mkdirSync(OUTPUT_DIR, { recursive: true });
 
 /**
+ * Analyzes a bundle file
+ */
+function analyzeBundle(filePath: string): BundleAnalysis["size"] {
+  const content = readFileSync(filePath);
+  const minified = content.length;
+  // Use bun's built-in gzip
+  // eslint-disable-next-line no-undef
+  const gzipped = Bun.gzipSync(content).length;
+
+  return {
+    gzipped: gzipped,
+    gzippedKB: gzipped / 1024,
+    minified: minified,
+    minifiedKB: minified / 1024,
+    raw: minified, // bun build already minifies
+    rawKB: minified / 1024,
+  };
+}
+
+/**
  * Analyzes the built dist file directly (most accurate for primary comparison)
  */
 function analyzeDistFile(library: "stoop" | "stitches"): BundleAnalysis["size"] | null {
@@ -122,7 +142,6 @@ async function buildBundle(
   scenario: string,
 ): Promise<string> {
   const outputPath = join(OUTPUT_DIR, `${library}-${scenario}.js`);
-  const packagePath = process.cwd().replace(/\/packages\/benchmarks.*$/, "");
 
   try {
     if (library === "stoop") {
@@ -138,26 +157,6 @@ async function buildBundle(
   }
 
   return outputPath;
-}
-
-/**
- * Analyzes a bundle file
- */
-function analyzeBundle(filePath: string): BundleAnalysis["size"] {
-  const content = readFileSync(filePath);
-  const minified = content.length;
-  // Use bun's built-in gzip
-  // eslint-disable-next-line no-undef
-  const gzipped = Bun.gzipSync(content).length;
-
-  return {
-    gzipped: gzipped,
-    gzippedKB: gzipped / 1024,
-    minified: minified,
-    minifiedKB: minified / 1024,
-    raw: minified, // bun build already minifies
-    rawKB: minified / 1024,
-  };
 }
 
 /**
@@ -345,6 +344,12 @@ const instance = createStitches({ theme: {} });`,
   }
 
   // Create primary analysis from dist files (preferred) or bundled results
+  const stoopFullImport = stoopResults.find((r) => r.scenario === "full-import");
+
+  if (!stoopFullImport && !stoopDistSize) {
+    throw new Error("Failed to find stoop full-import result");
+  }
+
   const stoopPrimary: BundleAnalysis = stoopDistSize
     ? {
         library: "stoop",
@@ -352,12 +357,18 @@ const instance = createStitches({ theme: {} });`,
         size: stoopDistSize,
         treeShaking:
           stoopResults.length > 0
-            ? stoopResults.find((r) => r.scenario === "full-import")?.treeShaking || {
+            ? stoopFullImport?.treeShaking || {
                 effective: true,
               }
             : { effective: true },
       }
-    : stoopResults.find((r) => r.scenario === "full-import")!;
+    : stoopFullImport;
+
+  const stitchesFullImport = stitchesResults.find((r) => r.scenario === "full-import");
+
+  if (!stitchesFullImport && !stitchesDistSize) {
+    throw new Error("Failed to find stitches full-import result");
+  }
 
   const stitchesPrimary: BundleAnalysis = stitchesDistSize
     ? {
@@ -366,12 +377,12 @@ const instance = createStitches({ theme: {} });`,
         size: stitchesDistSize,
         treeShaking:
           stitchesResults.length > 0
-            ? stitchesResults.find((r) => r.scenario === "full-import")?.treeShaking || {
+            ? stitchesFullImport?.treeShaking || {
                 effective: true,
               }
             : { effective: true },
       }
-    : stitchesResults.find((r) => r.scenario === "full-import")!;
+    : stitchesFullImport;
 
   // Add dist file results to arrays if they exist
   const allStoopResults = stoopDistSize ? [stoopPrimary, ...stoopResults] : stoopResults;

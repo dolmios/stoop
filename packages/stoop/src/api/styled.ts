@@ -436,23 +436,16 @@ export function createStyledFunction(
   <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
     baseStyles?: CSS,
-  ): ReturnType<
-    typeof forwardRef<unknown, StyledComponentProps<DefaultElement, {}>>
-  > & {
+  ): ReturnType<typeof forwardRef<unknown, StyledComponentProps<DefaultElement, {}>>> & {
     selector: StyledComponentRef;
   };
 } {
   return function styled<
     DefaultElement extends StylableElement,
     BaseStyles extends CSS | CSSWithVariants = CSS,
-  >(
-    defaultElement: DefaultElement,
-    baseStyles?: BaseStyles,
-  ) {
+  >(defaultElement: DefaultElement, baseStyles?: BaseStyles) {
     // Extract variants config from embedded variants only (matching Stitches API)
-    type VariantsConfig = BaseStyles extends CSSWithVariants
-      ? BaseStyles["variants"]
-      : {};
+    type VariantsConfig = BaseStyles extends CSSWithVariants ? BaseStyles["variants"] : {};
 
     let actualBaseStyles: CSS = (baseStyles || EMPTY_CSS) as CSS;
     let actualVariants: VariantsConfig | undefined;
@@ -467,9 +460,10 @@ export function createStyledFunction(
     ) {
       // Verify it's actually a Variants object (has string keys with CSS values)
       const variantsObj = baseStyles.variants as Record<string, unknown>;
-      const hasValidVariants = Object.keys(variantsObj).length > 0 &&
+      const hasValidVariants =
+        Object.keys(variantsObj).length > 0 &&
         Object.values(variantsObj).every(
-          (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+          (v) => typeof v === "object" && v !== null && !Array.isArray(v),
         );
 
       if (hasValidVariants) {

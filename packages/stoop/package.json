@@ -94,12 +94,7 @@
     "react-dom": ">=16.8.0"
   },
   "scripts": {
-    "build": "bun run build:clean && bun run build:js && bun run build:js:ssr && bun run build:types",
-    "build:clean": "rm -rf dist",
-    "build:copy-declarations": "mkdir -p dist/types && cp src/types/react-polymorphic-types.d.ts dist/types/react-polymorphic-types.d.ts 2>/dev/null || :",
-    "build:js": "NODE_ENV=production bun build ./src/create-stoop.ts --outfile ./dist/create-stoop.js --target browser --format esm --minify --jsx=automatic --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='\"production\"'",
-    "build:js:ssr": "NODE_ENV=production bun build ./src/create-stoop-ssr.ts --outfile ./dist/create-stoop-ssr.js --target browser --format esm --minify --jsx=automatic --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='\"production\"'",
-    "build:types": "bunx tsc --project tsconfig.build.json && bun run build:copy-declarations",
+    "build": "bun run build.ts",
     "lint": "eslint src --fix",
     "prepare": "bun run build",
     "test": "bun test",

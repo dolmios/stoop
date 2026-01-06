@@ -2,10 +2,8 @@ import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
-import type { BenchmarkResult } from "../utils";
-
 import { sharedTheme } from "../shared-theme";
-import { measureTime } from "../utils";
+import { measureTime, type BenchmarkResult } from "../utils";
 
 /**
  * React rendering benchmarks that test actual component rendering,
@@ -19,6 +17,7 @@ export function benchmarkReactRendering(): {
   const stoop = createStoop({ theme: sharedTheme });
 
   const stitches = createStitches({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     theme: sharedTheme as any,
   });
 
@@ -33,6 +32,7 @@ export function benchmarkReactRendering(): {
     backgroundColor: "$background",
     color: "$text",
     padding: "$medium",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   const ButtonStoop = stoop.styled(
@@ -62,6 +62,7 @@ export function benchmarkReactRendering(): {
         large: { fontSize: "18px", padding: "$large" },
         small: { fontSize: "12px", padding: "$small" },
       },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
   );
 
@@ -112,6 +113,7 @@ export function benchmarkReactRendering(): {
   );
 
   // Test nested component tree - measures CSS generation for many components
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function createNestedTreeStoop(depth: number): any {
     if (depth === 0) {
       return createElement(BoxStoop, { children: "Leaf" });
@@ -120,6 +122,7 @@ export function benchmarkReactRendering(): {
     return createElement(BoxStoop, {}, createNestedTreeStoop(depth - 1));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function createNestedTreeStitches(depth: number): any {
     if (depth === 0) {
       return createElement(BoxStitches, { children: "Leaf" });

@@ -34,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused storage utilities (unified storage API, JSON storage, theme detection)
 - Removed third parameter support from `styled()` function
 
-
 ## [0.4.0] - 2026-01-05
 
 ### Added

@@ -2,15 +2,14 @@ import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
-import type { BenchmarkResult } from "../utils";
-
 import { sharedTheme } from "../shared-theme";
-import { measureTime } from "../utils";
+import { measureTime, type BenchmarkResult } from "../utils";
 
 export function benchmarkCssProp(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
   const stoop = createStoop({ theme: sharedTheme });
 
   const stitches = createStitches({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     theme: sharedTheme as any,
   });
 
@@ -20,6 +19,7 @@ export function benchmarkCssProp(): { stoop: BenchmarkResult; stitches: Benchmar
 
   const ButtonStitches = stitches.styled("button", {
     padding: "$medium",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   // Test actual css prop usage by creating elements with css prop
@@ -47,14 +47,17 @@ export function benchmarkCssProp(): { stoop: BenchmarkResult; stitches: Benchmar
     () => {
       createElement(ButtonStitches, {
         css: { color: "$primary" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       createElement(ButtonStitches, {
         css: { backgroundColor: "$secondary" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       createElement(ButtonStitches, {
         css: { color: "$primary", padding: "$large" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
     },
     500,
