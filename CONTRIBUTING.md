@@ -45,6 +45,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) f
 ### Scope
 
 Use the package name as the scope:
+
 - `stoop` - Main stoop package
 - `stoop-ui` - UI components package
 - `stoop-swc` - SWC compiler package
@@ -70,30 +71,20 @@ chore: update dependencies
 
 ## Releasing
 
-To publish a new release:
-
-1. **Update CHANGELOG.md** - Add a new version entry documenting all changes
-2. **Ensure clean git tree** - All changes must be committed before publishing
-3. **Build packages** - Run `bun run build` to ensure everything compiles
-4. **Bump version** - Update version in `package.json` for the package(s) being released
-5. **Publish stoop** (if releasing):
+1. **Update CHANGELOG.md** with new version entry
+2. **Commit all changes** - Ensure clean git tree before publishing
+3. **Bump version** in `package.json` for package(s) being released
+4. **Build and publish stoop** (if releasing):
    ```bash
-   cd packages/stoop
-   bun run build
-   npm publish
+   cd packages/stoop && bun run build && npm publish --otp=<code>
    ```
-6. **Publish stoop-ui** (if releasing):
+5. **Build and publish stoop-ui** (if releasing):
    ```bash
-   cd packages/stoop-ui
-   bun run build
-   npm publish
+   cd packages/stoop-ui && bun run build && npm publish --otp=<code>
    ```
+6. **Tag release**: `git tag v<version> <commit-hash>` (e.g., `git tag v0.5.0`)
 
-**Important:**
-- Always build before publishing to ensure the latest code is published
-- You must be logged into npm (`npm login`)
-- For 2FA, you'll be prompted for an OTP code during publish
-- Publish packages in dependency order: `stoop` first, then `stoop-ui`
+**Notes:** Build before publishing. Must be logged into npm. Publish in dependency order: `stoop` first, then `stoop-ui`.
 
 ## Questions?
 
