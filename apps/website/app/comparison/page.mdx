@@ -18,7 +18,7 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 | **CSS prop** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
 | **CSS variables for themes** | No | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
 | **Runtime CSS injection** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
-| **Build-time CSS extraction** | Yes | No | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches advantage |
+| **Near-zero runtime** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Both optimize runtime performance |
 | **Compound variants** | Yes | No | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches advantage |
 | **Multi-theme support** | Manual | Built-in Provider | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
 | **Theme switching** | Recompile CSS | Instant (CSS vars) | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
@@ -45,11 +45,13 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 
 **Stoop:** Built-in multi-theme support via `Provider` component with automatic CSS variable switching.
 
-### Build-Time CSS Extraction
+### Runtime CSS Generation
 
-**Stitches:** Supports build-time CSS extraction for zero-runtime CSS.
+**Stitches:** Generates CSS at runtime with near-zero runtime overhead by avoiding unnecessary prop interpolations and defining variants upfront.
 
-**Stoop:** Runtime-only CSS generation. If you need build-time extraction, consider [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
+**Stoop:** Also generates CSS at runtime with optimized performance. Both libraries focus on minimizing runtime overhead rather than build-time extraction. 
+
+**Note:** If you need build-time CSS extraction, consider alternatives like [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
 
 ### Compound Variants
 
@@ -138,20 +140,20 @@ See the [Migration Guide](/migration) for detailed migration steps.
 - You want a Stitches-like API with CSS variable-based theming (instant theme switching)
 - You need built-in multi-theme support with Provider component
 - You're using Next.js App Router or React 18 Server Components
-- You want an actively maintained library (Stitches is no longer maintained)
+- You want an actively maintained library (Stitches is no longer maintained as of June 2023)
 - You prefer a simpler API (no theme parameter needed for `getCssText()`)
 - You don't need compound variants (most projects don't)
 
 ## When to Use Stitches
 
 - You need compound variants (Stoop planned for future)
-- You want build-time CSS extraction
 - You prefer Stitches' built-in utility functions (though Stoop utilities are equally capable)
 - You have an existing Stitches codebase and don't want to migrate
+- Note: Stitches is no longer actively maintained and may have compatibility issues with React 18 Server Components
 
 ## Development Status
 
-**Stitches:** No longer actively maintained (as of 2024).
+**Stitches:** No longer actively maintained (as of June 2023).
 
 **Stoop:** Currently in active development (beta).
 

@@ -39,11 +39,13 @@ const className = stoop.css({
 **When to use**:
 - Server Components (no React APIs needed)
 - Server-side CSS generation
-- Build-time CSS extraction
+- SSR with `getCssText()`
 
 **When NOT to use**:
 - Client Components (use regular `stoop` import)
 - Components using `styled()` or `useTheme()`
+
+**Note:** For build-time CSS extraction, see the separate [`stoop-swc`](https://github.com/dolmios/stoop/tree/main/packages/stoop-swc) package. The core `stoop` package generates CSS at runtime.
 
 ## Next.js App Router (Recommended)
 
