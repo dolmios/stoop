@@ -23,30 +23,22 @@ const animatedClass = css({
 
 ## With Theme Tokens
 
-Theme tokens in keyframes must use template literals or explicit CSS variables:
+Theme tokens work directly in keyframes:
 
 ```typescript
 const slideUp = keyframes({
   from: {
     opacity: 0,
-    transform: `translateY($medium)`, // Use template literal
+    transform: "translateY($medium)",
+    backgroundColor: "$primary",
   },
   to: {
     opacity: 1,
     transform: "translateY(0)",
-  },
-});
-
-// Or use explicit CSS variable
-const slideUpExplicit = keyframes({
-  from: {
-    opacity: 0,
-    transform: "translateY(var(--stoop-space-medium))",
-  },
-  to: {
-    opacity: 1,
-    transform: "translateY(0)",
+    backgroundColor: "$secondary",
   },
 });
 ```
+
+Tokens are automatically resolved to CSS variables, just like in regular styles.
 

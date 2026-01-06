@@ -19,20 +19,21 @@ const Button = styled("button", {
 ```typescript
 const Button = styled("button", {
   padding: "$medium $large",
-}, {
-  variant: {
-    primary: {
-      backgroundColor: "$primary",
-      color: "$background",
+  variants: {
+    variant: {
+      primary: {
+        backgroundColor: "$primary",
+        color: "$background",
+      },
+      secondary: {
+        backgroundColor: "$background",
+        border: "1px solid $border",
+      },
     },
-    secondary: {
-      backgroundColor: "$background",
-      border: "1px solid $border",
-    },
-  },
-  size: {
-    small: {
-      padding: "$small $medium",
+    size: {
+      small: {
+        padding: "$small $medium",
+      },
     },
   },
 });

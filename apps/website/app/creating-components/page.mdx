@@ -31,21 +31,22 @@ const Button = styled("button", {
   padding: "$medium $large",
   borderRadius: "$default",
   cursor: "pointer",
-}, {
-  variant: {
-    primary: {
-      backgroundColor: "$primary",
-      color: "$background",
+  variants: {
+    variant: {
+      primary: {
+        backgroundColor: "$primary",
+        color: "$background",
+      },
+      secondary: {
+        backgroundColor: "$background",
+        border: "1px solid $border",
+      },
     },
-    secondary: {
-      backgroundColor: "$background",
-      border: "1px solid $border",
-    },
-  },
-  size: {
-    small: {
-      padding: "$small $medium",
-      fontSize: "$small",
+    size: {
+      small: {
+        padding: "$small $medium",
+        fontSize: "$small",
+      },
     },
   },
 });
@@ -61,14 +62,15 @@ You can also create boolean variants:
 const ToggleButton = styled("button", {
   padding: "$medium $large",
   borderRadius: "$default",
-}, {
-  active: {
-    false: {
-      backgroundColor: "$background",
-    },
-    true: {
-      backgroundColor: "$primary",
-      color: "$background",
+  variants: {
+    active: {
+      false: {
+        backgroundColor: "$background",
+      },
+      true: {
+        backgroundColor: "$primary",
+        color: "$background",
+      },
     },
   },
 });
@@ -84,14 +86,15 @@ Components can have multiple variant props:
 const Card = styled("div", {
   padding: "$large",
   borderRadius: "$default",
-}, {
-  variant: {
-    outlined: { border: "1px solid $border" },
-    filled: { backgroundColor: "$background" },
-  },
-  size: {
-    small: { padding: "$small" },
-    large: { padding: "$xlarge" },
+  variants: {
+    variant: {
+      outlined: { border: "1px solid $border" },
+      filled: { backgroundColor: "$background" },
+    },
+    size: {
+      small: { padding: "$small" },
+      large: { padding: "$xlarge" },
+    },
   },
 });
 

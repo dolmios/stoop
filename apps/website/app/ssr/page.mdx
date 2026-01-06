@@ -126,11 +126,8 @@ import { preloadTheme } from "./theme";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Preload theme before React renders to prevent FOUC
-    const savedTheme = localStorage.getItem("stoop-theme");
-    if (savedTheme) {
-      preloadTheme(savedTheme);
-    }
+    // Preload all themes before React renders to prevent FOUC
+    preloadTheme();
   }, []);
 
   return <>{children}</>;

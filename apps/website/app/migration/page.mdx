@@ -16,7 +16,7 @@
 |---------|----------|-------|------------------|
 | **Core API** | `createStitches` | `createStoop` | Simple rename |
 | **Theme tokens** | `$token` syntax | `$token` syntax | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** |
-| **Variants API** | `variants` property (2nd param) | Third parameter | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Breaking change** |
+| **Variants API** | `variants` property (2nd param) | `variants` property (2nd param) | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** |
 | **Compound variants** | Supported | Not supported | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Breaking change** |
 | **Theme system** | Runtime values | CSS variables | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** (instant switching) |
 | **Multi-theme** | Manual management | Built-in Provider | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** (easier) |
@@ -120,48 +120,26 @@ export const { styled, css, globalCss, keyframes, getCssText, Provider, useTheme
 - `theme` becomes the default theme
 - Get `Provider` and `useTheme` automatically when `themes` is provided
 
-### Step 3: Update Component Variants
+### Step 3: Component Variants
 
-This is the main breaking change. Variants move from a property in the second parameter to the third parameter.
+Variants work exactly the same way - no changes needed.
 
-**Before (Stitches):**
 ```typescript
 const Button = styled('button', {
   padding: '$medium',
   borderRadius: '$default',
   variants: {
     size: {
-      small: { padding: '$small', fontSize: '$small' },
-      medium: { padding: '$medium', fontSize: '$medium' },
-      large: { padding: '$large', fontSize: '$large' },
+      small: { padding: '$small' },
+      large: { padding: '$large' },
     },
     variant: {
-      primary: { backgroundColor: '$primary', color: '$background' },
-      secondary: { backgroundColor: '$secondary', color: '$background' },
+      primary: { backgroundColor: '$primary' },
+      secondary: { backgroundColor: '$secondary' },
     },
   },
 });
 ```
-
-**After (Stoop):**
-```typescript
-const Button = styled('button', {
-  padding: '$medium',
-  borderRadius: '$default',
-}, {
-  size: {
-    small: { padding: '$small', fontSize: '$small' },
-    medium: { padding: '$medium', fontSize: '$medium' },
-    large: { padding: '$large', fontSize: '$large' },
-  },
-  variant: {
-    primary: { backgroundColor: '$primary', color: '$background' },
-    secondary: { backgroundColor: '$secondary', color: '$background' },
-  },
-});
-```
-
-**Key Change:** Move `variants` from second parameter to third parameter.
 
 ### Step 4: Handle Compound Variants
 
@@ -186,9 +164,11 @@ const Button = styled('button', {
 
 **Option 1: Use conditional `css` prop (Recommended)**
 ```typescript
-const Button = styled('button', {}, {
-  size: { small: {}, large: {} },
-  variant: { primary: {}, secondary: {} },
+const Button = styled('button', {
+  variants: {
+    size: { small: {}, large: {} },
+    variant: { primary: {}, secondary: {} },
+  },
 });
 
 // In your component
@@ -208,9 +188,11 @@ function MyButton({ size, variant, ...props }) {
 
 **Option 2: Create a wrapper component**
 ```typescript
-const ButtonBase = styled('button', {}, {
-  size: { small: {}, large: {} },
-  variant: { primary: {}, secondary: {} },
+const ButtonBase = styled('button', {
+  variants: {
+    size: { small: {}, large: {} },
+    variant: { primary: {}, secondary: {} },
+  },
 });
 
 const Button = ({ size, variant, ...props }) => {
@@ -224,13 +206,15 @@ const Button = ({ size, variant, ...props }) => {
 
 **Option 3: Use separate variant values**
 ```typescript
-const Button = styled('button', {}, {
-  size: {
-    small: {},
-    'small-primary': { fontWeight: '$bold', textTransform: 'uppercase' },
-    large: {},
+const Button = styled('button', {
+  variants: {
+    size: {
+      small: {},
+      'small-primary': { fontWeight: '$bold', textTransform: 'uppercase' },
+      large: {},
+    },
+    variant: { primary: {}, secondary: {} },
   },
-  variant: { primary: {}, secondary: {} },
 });
 ```
 
@@ -372,11 +356,11 @@ const darkTheme = createTheme('dark-theme', { ... });
 import { useTheme } from './stoop.theme';
 
 export function ThemeToggle() {
-  const { theme, setTheme, toggleTheme } = useTheme();
+  const { themeName, toggleTheme } = useTheme();
 
   return (
     <button onClick={toggleTheme}>
-      Current theme: {theme}
+      Current theme: {themeName}
     </button>
   );
 }
@@ -384,88 +368,25 @@ export function ThemeToggle() {
 
 ## What Stays the Same
 
-These features work exactly the same in Stoop:
+These features work identically:
 
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Theme token syntax** - `$token` and `$scale.token` work identically
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Base styles** - Same CSS object syntax
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **CSS prop** - Same usage and behavior
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Polymorphic components** - `as` prop works the same
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Media queries** - Same configuration and usage
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Utility functions** - Same syntax (if you use custom utilities)
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **globalCss** - Same API
-<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **keyframes** - Same API
+- Theme token syntax (`$token`, `$scale.token`)
+- Base styles (CSS object syntax)
+- Variants API (same structure)
+- CSS prop
+- Polymorphic components (`as` prop)
+- Media queries
+- Utility functions
+- `globalCss` and `keyframes` APIs
 
-## Common Migration Patterns
-
-### Pattern 1: Simple Variants
-
-**Stitches:**
-```typescript
-const Button = styled('button', {
-  variants: {
-    size: { small: {}, large: {} },
-  },
-});
-```
-
-**Stoop:**
-```typescript
-const Button = styled('button', {}, {
-  size: { small: {}, large: {} },
-});
-```
-
-### Pattern 2: Boolean Variants
-
-**Stitches:**
-```typescript
-const Toggle = styled('button', {
-  variants: {
-    active: {
-      true: { backgroundColor: '$primary' },
-      false: { backgroundColor: '$background' },
-    },
-  },
-});
-```
-
-**Stoop:**
-```typescript
-const Toggle = styled('button', {}, {
-  active: {
-    true: { backgroundColor: '$primary' },
-    false: { backgroundColor: '$background' },
-  },
-});
-```
-
-### Pattern 3: Multiple Variants
-
-**Stitches:**
-```typescript
-const Card = styled('div', {
-  variants: {
-    variant: { outlined: {}, filled: {} },
-    size: { small: {}, large: {} },
-  },
-});
-```
-
-**Stoop:**
-```typescript
-const Card = styled('div', {}, {
-  variant: { outlined: {}, filled: {} },
-  size: { small: {}, large: {} },
-});
-```
 
 ## Breaking Changes Summary
 
-1. **Variants API** - Move `variants` from second parameter to third parameter
-2. **Compound Variants** - Not currently supported (planned for future) - use conditional logic or `css` prop (most projects don't need compound variants)
-3. **Theme Configuration** - Add `themes` object for multi-theme support (optional but recommended)
-4. **getCssText()** - No longer accepts theme parameter - always includes all themes automatically (simpler API)
-5. **Multi-theme** - Requires Provider wrapper (but much easier to use than manual theme management)
+1. **Compound Variants** - Not currently supported (planned for future) - use conditional logic or `css` prop (most projects don't need compound variants)
+2. **Theme Configuration** - Add `themes` object for multi-theme support (optional but recommended)
+3. **getCssText()** - No longer accepts theme parameter - always includes all themes automatically (simpler API)
+4. **Multi-theme** - Requires Provider wrapper (but much easier to use than manual theme management)
+
 
 ## Troubleshooting
 
@@ -483,7 +404,7 @@ const Card = styled('div', {}, {
 
 ### Issue: Type errors with variants
 
-**Solution:** Variants are now in the third parameter, not nested in the second parameter. Update your component definitions.
+**Solution:** Variants work the same way as Stitches. Ensure your variants object follows the same structure.
 
 ### Issue: Theme tokens not resolving
 

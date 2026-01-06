@@ -13,7 +13,7 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 | **Core API** | `createStitches` | `createStoop` | Different function name |
 | **Type-safe CSS objects** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
 | **Theme tokens (`$` prefix)** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same syntax |
-| **Variant system** | Yes | Yes | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Different API (see below) |
+| **Variant system** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same API |
 | **Polymorphic components (`as` prop)** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
 | **CSS prop** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
 | **CSS variables for themes** | No | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
@@ -67,6 +67,8 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 
 ### Variants API
 
+Variants work exactly the same way in both libraries:
+
 **Stitches:**
 ```typescript
 const Button = styled("button", {
@@ -80,19 +82,20 @@ const Button = styled("button", {
 });
 ```
 
-**Stoop:**
+**Stoop (same syntax):**
 ```typescript
 const Button = styled("button", {
   padding: "$medium",
-}, {
-  size: {
-    small: { padding: "$small" },
-    large: { padding: "$large" },
+  variants: {
+    size: {
+      small: { padding: "$small" },
+      large: { padding: "$large" },
+    },
   },
 });
 ```
 
-**Key Difference:** In Stitches, variants are a property in the second parameter. In Stoop, variants are the third parameter.
+**No difference** - variants work exactly the same way!
 
 ### Theme Configuration
 
@@ -121,7 +124,7 @@ const { styled, Provider, useTheme } = createStoop({
 When migrating from Stitches to Stoop:
 
 1. **Theme tokens:** Work the same way (`$medium`, `$primary`, etc.)
-2. **Component API:** Mostly identical (variants move to third parameter)
+2. **Component API:** Identical - variants work exactly the same
 3. **CSS variables:** Stoop uses CSS variables instead of runtime injection (better performance)
 4. **Multi-theme:** Requires `Provider` wrapper in Stoop (but much easier to use)
 5. **Compound variants:** Need to be refactored to use conditional `css` props (most projects don't use compound variants)
