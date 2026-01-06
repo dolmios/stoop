@@ -240,9 +240,9 @@ const Button = styled("button", {
 
 Stoop uses CSS variables (CSS custom properties) for theme tokens:
 
-- **Theme Switching**: Changing themes updates CSS variables, not CSS classes
+- **Theme Switching**: Changing themes updates the `data-theme` attribute, not CSS variables (all themes are available simultaneously)
 - **No Recompilation**: Components don't need to recompile when theme changes
-- **Browser Native**: Browser handles theme updates natively
+- **Browser Native**: Browser handles theme updates natively via CSS attribute selectors
 
 ### How It Works
 

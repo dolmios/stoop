@@ -61,10 +61,15 @@ const Button = styled("button", {
 
 ## Documentation
 
-- **[GUIDE.md](./docs/GUIDE.md)** - Step-by-step setup and usage guide
-- **[API.md](./docs/API.md)** - Complete API reference
-- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Internal implementation details
-- **[TESTING.md](./docs/TESTING.md)** - Testing guide and test suite documentation
+📚 **[Full Documentation →](https://stoop.dolmios.com)**
+
+- [Installation](https://stoop.dolmios.com/installation)
+- [Theme Setup](https://stoop.dolmios.com/theme-setup)
+- [Creating Components](https://stoop.dolmios.com/creating-components)
+- [SSR Guide](https://stoop.dolmios.com/ssr)
+- [API Reference](https://stoop.dolmios.com/api)
+
+For internal architecture details, see [ARCHITECTURE.md](./ARCHITECTURE.md) (developer-only).
 
 ## API Overview
 

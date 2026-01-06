@@ -1,6 +1,6 @@
 # [stoop](https://github.com/dolmios/stoop)
 
-> A lightweight, polymorphic React component library with intuitive design tokens and built-in theming system.
+> A lightweight, type-safe CSS-in-JS library for React with CSS variables, built-in multi-theme support, and perfect Next.js integration.
 
 ![Stoop Kid Steps Off](https://stoop.dolmios.com/stoop.jpg)
 
@@ -81,14 +81,20 @@ const Button = styled(
 <Button variant="primary">Click me</Button>;
 ```
 
-See [packages/stoop/docs/GUIDE.md](./packages/stoop/docs/GUIDE.md) for complete setup instructions.
+See the [full documentation](https://stoop.dolmios.com) for complete setup instructions.
 
 ## Documentation
 
-- **[GUIDE.md](./packages/stoop/docs/GUIDE.md)** - Step-by-step setup and usage guide
-- **[API.md](./packages/stoop/docs/API.md)** - Complete API reference
-- **[ARCHITECTURE.md](./packages/stoop/docs/ARCHITECTURE.md)** - Internal implementation details
-- **[TESTING.md](./packages/stoop/docs/TESTING.md)** - Testing guide and test suite documentation
+📚 **[Full Documentation →](https://stoop.dolmios.com)**
+
+- [Installation](https://stoop.dolmios.com/installation)
+- [Theme Setup](https://stoop.dolmios.com/theme-setup)
+- [Creating Components](https://stoop.dolmios.com/creating-components)
+- [SSR Guide](https://stoop.dolmios.com/ssr)
+- [API Reference](https://stoop.dolmios.com/api)
+- [Migration from Stitches](https://stoop.dolmios.com/migration)
+
+For internal implementation details, see [packages/stoop/ARCHITECTURE.md](./packages/stoop/ARCHITECTURE.md) (developer-only).
 
 ## API Overview
 
@@ -96,7 +102,7 @@ See [packages/stoop/docs/GUIDE.md](./packages/stoop/docs/GUIDE.md) for complete 
 
 Creates a Stoop instance. Returns: `styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`, `theme`, `config`. If `themes` config is provided, also returns `Provider` and `useTheme`.
 
-See [API.md](./packages/stoop/docs/API.md) for complete API documentation.
+See the [API Reference](https://stoop.dolmios.com/api) for complete API documentation.
 
 ### Theme Tokens
 
@@ -143,7 +149,7 @@ Stoop provides a similar API for the features it implements. Key differences:
 - Simple theme system with `createTheme()`
 - Full TypeScript inference
 
-See [GUIDE.md](./packages/stoop/docs/GUIDE.md) for migration examples.
+See the [Migration Guide](https://stoop.dolmios.com/migration) for migration examples.
 
 ## Related Projects
 
