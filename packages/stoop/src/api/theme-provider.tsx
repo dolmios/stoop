@@ -102,13 +102,13 @@ function readThemeFromStorage(
  *
  * @remarks
  * To prevent FOUC (Flash of Unstyled Content) when a user has a non-default theme stored,
- * call `preloadTheme()` from your stoop instance in a script tag before React hydrates:
+ * call `preloadTheme()` from your stoop instance in a script tag before React hydrates.
+ * Note: `preloadTheme()` takes no parameters and always preloads all configured themes.
  *
  * ```html
  * <script>
- *   // Read theme from storage and preload before React renders
- *   const storedTheme = localStorage.getItem('stoop-theme') || 'light';
- *   stoopInstance.preloadTheme(storedTheme);
+ *   // Preload all themes before React renders
+ *   stoopInstance.preloadTheme();
  * </script>
  * ```
  */

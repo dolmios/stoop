@@ -62,20 +62,17 @@ const { styled, css, createTheme, globalCss, keyframes } = createStoop({
   },
 });
 
-const Button = styled(
-  "button",
-  {
-    padding: "$medium",
-    backgroundColor: "$primary",
-    color: "$text",
-  },
-  {
+const Button = styled("button", {
+  padding: "$medium",
+  backgroundColor: "$primary",
+  color: "$text",
+  variants: {
     variant: {
       primary: { backgroundColor: "$primary" },
       secondary: { backgroundColor: "$background", border: "1px solid $primary" },
     },
   },
-);
+});
 
 <Button variant="primary">Click me</Button>;
 ```
@@ -122,10 +119,8 @@ Tokens resolve to CSS variables (`var(--colors-primary)`), enabling instant them
 Variants create component variations via props:
 
 ```tsx
-const Button = styled(
-  "button",
-  {},
-  {
+const Button = styled("button", {
+  variants: {
     variant: {
       primary: { backgroundColor: "$primary" },
       secondary: { backgroundColor: "$secondary" },
@@ -135,7 +130,7 @@ const Button = styled(
       large: { padding: "$large" },
     },
   },
-);
+});
 
 <Button variant="primary" size="small" />;
 ```

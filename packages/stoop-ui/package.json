@@ -50,7 +50,7 @@
   "scripts": {
     "build": "bun run build:clean && bun run build:js && bun run build:types",
     "build:clean": "rm -rf dist",
-    "build:js": "bun build ./src/index.ts --outdir ./dist --target browser --format esm --external react --external react-dom --external react/jsx-runtime --external stoop --external @floating-ui/dom && node -e \"const fs=require('fs');const f='./dist/index.js';let c=fs.readFileSync(f,'utf8');c=c.replace(/\\\"use client\\\";?\\n?/g,'');if(!c.startsWith('\\\"use client\\\"')){c='\\\"use client\\\";\\n'+c}fs.writeFileSync(f,c)\"",
+    "build:js": "NODE_ENV=production bun build ./src/index.ts --outdir ./dist --target browser --format esm --jsx=automatic --minify --external react --external react-dom --external react/jsx-runtime --external stoop --external @floating-ui/dom --define process.env.NODE_ENV='\"production\"' && node -e \"const fs=require('fs');const f='./dist/index.js';let c=fs.readFileSync(f,'utf8');c=c.replace(/\\\"use client\\\";?\\n?/g,'');if(!c.startsWith('\\\"use client\\\"')){c='\\\"use client\\\";\\n'+c}fs.writeFileSync(f,c)\"",
     "build:types": "bunx tsc --project tsconfig.build.json --emitDeclarationOnly",
     "test": "bun test"
   },

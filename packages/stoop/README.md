@@ -94,10 +94,8 @@ Use `$` prefix for theme tokens. Shorthand `$token` uses property-aware resoluti
 Variants create component variations via props:
 
 ```tsx
-const Button = styled(
-  "button",
-  {},
-  {
+const Button = styled("button", {
+  variants: {
     variant: {
       primary: { backgroundColor: "$primary" },
       secondary: { backgroundColor: "$secondary" },
@@ -107,7 +105,7 @@ const Button = styled(
       large: { padding: "$large" },
     },
   },
-);
+});
 
 <Button variant="primary" size="small" />;
 ```
