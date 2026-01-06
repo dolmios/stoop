@@ -183,8 +183,8 @@ describe("CSS Injection and Deduplication", () => {
 
       stoop.css({ color: "$colors.primary" });
 
-      const lightCss = stoop.getCssText("light");
-      const darkCss = stoop.getCssText("dark");
+      const lightCss = stoop.getCssText();
+      const darkCss = stoop.getCssText();
 
       expect(typeof lightCss).toBe("string");
       expect(typeof darkCss).toBe("string");
@@ -201,7 +201,7 @@ describe("CSS Injection and Deduplication", () => {
 
       stoop.css({ color: "$colors.primary" });
 
-      const cssText = stoop.getCssText(customTheme);
+      const cssText = stoop.getCssText();
 
       expect(typeof cssText).toBe("string");
       expect(cssText.length).toBeGreaterThan(0);

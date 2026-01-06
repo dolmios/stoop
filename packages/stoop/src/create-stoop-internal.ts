@@ -4,17 +4,14 @@
  * React types are only imported conditionally when creating client instances.
  */
 
-// Note: This file does NOT import React types to allow SSR-safe usage
-
 import type { CSS, StoopConfig, Theme, ThemeScale } from "./types";
 
 import {
   createTheme as createThemeFactory,
   createCSSFunction,
   createKeyframesFunction,
+  createGlobalCSSFunction,
 } from "./api/core-api";
-import { createGlobalCSSFunction } from "./api/global-css";
-// Note: React APIs (styled, Provider) are NOT imported here for SSR safety
 import { DEFAULT_THEME_MAP } from "./constants";
 import { compileCSS } from "./core/compiler";
 import { mergeWithDefaultTheme, registerDefaultTheme, injectAllThemes } from "./core/theme-manager";
@@ -26,19 +23,18 @@ import { sanitizePrefix } from "./utils/theme-utils";
 /**
  * Shared implementation for creating Stoop instances.
  * Handles common setup logic for both client and server instances.
- * Exported for use in SSR entry point.
  */
 export function createStoopBase(config: StoopConfig): {
   config: StoopConfig;
   createTheme: (overrides?: Partial<Theme>) => Theme;
   css: ReturnType<typeof createCSSFunction>;
-  getCssText: (theme?: string | Theme) => string;
+  getCssText: () => string;
   globalCss: ReturnType<typeof createGlobalCSSFunction>;
   globalCssConfig: StoopConfig["globalCss"];
   keyframes: ReturnType<typeof createKeyframesFunction>;
   media: StoopConfig["media"];
   mergedThemeMap: Record<string, ThemeScale>;
-  preloadTheme: (theme: string | Theme) => void;
+  preloadTheme: () => void;
   sanitizedPrefix: string;
   theme: Theme;
   utils: StoopConfig["utils"];
@@ -95,34 +91,27 @@ export function createStoopBase(config: StoopConfig): {
   }
 
   /**
-   * Preloads a theme by injecting its CSS variables before React renders.
+   * Preloads themes by injecting CSS variables before React renders.
    * Useful for preventing FOUC when loading a non-default theme from localStorage.
-   * Uses injectAllThemes to ensure all themes are available.
-   *
-   * @param theme - Theme to preload (can be theme name string or Theme object)
    */
-  function preloadTheme(theme: string | Theme): void {
+  function preloadTheme(): void {
     if (!config.themes || Object.keys(config.themes).length === 0) {
       return;
     }
 
-    // Always inject all themes for consistency and to prevent FOUC
     injectAllThemes(config.themes, sanitizedPrefix);
   }
 
   /**
    * Gets all injected CSS text for server-side rendering.
-   * Always includes all theme CSS variables using attribute selectors.
+   * Includes all theme CSS variables using attribute selectors.
    *
-   * @param theme - Deprecated parameter, kept for backward compatibility but ignored
    * @returns CSS text string with theme variables and component styles
    */
-  function getCssText(theme?: string | Theme): string {
+  function getCssText(): string {
     let result = "";
 
-    // Always include all themes using attribute selectors for consistency
     if (config.themes && Object.keys(config.themes).length > 0) {
-      // Merge all themes with default theme for consistency with client-side behavior
       const mergedThemes: Record<string, Theme> = {};
 
       for (const [themeName, theme] of Object.entries(config.themes)) {
@@ -135,7 +124,6 @@ export function createStoopBase(config: StoopConfig): {
         result += allThemeVars + "\n";
       }
     } else {
-      // No themes configured, just use default theme
       const themeVars = generateCSSVariables(validatedTheme, sanitizedPrefix);
 
       if (themeVars) {
@@ -144,7 +132,6 @@ export function createStoopBase(config: StoopConfig): {
     }
 
     const baseCss = getCssTextBase();
-    // Remove any existing theme variable blocks (they're already included above)
     const cleanedCss = removeThemeVariableBlocks(baseCss).trim();
 
     if (cleanedCss) {
@@ -168,12 +155,7 @@ export function createStoopBase(config: StoopConfig): {
     sanitizedPrefix,
     theme: themeObject,
     utils,
-    // Internal values for React API creation
     validatedTheme,
     warmCache,
   };
 }
-
-// Export createStoopBase for use in SSR entry point
-// Note: This file does NOT export createStoop() - that's in create-stoop.ts
-// This separation allows SSR entry point to avoid bundling React code

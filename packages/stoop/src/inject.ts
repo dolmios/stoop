@@ -41,7 +41,6 @@ export function markRuleAsInjected(key: string, css: string): void {
 // SSR Cache Management
 // ============================================================================
 
-// Use LRUCache for reliable FIFO eviction (Map iteration order not guaranteed)
 const cssTextCache = new LRUCache<string, boolean>(MAX_CSS_CACHE_SIZE);
 
 /**
@@ -85,7 +84,6 @@ export function isInSSRCache(css: string): boolean {
 // Browser-Specific Injection
 // ============================================================================
 
-// Map of prefix -> stylesheet element to support multiple Stoop instances
 const stylesheetElements = new Map<string, HTMLStyleElement>();
 const lastInjectedThemes = new Map<string, Theme>();
 const lastInjectedCSSVars = new Map<string, string>();
@@ -93,7 +91,6 @@ const lastInjectedCSSVars = new Map<string, string>();
 /**
  * Gets or creates the stylesheet element for CSS injection.
  * Reuses the SSR stylesheet if it exists to prevent FOUC.
- * Supports multiple Stoop instances with different prefixes.
  *
  * @param prefix - Optional prefix for stylesheet identification
  * @returns HTMLStyleElement
@@ -108,13 +105,11 @@ export function getStylesheet(prefix = "stoop"): HTMLStyleElement {
   let stylesheetElement = stylesheetElements.get(sanitizedPrefix);
 
   if (!stylesheetElement || !stylesheetElement.parentNode) {
-    // Check if SSR stylesheet exists and matches this prefix
     const ssrStylesheet = document.getElementById("stoop-ssr") as HTMLStyleElement | null;
 
     if (ssrStylesheet) {
       const existingPrefix = ssrStylesheet.getAttribute("data-stoop");
 
-      // Only reuse if prefix matches or no prefix set yet
       if (!existingPrefix || existingPrefix === sanitizedPrefix) {
         stylesheetElement = ssrStylesheet;
         stylesheetElement.setAttribute("data-stoop", sanitizedPrefix);
@@ -124,7 +119,6 @@ export function getStylesheet(prefix = "stoop"): HTMLStyleElement {
       }
     }
 
-    // Create new stylesheet for this prefix
     stylesheetElement = document.createElement("style");
     stylesheetElement.setAttribute("data-stoop", sanitizedPrefix);
     stylesheetElement.setAttribute("id", `stoop-${sanitizedPrefix}`);
@@ -143,13 +137,10 @@ export function getStylesheet(prefix = "stoop"): HTMLStyleElement {
  */
 export function removeThemeVariableBlocks(css: string): string {
   let result = css;
-
-  // Remove :root blocks using regex
   const rootRegex = getRootRegex("");
 
   result = result.replace(rootRegex, "").trim();
 
-  // Remove attribute selector blocks manually (handles nested braces)
   let startIndex = result.indexOf("[data-theme=");
 
   while (startIndex !== -1) {
@@ -188,8 +179,7 @@ export function removeThemeVariableBlocks(css: string): string {
 
 /**
  * Injects CSS variables for all themes using attribute selectors.
- * This allows all themes to be available simultaneously, with theme switching
- * handled by changing the data-theme attribute.
+ * All themes are available simultaneously, with theme switching handled by changing the data-theme attribute.
  *
  * @param allThemeVars - CSS string containing all theme CSS variables
  * @param prefix - Optional prefix for CSS variables
@@ -203,7 +193,6 @@ export function injectAllThemeVariables(allThemeVars: string, prefix = "stoop"):
   const key = `__all_theme_vars_${sanitizedPrefix}`;
   const lastCSSVars = lastInjectedCSSVars.get(key) ?? null;
 
-  // Only skip if CSS vars string is exactly the same
   if (lastCSSVars === allThemeVars) {
     return;
   }
@@ -218,20 +207,15 @@ export function injectAllThemeVariables(allThemeVars: string, prefix = "stoop"):
 
   const sheet = getStylesheet(sanitizedPrefix);
   const currentCSS = sheet.textContent || "";
-
-  // Check if theme variable blocks exist
   const hasThemeBlocks = currentCSS.includes(":root") || currentCSS.includes("[data-theme=");
 
   if (isInjectedRule(key) || hasThemeBlocks) {
-    // Remove all existing theme variable blocks
     const withoutVars = removeThemeVariableBlocks(currentCSS);
 
-    // Update stylesheet synchronously - prepend all theme vars, then append rest
     sheet.textContent = allThemeVars + (withoutVars ? "\n\n" + withoutVars : "");
 
     markRuleAsInjected(key, allThemeVars);
   } else {
-    // First injection - no existing theme blocks
     sheet.textContent = allThemeVars + (currentCSS ? "\n\n" + currentCSS : "");
     markRuleAsInjected(key, allThemeVars);
   }
@@ -292,10 +276,9 @@ export function getStylesheetElement(prefix = "stoop"): HTMLStyleElement | null 
 }
 
 /**
- * Clears the stylesheet and all caches (internal).
+ * Clears the stylesheet and all caches.
  */
 function clearStylesheetInternal(): void {
-  // Remove all stylesheet elements
   for (const [, element] of stylesheetElements.entries()) {
     if (element && element.parentNode) {
       element.parentNode.removeChild(element);
@@ -309,7 +292,7 @@ function clearStylesheetInternal(): void {
 }
 
 /**
- * Gets all injected rules (for internal use).
+ * Gets all injected rules.
  */
 export function getAllInjectedRules(): Map<string, string> {
   return new Map(injectedRules);

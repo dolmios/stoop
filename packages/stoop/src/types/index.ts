@@ -35,6 +35,18 @@ export interface StyledBaseProps {
   css?: CSS;
 }
 
+/**
+ * CSS object that includes variants configuration.
+ * Used for styled component definitions that combine base styles with variants.
+ * This type explicitly requires the `variants` property to be present and of type Variants.
+ * We exclude variants from the CSS index signature to make it distinct.
+ */
+export type CSSWithVariants = {
+  [K in keyof CSS as K extends "variants" ? never : K]: CSS[K];
+} & {
+  variants: Variants;
+};
+
 export type UtilityFunction = (value: CSSPropertyValue | CSS | undefined) => CSS;
 
 /**
@@ -84,8 +96,6 @@ export interface StoopConfig {
 export type VariantKeys<T extends Variants> = keyof T;
 
 // Extract the keys from a variant object, preserving literal types when possible
-// Uses CSS constraint instead of 'any' to properly type variant values
-// This preserves literal string/number/boolean types from variant definitions
 type ExtractVariantKeys<T> =
   T extends Record<infer K, CSS>
     ? K extends string | number | boolean
@@ -130,10 +140,10 @@ export interface StoopServerInstance {
   config: StoopConfig & { prefix: string };
   createTheme: (themeOverride: Partial<Theme>) => Theme;
   css: (styles: CSS) => string;
-  getCssText: (theme?: string | Theme) => string;
+  getCssText: () => string;
   globalCss: (...args: CSS[]) => () => void;
   keyframes: (definition: Record<string, CSS>) => string;
-  preloadTheme: (theme: string | Theme) => void;
+  preloadTheme: () => void;
   theme: Theme;
   warmCache: (styles: CSS[]) => void;
 }
@@ -243,13 +253,17 @@ export type StyledComponent<
 
 /**
  * Styled function type - the main styled() function signature
+ * Variants must be embedded in the baseStyles object, matching Stitches API.
  */
 export interface StyledFunction {
-  <DefaultElement extends StylableElement, VariantsConfig extends Variants = {}>(
+  <DefaultElement extends StylableElement, BaseStyles extends CSSWithVariants>(
+    defaultElement: DefaultElement,
+    baseStyles: BaseStyles,
+  ): StyledComponent<DefaultElement, BaseStyles["variants"]>;
+  <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
     baseStyles?: CSS,
-    variants?: VariantsConfig,
-  ): StyledComponent<DefaultElement, VariantsConfig>;
+  ): StyledComponent<DefaultElement, {}>;
 }
 
 export interface GetCssTextOptions {
@@ -308,10 +322,9 @@ export interface StoopInstance {
    * Gets all generated CSS text for server-side rendering.
    * Always includes theme CSS variables.
    *
-   * @param theme - Deprecated parameter, kept for backward compatibility but ignored
    * @returns CSS text string with theme variables and component styles
    */
-  getCssText: (theme?: string | Theme) => string;
+  getCssText: () => string;
   config: StoopConfig;
   /**
    * Pre-compiles CSS objects to warm the cache.
@@ -321,12 +334,11 @@ export interface StoopInstance {
    */
   warmCache: (styles: CSS[]) => void;
   /**
-   * Preloads a theme by injecting its CSS variables before React renders.
+   * Preloads themes by injecting CSS variables before React renders.
    * Useful for preventing FOUC when loading a non-default theme from localStorage.
-   *
-   * @param theme - Theme to preload (theme name string or Theme object)
+   * Always injects all configured themes.
    */
-  preloadTheme: (theme: string | Theme) => void;
+  preloadTheme: () => void;
   /**
    * Provider component for managing theme state and updates.
    * Available when themes are provided in createStoop config.

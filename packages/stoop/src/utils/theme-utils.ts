@@ -104,7 +104,6 @@ export function escapeCSSValue(value: string | number): string {
 /**
  * Validates and sanitizes CSS selectors to prevent injection attacks.
  * Only allows safe selector characters. Returns empty string for invalid selectors.
- * Uses memoization for performance.
  *
  * @param selector - Selector to sanitize
  * @returns Sanitized selector string or empty string if invalid
@@ -128,7 +127,6 @@ export function sanitizeCSSSelector(selector: string): string {
 /**
  * Validates and sanitizes CSS variable names to prevent injection attacks.
  * CSS custom properties must start with -- and contain only valid characters.
- * Uses memoization for performance.
  *
  * @param name - Variable name to sanitize
  * @returns Sanitized variable name
@@ -175,7 +173,6 @@ export function sanitizePrefix(prefix: string): string {
   const sanitized = prefix.replace(/[^a-zA-Z0-9-_]/g, "");
   const cleaned = sanitized.replace(/^[\d-]+/, "").replace(/^-+/, "");
 
-  // Return "stoop" as default if sanitization results in empty string
   return cleaned || "stoop";
 }
 
@@ -203,7 +200,6 @@ export function sanitizeMediaQuery(mediaQuery: string): string {
 /**
  * Sanitizes CSS class names to prevent injection attacks.
  * Only allows valid CSS class name characters.
- * Uses memoization for performance.
  *
  * @param className - Class name(s) to sanitize
  * @returns Sanitized class name string
@@ -270,7 +266,6 @@ export function validateKeyframeKey(key: string): boolean {
 
 /**
  * Gets a pre-compiled regex for matching :root CSS selector blocks.
- * Uses caching for performance.
  *
  * @param prefix - Optional prefix (unused, kept for API compatibility)
  * @returns RegExp for matching :root selector blocks
@@ -280,9 +275,6 @@ export function getRootRegex(prefix = ""): RegExp {
     const rootSelector = ":root";
     const escapedSelector = rootSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-    // Match :root block - use greedy match to handle nested braces (e.g., calc())
-    // Since theme vars should only have one :root block, greedy matching is safe
-    // Greedy matching ensures we capture the entire :root block, including nested functions
     cachedRootRegex = new RegExp(`${escapedSelector}\\s*\\{[\\s\\S]*\\}`);
   }
 
@@ -295,7 +287,6 @@ export function getRootRegex(prefix = ""): RegExp {
 
 /**
  * Auto-detects theme scale from CSS property name using pattern matching.
- * Used as fallback when property is not in DEFAULT_THEME_MAP.
  *
  * @param property - CSS property name
  * @returns Theme scale name or undefined if no pattern matches

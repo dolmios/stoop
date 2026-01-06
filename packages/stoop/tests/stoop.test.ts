@@ -8,7 +8,7 @@ import { createElement } from "react";
 
 import { createStoop } from "../src/create-stoop";
 import { clearStylesheet } from "../src/inject";
-import type { CSS, UtilityFunction } from "../src/types";
+import type { CSS, CSSWithVariants, UtilityFunction } from "../src/types";
 
 import { createMockTheme } from "./helpers";
 
@@ -390,12 +390,9 @@ describe("Stoop", () => {
     it("should handle variants", () => {
       const stoop = createStoop({ theme: createMockTheme() });
 
-      const Button = stoop.styled(
-        "button",
-        {
-          color: "red",
-        },
-        {
+      const Button = stoop.styled("button", {
+        color: "red",
+        variants: {
           size: {
             small: {
               padding: "4px",
@@ -405,7 +402,7 @@ describe("Stoop", () => {
             },
           },
         },
-      );
+      } as CSSWithVariants);
 
       const smallButton = createElement(Button, { size: "small", children: "Small" });
       const largeButton = createElement(Button, { size: "large", children: "Large" });
@@ -417,12 +414,9 @@ describe("Stoop", () => {
     it("should handle boolean variants", () => {
       const stoop = createStoop({ theme: createMockTheme() });
 
-      const Button = stoop.styled(
-        "button",
-        {
-          color: "red",
-        },
-        {
+      const Button = stoop.styled("button", {
+        color: "red",
+        variants: {
           disabled: {
             true: {
               opacity: "0.5",
@@ -433,10 +427,10 @@ describe("Stoop", () => {
             },
           },
         },
-      );
+      } as CSSWithVariants);
 
-      const disabledButton = createElement(Button, { disabled: true, children: "Disabled" });
-      const enabledButton = createElement(Button, { disabled: false, children: "Enabled" });
+      const disabledButton = createElement(Button, { disabled: "true", children: "Disabled" });
+      const enabledButton = createElement(Button, { disabled: "false", children: "Enabled" });
 
       expect(disabledButton.type).toBeDefined();
       expect(enabledButton.type).toBeDefined();
@@ -503,7 +497,7 @@ describe("Stoop", () => {
             },
           },
         },
-      });
+      } as CSSWithVariants);
 
       const element = createElement(Button, { size: "small", children: "Small" });
       expect(element.type).toBeDefined();
@@ -774,7 +768,7 @@ describe("Stoop", () => {
 
       stoop.css({ color: "$colors.primary" });
 
-      const cssText = stoop.getCssText(customTheme);
+      const cssText = stoop.getCssText();
 
       expect(typeof cssText).toBe("string");
       expect(cssText.length).toBeGreaterThan(0);
@@ -807,7 +801,7 @@ describe("Stoop", () => {
 
       // Should not throw
       expect(() => {
-        stoop.preloadTheme("dark");
+        stoop.preloadTheme();
       }).not.toThrow();
     });
 
@@ -821,7 +815,7 @@ describe("Stoop", () => {
       expect(typeof stoop.preloadTheme).toBe("function");
 
       expect(() => {
-        stoop.preloadTheme(customTheme);
+        stoop.preloadTheme();
       }).not.toThrow();
     });
 
@@ -835,7 +829,7 @@ describe("Stoop", () => {
         themes: { light: lightTheme, dark: darkTheme },
       });
 
-      stoop.preloadTheme("dark");
+      stoop.preloadTheme();
 
       if (typeof document !== "undefined") {
         const styleTags = document.querySelectorAll("style");
@@ -883,7 +877,7 @@ describe("Stoop", () => {
       expect(typeof className).toBe("string");
       expect(className.length).toBeGreaterThan(0);
 
-      const cssText = stoop.getCssText("dark");
+      const cssText = stoop.getCssText();
       expect(cssText).toContain("--colors-primary");
       expect(cssText).toContain("--space-medium");
       expect(cssText).toContain("--fontSizes-large");

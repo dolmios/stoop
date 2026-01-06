@@ -6,17 +6,13 @@
 import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
 
 import { LRUCache } from "../core/cache";
-import { compileCSS } from "../core/compiler";
+import { compileCSS, cssObjectToString } from "../core/compiler";
 import { sanitizeCSSPropertyName } from "../core/stringify";
 import { mergeThemes } from "../core/theme-manager";
 import { injectCSS } from "../inject";
-import { validateTheme } from "../utils/helpers";
+import { applyUtilities, validateTheme } from "../utils/helpers";
 import { replaceThemeTokensWithVars } from "../utils/theme";
-import {
-  hashObject,
-  sanitizePrefix,
-  validateKeyframeKey,
-} from "../utils/theme-utils";
+import { hashObject, sanitizePrefix, validateKeyframeKey } from "../utils/theme-utils";
 
 // ============================================================================
 // Theme Creation API
@@ -33,7 +29,6 @@ export function createTheme(baseTheme: Theme): (themeOverrides?: Partial<Theme>)
   return function createTheme(themeOverrides: Partial<Theme> = {}): Theme {
     const validatedOverrides = validateTheme(themeOverrides);
 
-    // Use shared mergeThemes function instead of duplicate deepMerge
     return mergeThemes(baseTheme, validatedOverrides);
   };
 }
@@ -185,5 +180,55 @@ export function createKeyframesFunction(
     animationCache.set(keyframesKey, animationName);
 
     return animationName;
+  };
+}
+
+// ============================================================================
+// Global CSS Injection API
+// ============================================================================
+
+/**
+ * Creates a global CSS injection function.
+ * Injects styles directly into the document with deduplication support.
+ * Supports media queries, nested selectors, and theme tokens.
+ *
+ * @param defaultTheme - Default theme for token resolution
+ * @param prefix - Optional prefix for CSS rules
+ * @param media - Optional media query breakpoints
+ * @param utils - Optional utility functions
+ * @param themeMap - Optional theme scale mappings
+ * @returns Function that accepts CSS objects and returns a cleanup function
+ */
+const globalInjectedStyles = new Set<string>();
+
+export function createGlobalCSSFunction(
+  defaultTheme: Theme,
+  prefix = "stoop",
+  media?: Record<string, string>,
+  utils?: Record<string, UtilityFunction>,
+  themeMap?: Record<string, ThemeScale>,
+) {
+  return function globalCss(styles: CSS): () => void {
+    const cssKey = hashObject(styles);
+
+    if (globalInjectedStyles.has(cssKey)) {
+      return () => {};
+    }
+
+    globalInjectedStyles.add(cssKey);
+
+    const sanitizedPrefix = sanitizePrefix(prefix);
+
+    const stylesWithUtils = applyUtilities(styles, utils);
+    const themedStyles = replaceThemeTokensWithVars(stylesWithUtils, defaultTheme, themeMap);
+
+    // Empty selector for global CSS (no base selector needed)
+    const cssText = cssObjectToString(themedStyles, "", 0, media);
+
+    injectCSS(cssText, sanitizedPrefix, `__global_${cssKey}`);
+
+    return () => {
+      globalInjectedStyles.delete(cssKey);
+    };
   };
 }

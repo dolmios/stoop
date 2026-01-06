@@ -19,6 +19,7 @@ import {
 import type {
   CSS,
   CSSPropertyValue,
+  CSSWithVariants,
   StyledComponentProps,
   StyledComponentRef,
   StylableElement,
@@ -27,13 +28,67 @@ import type {
   ThemeScale,
   UtilityFunction,
   Variants,
+  VariantProps,
 } from "../types";
 
 import { EMPTY_CSS, STOOP_COMPONENT_SYMBOL } from "../constants";
 import { compileCSS } from "../core/compiler";
-import { applyVariants } from "../core/variants";
 import { isStyledComponentRef } from "../utils/helpers";
 import { hash, sanitizeClassName } from "../utils/theme-utils";
+
+// ============================================================================
+// Variant Application Logic
+// ============================================================================
+
+/**
+ * Applies variant styles to base styles based on component props.
+ * Optimized to avoid unnecessary object spreads when no variants are applied.
+ *
+ * @param variants - Variant configuration object
+ * @param props - Component props containing variant values
+ * @param baseStyles - Base styles to merge with variant styles
+ * @returns Merged CSS object
+ */
+function applyVariants(variants: Variants, props: VariantProps, baseStyles: CSS): CSS {
+  const appliedVariantStyles: CSS[] = [];
+
+  for (const variantName in variants) {
+    const propValue = props[variantName];
+
+    if (propValue === undefined) {
+      continue;
+    }
+
+    const variantOptions = variants[variantName] as Record<string | number, CSS>;
+    const key = propValue === true ? "true" : propValue === false ? "false" : String(propValue);
+
+    if (variantOptions[key]) {
+      appliedVariantStyles.push(variantOptions[key]);
+    }
+  }
+
+  if (appliedVariantStyles.length === 0) {
+    return baseStyles;
+  }
+
+  // Optimize for single variant case
+  if (appliedVariantStyles.length === 1) {
+    return { ...baseStyles, ...appliedVariantStyles[0] };
+  }
+
+  // Merge multiple variant styles
+  const mergedVariants = { ...appliedVariantStyles[0] };
+
+  for (let i = 1; i < appliedVariantStyles.length; i++) {
+    Object.assign(mergedVariants, appliedVariantStyles[i]);
+  }
+
+  return { ...baseStyles, ...mergedVariants };
+}
+
+// ============================================================================
+// Styled Component API
+// ============================================================================
 
 let defaultThemeContext: Context<ThemeContextValue | null> | null = null;
 
@@ -64,7 +119,6 @@ export function createStyledComponentRef(className: string): StyledComponentRef 
 
 /**
  * Type guard for styled component references.
- * Uses shared isStyledComponentRef helper for consistency.
  *
  * @param value - Value to check
  * @returns True if value is a styled component reference
@@ -342,22 +396,14 @@ function extractVariantProps<V extends Variants>(
     if (variantKeys.has(key)) {
       variantProps[key] = props[key] as string | boolean | undefined;
     } else if (isCSSProperty(key)) {
-      // Convert CSS properties to CSS styles
       cssProps[key] = props[key] as CSSPropertyValue | CSS | undefined;
     } else {
-      // Only include non-CSS, non-variant properties in elementProps
       elementProps[key] = props[key];
     }
   }
 
   return { cssProps, elementProps, variantProps };
 }
-
-type CSSWithVariants = {
-  [K in keyof CSS]: CSS[K];
-} & {
-  variants: Variants;
-};
 
 /**
  * Creates a styled component factory function.
@@ -387,43 +433,51 @@ export function createStyledFunction(
   > & {
     selector: StyledComponentRef;
   };
-  <DefaultElement extends StylableElement, VariantsConfig extends Variants = {}>(
+  <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
     baseStyles?: CSS,
-    variants?: VariantsConfig,
   ): ReturnType<
-    typeof forwardRef<unknown, StyledComponentProps<DefaultElement, VariantsConfig>>
+    typeof forwardRef<unknown, StyledComponentProps<DefaultElement, {}>>
   > & {
     selector: StyledComponentRef;
   };
 } {
   return function styled<
     DefaultElement extends StylableElement,
-    BaseStylesOrVariants extends CSS | CSSWithVariants = CSS,
-    VariantsParam extends Variants | undefined = undefined,
+    BaseStyles extends CSS | CSSWithVariants = CSS,
   >(
     defaultElement: DefaultElement,
-    baseStylesOrVariants?: BaseStylesOrVariants,
-    variantsParam?: VariantsParam,
+    baseStyles?: BaseStyles,
   ) {
-    type VariantsConfig = BaseStylesOrVariants extends CSSWithVariants
-      ? BaseStylesOrVariants["variants"]
-      : VariantsParam extends Variants
-        ? VariantsParam
-        : {};
+    // Extract variants config from embedded variants only (matching Stitches API)
+    type VariantsConfig = BaseStyles extends CSSWithVariants
+      ? BaseStyles["variants"]
+      : {};
 
-    let actualBaseStyles: CSS = (baseStylesOrVariants || EMPTY_CSS) as CSS;
-    let actualVariants: VariantsConfig | undefined = variantsParam as VariantsConfig | undefined;
+    let actualBaseStyles: CSS = (baseStyles || EMPTY_CSS) as CSS;
+    let actualVariants: VariantsConfig | undefined;
 
+    // Extract variants if embedded in baseStyles
     if (
-      baseStylesOrVariants &&
-      "variants" in baseStylesOrVariants &&
-      typeof baseStylesOrVariants.variants === "object"
+      baseStyles &&
+      "variants" in baseStyles &&
+      typeof baseStyles.variants === "object" &&
+      baseStyles.variants !== null &&
+      !Array.isArray(baseStyles.variants)
     ) {
-      actualVariants = baseStylesOrVariants.variants as VariantsConfig;
-      const { variants: _, ...rest } = baseStylesOrVariants;
+      // Verify it's actually a Variants object (has string keys with CSS values)
+      const variantsObj = baseStyles.variants as Record<string, unknown>;
+      const hasValidVariants = Object.keys(variantsObj).length > 0 &&
+        Object.values(variantsObj).every(
+          (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+        );
 
-      actualBaseStyles = rest as CSS;
+      if (hasValidVariants) {
+        actualVariants = baseStyles.variants as VariantsConfig;
+        const { variants: _, ...rest } = baseStyles;
+
+        actualBaseStyles = rest as CSS;
+      }
     }
 
     type Props = StyledComponentProps<DefaultElement, VariantsConfig>;
@@ -490,12 +544,10 @@ export function createStyledFunction(
             componentStyles = applyVariants(actualVariants, variantProps, actualBaseStyles);
           }
 
-          // Merge CSS props (CSS properties passed as props) into styles
           if (Object.keys(cssProps).length > 0) {
             componentStyles = Object.assign({}, componentStyles, cssProps);
           }
 
-          // Merge explicit css prop into styles
           if (cssObject !== EMPTY_CSS) {
             componentStyles = Object.assign({}, componentStyles, cssObject);
           }

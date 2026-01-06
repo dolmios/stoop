@@ -22,24 +22,20 @@ import { sanitizeCSSPropertyName } from "./stringify";
 
 /**
  * Checks if a key/value pair represents a styled component reference.
- * Uses shared isStyledComponentRef helper for consistency.
  *
  * @param key - Property key to check
  * @param value - Property value to check
  * @returns True if key/value represents a styled component reference
  */
 function isStyledComponentKey(key: string | symbol, value: unknown): boolean {
-  // Check symbol key
   if (typeof key === "symbol" && key === STOOP_COMPONENT_SYMBOL) {
     return true;
   }
 
-  // Check if value is a styled component ref (consolidated check)
   if (isStyledComponentRef(value)) {
     return true;
   }
 
-  // Check string key prefix
   if (typeof key === "string" && key.startsWith("__STOOP_COMPONENT_")) {
     return true;
   }
@@ -210,7 +206,6 @@ export function cssObjectToString(
     }
   }
 
-  // Use array join pattern for better performance with large stylesheets
   const parts: string[] = [];
 
   if (cssProperties.length > 0) {

@@ -28,15 +28,12 @@ export function isBrowser(): boolean {
     typeof window !== "undefined" &&
     typeof document !== "undefined" &&
     typeof window.document === "object" &&
-    // Use document.createElement instead of requestAnimationFrame for better compatibility
-    // requestAnimationFrame may not exist in test environments (jsdom)
     typeof document.createElement === "function"
   );
 }
 
 /**
  * Checks if running in production mode.
- * Extracted to helper function for consistency.
  *
  * @returns True if running in production mode
  */
@@ -60,7 +57,6 @@ export function isCSSObject(value: unknown): value is CSS {
 
 /**
  * Checks if a value is a styled component reference.
- * Consolidated function used across the codebase.
  *
  * @param value - Value to check
  * @returns True if value is a styled component reference
@@ -101,7 +97,6 @@ export function isThemeObject(value: unknown): value is Theme {
 
 /**
  * Validates that a theme object only contains approved scales.
- * In production, skips all validation for performance.
  *
  * @param theme - Theme object to validate
  * @returns Validated theme as DefaultTheme

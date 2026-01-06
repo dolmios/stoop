@@ -221,7 +221,7 @@ describe("Provider and useTheme", () => {
       expect(typeof className).toBe("string");
       expect(className.length).toBeGreaterThan(0);
 
-      const cssText = stoop.getCssText("dark");
+      const cssText = stoop.getCssText();
       expect(cssText).toContain("--colors-primary");
       expect(cssText).toContain("--space-medium");
     });

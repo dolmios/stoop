@@ -17,10 +17,13 @@
     "react-polymorphic-types": "^2.0.0"
   },
   "devDependencies": {
+    "@stitches/stringify": "^1.2.8",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "bun-types": "^1.3.5",
+    "style-object-to-css-string": "^1.1.3",
+    "to-css": "^1.2.1",
     "typescript": "^5.9.3"
   },
   "exports": {
@@ -35,12 +38,6 @@
       "import": "./dist/utils/storage.js",
       "require": "./dist/utils/storage.js",
       "default": "./dist/utils/storage.js"
-    },
-    "./utils/auto-preload": {
-      "types": "./dist/utils/auto-preload.d.ts",
-      "import": "./dist/utils/auto-preload.js",
-      "require": "./dist/utils/auto-preload.js",
-      "default": "./dist/utils/auto-preload.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
@@ -112,4 +109,3 @@
   "sideEffects": false,
   "type": "module"
 }
-

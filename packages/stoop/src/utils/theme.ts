@@ -1,7 +1,6 @@
 /**
  * Theme token resolution utilities.
  * Converts theme tokens to CSS variables for runtime theme switching.
- * Uses cached token index for efficient lookups and theme comparison.
  */
 
 import type { CSS, Theme, ThemeScale } from "../types";
@@ -13,7 +12,6 @@ import {
   sanitizeCSSVariableName,
 } from "./theme-utils";
 
-// Pre-compiled regex for token replacement (matches $primary, -$medium, $colors.primary, etc.)
 const TOKEN_REGEX =
   /(-?\$[a-zA-Z][a-zA-Z0-9]*(?:\$[a-zA-Z][a-zA-Z0-9]*)?(?:\.[a-zA-Z][a-zA-Z0-9]*)?)/g;
 
@@ -176,7 +174,6 @@ export function tokenToCSSVar(
 
   const tokenName = token.slice(1);
 
-  // Handle explicit scale: $colors$primary or $colors.primary
   if (tokenName.includes("$") || tokenName.includes(".")) {
     const parts = tokenName.includes("$") ? tokenName.split("$") : tokenName.split(".");
     const sanitizedParts = parts.map((part) => sanitizeCSSVariableName(part));
@@ -185,7 +182,6 @@ export function tokenToCSSVar(
     return `var(${cssVarName})`;
   }
 
-  // Handle shorthand token: $primary
   if (theme && property) {
     const scale = getScaleForProperty(property, themeMap);
 
@@ -275,11 +271,10 @@ export function generateCSSVariables(
   const variables: string[] = [];
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
-    const keys = Object.keys(obj).sort() as Array<ThemeScale>;
+      const keys = Object.keys(obj).sort() as Array<ThemeScale>;
 
-    for (const key of keys) {
-      // Media queries cannot be CSS variables
-      if (key === "media") {
+      for (const key of keys) {
+        if (key === "media") {
         continue;
       }
 
@@ -312,8 +307,7 @@ export function generateCSSVariables(
 
 /**
  * Generates CSS custom properties for all themes using attribute selectors.
- * This allows all themes to be available simultaneously, with theme switching
- * handled by changing the data-theme attribute.
+ * All themes are available simultaneously, with theme switching handled by changing the data-theme attribute.
  *
  * @param themes - Map of theme names to theme objects
  * @param prefix - Optional prefix for CSS variable names
@@ -370,7 +364,7 @@ export function replaceThemeTokensWithVars(
       const processed = replaceThemeTokensWithVars(value, theme, themeMap, undefined);
 
       result[key] = processed;
-      // Check if processing changed anything (indicates tokens were found)
+
       if (processed !== value) {
         hasTokens = true;
       }
@@ -393,7 +387,6 @@ export function replaceThemeTokensWithVars(
     }
   }
 
-  // Early exit: if no tokens were found, return original object to avoid unnecessary copying
   if (!hasTokens) {
     return obj;
   }

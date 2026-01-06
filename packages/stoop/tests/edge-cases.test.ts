@@ -308,10 +308,10 @@ describe("Edge Cases and Error Handling", () => {
       });
 
       expect(() => {
-        stoop.getCssText("nonexistent");
+        stoop.getCssText();
       }).not.toThrow();
 
-      const cssText = stoop.getCssText("nonexistent");
+      const cssText = stoop.getCssText();
       expect(typeof cssText).toBe("string");
     });
   });

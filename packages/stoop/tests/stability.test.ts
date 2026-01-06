@@ -53,18 +53,15 @@ describe("Stability", () => {
       },
     });
 
-    const Button = styled(
-      "button",
-      {
-        color: "$primary",
-      },
-      {
+    const Button = styled("button", {
+      color: "$primary",
+      variants: {
         size: {
           small: { fontSize: "12px" },
           large: { fontSize: "16px" },
         },
       },
-    );
+    });
 
     const render1 = renderToString(createElement(Button, { size: "small" }, "Click me"));
     const render2 = renderToString(createElement(Button, { size: "small" }, "Click me"));

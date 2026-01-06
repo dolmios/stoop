@@ -1,8 +1,6 @@
 /**
  * Theme variable management.
- * Updates CSS custom properties when theme changes.
- * Ensures CSS variables are injected and kept in sync with theme updates.
- * Automatically merges themes with the default theme when applied.
+ * Updates CSS custom properties when theme changes and merges themes with the default theme.
  */
 
 import type { Theme } from "../types";
@@ -39,9 +37,7 @@ export function getDefaultTheme(prefix = "stoop"): Theme | null {
 }
 
 /**
- * Core theme merging logic.
  * Merges source theme into target theme, handling nested objects.
- * Shared implementation used by both mergeWithDefaultTheme and createTheme.
  *
  * @param target - Target theme to merge into
  * @param source - Source theme to merge from
@@ -79,9 +75,7 @@ export function mergeThemes(target: Theme, source: Theme | Partial<Theme>): Them
 }
 
 /**
- * Merges a theme with the default theme if it's not already the default theme.
- * This ensures all themes extend the default theme, keeping all original properties.
- * Uses caching to avoid repeated merging of the same theme objects.
+ * Merges a theme with the default theme, ensuring all themes extend the default theme.
  *
  * @param theme - Theme to merge
  * @param prefix - Optional prefix for theme scoping
@@ -98,15 +92,12 @@ export function mergeWithDefaultTheme(theme: Theme, prefix = "stoop"): Theme {
     return theme;
   }
 
-  // Merge theme with default theme
   return mergeThemes(defaultTheme, theme);
 }
 
 /**
  * Injects CSS variables for all themes using attribute selectors.
- * This allows all themes to be available simultaneously, with theme switching
- * handled by changing the data-theme attribute. This prevents layout shifts
- * and eliminates the need to replace CSS variables on theme change.
+ * All themes are available simultaneously, with theme switching handled by changing the data-theme attribute.
  *
  * @param themes - Map of theme names to theme objects
  * @param prefix - Optional prefix for CSS variable names
@@ -121,7 +112,6 @@ export function injectAllThemes(
     return;
   }
 
-  // Merge all themes with default theme
   const mergedThemes: Record<string, Theme> = {};
 
   for (const [themeName, theme] of Object.entries(themes)) {

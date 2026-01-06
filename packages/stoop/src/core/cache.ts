@@ -49,12 +49,10 @@ export class LRUCache<K, V> extends Map<K, V> {
 export const classNameCache = new LRUCache<string, string>(MAX_CLASS_NAME_CACHE_SIZE);
 export const cssStringCache = new LRUCache<string, string>(MAX_CSS_CACHE_SIZE);
 
-// Separate cache for tracking injected CSS strings (used by browser injection)
 const injectedStylesCache = new Set<string>();
 
 /**
  * Checks if a CSS string has been injected.
- * Uses a Set for O(1) lookup.
  *
  * @param css - CSS string to check
  * @returns True if CSS has been injected

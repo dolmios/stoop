@@ -277,7 +277,9 @@ describe("Stringification", () => {
       it("should handle WebKit vendor prefixes", () => {
         expect(sanitizeCSSPropertyName("WebkitAppearance")).toBe("-webkit-appearance");
         expect(sanitizeCSSPropertyName("WebkitTransform")).toBe("-webkit-transform");
-        expect(sanitizeCSSPropertyName("WebkitBackfaceVisibility")).toBe("-webkit-backface-visibility");
+        expect(sanitizeCSSPropertyName("WebkitBackfaceVisibility")).toBe(
+          "-webkit-backface-visibility",
+        );
         expect(sanitizeCSSPropertyName("WebkitFontSmoothing")).toBe("-webkit-font-smoothing");
       });
 

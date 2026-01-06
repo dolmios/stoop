@@ -32,7 +32,6 @@ import { getCookie, setCookie, getFromStorage, setInStorage } from "../utils/sto
 
 /**
  * Syncs a theme value between cookie and localStorage.
- * If cookie exists, syncs to localStorage. If localStorage exists, syncs to cookie.
  *
  * @param value - Theme value to sync
  * @param cookieKey - Cookie key (if undefined, cookie sync is skipped)
@@ -47,12 +46,10 @@ function syncThemeStorage(value: string, cookieKey: string | undefined, storageK
   const localStorageResult = getFromStorage(storageKey);
   const localStorageValue = localStorageResult.success ? localStorageResult.value : null;
 
-  // Sync cookie -> localStorage
   if (cookieValue === value && localStorageValue !== value) {
     setInStorage(storageKey, value);
   }
 
-  // Sync localStorage -> cookie
   if (localStorageValue === value && cookieKey && cookieValue !== value) {
     setCookie(cookieKey, value);
   }
@@ -75,7 +72,6 @@ function readThemeFromStorage(
     return null;
   }
 
-  // Try cookie first if cookieKey is provided
   if (cookieKey !== undefined) {
     const cookieValue = getCookie(cookieKey);
 
@@ -84,7 +80,6 @@ function readThemeFromStorage(
     }
   }
 
-  // Fall back to localStorage
   const storageResult = getFromStorage(storageKey);
   const stored = storageResult.success ? storageResult.value : null;
 
@@ -134,7 +129,6 @@ export function createProvider(
   const availableThemeNames = Object.keys(themes);
   const firstThemeName = availableThemeNames[0] || "default";
 
-  // Create global styles function from config if provided
   const configGlobalStyles =
     globalCss && globalCssFunction ? globalCssFunction(globalCss) : undefined;
 
@@ -145,16 +139,9 @@ export function createProvider(
     defaultTheme: defaultThemeProp,
     storageKey = "stoop-theme",
   }: ProviderProps): JSX.Element {
-    // SSR-safe initialization: always start with default theme to match SSR
-    // This prevents hydration mismatch - server always renders with default theme
-    // Hydration will happen in useLayoutEffect to update to stored theme
     const [themeName, setThemeNameState] = useState<string>(defaultThemeProp || firstThemeName);
-
-    // Track if hydration has occurred to prevent re-running hydration effect
     const hasHydratedRef = useRef(false);
 
-    // Hydrate from cookie/localStorage after mount to prevent hydration mismatch
-    // Only run once on mount - storage changes are handled by the storage event listener
     useLayoutEffect(() => {
       if (!isBrowser() || hasHydratedRef.current) {
         return;
@@ -163,19 +150,16 @@ export function createProvider(
       const stored = readThemeFromStorage(cookieKey, storageKey, themes);
 
       if (stored) {
-        // Sync between cookie and localStorage
         syncThemeStorage(stored, cookieKey, storageKey);
 
-        // Only update if different from initial state to avoid unnecessary re-render
         if (stored !== themeName) {
           setThemeNameState(stored);
         }
       }
 
       hasHydratedRef.current = true;
-    }, [cookieKey, storageKey, themes]); // Removed themeName from deps - only run once on mount
+    }, [cookieKey, storageKey, themes]);
 
-    // Listen for storage changes from other tabs/windows
     useLayoutEffect(() => {
       if (!isBrowser()) {
         return;
@@ -184,7 +168,6 @@ export function createProvider(
       const handleStorageChange = (e: StorageEvent): void => {
         if (e.key === storageKey && e.newValue && themes[e.newValue] && e.newValue !== themeName) {
           setThemeNameState(e.newValue);
-          // Sync to cookie if cookieKey is provided
           syncThemeStorage(e.newValue, cookieKey, storageKey);
         }
       };
@@ -200,45 +183,34 @@ export function createProvider(
       return themes[themeName] || themes[defaultThemeProp || firstThemeName] || defaultTheme;
     }, [themeName, defaultThemeProp, firstThemeName, themes, defaultTheme]);
 
-    // Track if themes and global styles have been injected
     const themesInjectedRef = useRef(false);
     const globalStylesInjectedRef = useRef(false);
 
-    // Inject all theme CSS variables once on mount (before global styles and theme switching)
-    // This ensures all themes are available simultaneously via attribute selectors
     useLayoutEffect(() => {
       if (!isBrowser() || themesInjectedRef.current) {
         return;
       }
 
-      // Inject all themes using attribute selectors
-      // This allows instant theme switching by only changing the data-theme attribute
       injectAllThemes(themes, prefix, attribute);
       themesInjectedRef.current = true;
     }, [themes, prefix, attribute]);
 
-    // Inject global styles once on mount (after themes are injected)
     useLayoutEffect(() => {
       if (!isBrowser() || globalStylesInjectedRef.current) {
         return;
       }
 
-      // Inject global styles from config
-      // These use CSS variables, so they'll automatically work with all themes
       if (configGlobalStyles) {
         configGlobalStyles();
         globalStylesInjectedRef.current = true;
       }
     }, [configGlobalStyles]);
 
-    // Update data-theme attribute when theme changes
-    // No need to update CSS variables since all themes are already injected
     useLayoutEffect(() => {
       if (!isBrowser()) {
         return;
       }
 
-      // Simply update the data-theme attribute - CSS variables are already available
       if (attribute) {
         document.documentElement.setAttribute(attribute, themeName);
       }

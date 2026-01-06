@@ -1,7 +1,6 @@
 /**
  * Storage and theme detection utilities.
- * Provides simplified localStorage and cookie management, plus automatic theme selection.
- * Supports SSR compatibility and error handling.
+ * Provides simplified localStorage and cookie management with SSR compatibility and error handling.
  */
 
 import type { StorageOptions, StorageResult } from "../types";

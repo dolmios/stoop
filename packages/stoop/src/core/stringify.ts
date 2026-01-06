@@ -27,8 +27,6 @@ function toKebabCase(str: string): string {
  * @returns Normalized property name
  */
 function normalizePropertyName(property: string): string {
-  // If all caps and longer than 1 char, normalize to camelCase
-
   if (property === property.toUpperCase() && property.length > 1) {
     return property.charAt(0) + property.slice(1).toLowerCase();
   }
@@ -48,14 +46,18 @@ function restToKebabCase(rest: string): string {
     return "";
   }
 
-  // Ensure first char is lowercase, then convert camelCase to kebab-case
-  return rest.charAt(0).toLowerCase() + rest.slice(1).replace(/([A-Z])/g, "-$1").toLowerCase();
+  return (
+    rest.charAt(0).toLowerCase() +
+    rest
+      .slice(1)
+      .replace(/([A-Z])/g, "-$1")
+      .toLowerCase()
+  );
 }
 
 /**
  * Sanitizes CSS property names to prevent injection attacks.
  * Handles vendor prefixes, camelCase conversion, and edge cases.
- * Uses memoization for performance.
  *
  * Vendor prefix patterns handled:
  * - Moz* → -moz-*
@@ -71,28 +73,23 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
     return "";
   }
 
-  // Check cache first
   const cached = propertyNameCache.get(propertyName);
 
   if (cached !== undefined) {
     return cached;
   }
 
-  // Already kebab-case with vendor prefix - preserve it
   if (/^-[a-z]+-/.test(propertyName)) {
     propertyNameCache.set(propertyName, propertyName);
 
     return propertyName;
   }
 
-  // Normalize for vendor prefix detection (handles all-caps, etc.)
   const normalized = normalizePropertyName(propertyName);
 
-  // Mozilla prefix (case-insensitive)
-  // Pattern: Moz*, moz*, MOZ* → -moz-*
+  // Mozilla prefix (case-insensitive): Moz*, moz*, MOZ* → -moz-*
   if (/^[Mm]oz/i.test(normalized)) {
     if (normalized.length === 3 || normalized.toLowerCase() === "moz") {
-      // Just the prefix itself
       const result = "-moz";
 
       propertyNameCache.set(propertyName, result);
@@ -116,11 +113,9 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
     }
   }
 
-  // WebKit prefix (case-insensitive)
-  // Pattern: Webkit*, webkit*, WEBKIT* → -webkit-*
+  // WebKit prefix (case-insensitive): Webkit*, webkit*, WEBKIT* → -webkit-*
   if (/^[Ww]ebkit/i.test(normalized)) {
     if (normalized.length === 6 || normalized.toLowerCase() === "webkit") {
-      // Just the prefix itself
       const result = "-webkit";
 
       propertyNameCache.set(propertyName, result);
@@ -144,11 +139,9 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
     }
   }
 
-  // Microsoft prefix (case-insensitive)
-  // Pattern: ms*, Ms*, MS* → -ms-*
+  // Microsoft prefix (case-insensitive): ms*, Ms*, MS* → -ms-*
   if (/^[Mm]s/i.test(normalized)) {
     if (normalized.length === 2 || normalized.toLowerCase() === "ms") {
-      // Just the prefix itself
       const result = "-ms";
 
       propertyNameCache.set(propertyName, result);
@@ -172,11 +165,9 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
     }
   }
 
-  // Opera prefix (single uppercase O)
-  // Pattern: O* → -o-* or just O → -o
+  // Opera prefix (single uppercase O): O* → -o-* or just O → -o
   if (/^O/i.test(normalized)) {
     if (normalized.length === 1 || normalized.toLowerCase() === "o") {
-      // Just the prefix itself
       const result = "-o";
 
       propertyNameCache.set(propertyName, result);
@@ -198,7 +189,6 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
     }
   }
 
-  // Regular camelCase to kebab-case conversion
   const kebab = toKebabCase(normalized);
   const sanitized = kebab.replace(/[^a-zA-Z0-9-]/g, "").replace(/^-+|-+$/g, "");
   const result = sanitized.replace(/^\d+/, "") || "";
