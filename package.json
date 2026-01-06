@@ -79,7 +79,9 @@
     "tidy": "bun run lint; bun run format",
     "test": "bun --cwd packages/stoop test",
     "test:coverage": "bun --cwd packages/stoop test --coverage",
-    "test:watch": "bun --cwd packages/stoop test --watch"
+    "test:watch": "bun --cwd packages/stoop test --watch",
+    "benchmark": "bun --cwd packages/benchmarks benchmark",
+    "analyze:bundle": "bun --cwd packages/benchmarks analyze:bundle"
   },
   "sideEffects": false,
   "type": "module"
