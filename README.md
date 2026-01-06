@@ -191,7 +191,8 @@ This is a monorepo using Bun workspaces. The project structure:
 stoop/
 ├── packages/
 │   ├── stoop/          # Main library package
-│   └── stoop-ui/       # UI component library built with stoop
+│   ├── stoop-ui/       # UI component library built with stoop
+│   └── benchmarks/     # Performance benchmarks (Stoop vs Stitches)
 ├── apps/
 │   ├── website/        # Website/documentation site (Next.js)
 │   └── playground/     # Component playground (Vite)
@@ -239,6 +240,9 @@ bun run tidy               # Run lint + format
 bun run test               # Run tests
 bun run test:coverage      # Run tests with coverage
 bun run test:watch         # Run tests in watch mode
+
+# Benchmarks
+bun run benchmark          # Run performance benchmarks (Stoop vs Stitches)
 ```
 
 ### Working with Packages
@@ -284,6 +288,10 @@ bun run build
 - **`apps/playground`** - Component playground for testing stoop-ui (Vite)
   - Dev: `bun run dev:playground`
   - Build: `bun run build` (from app directory)
+
+- **`packages/benchmarks`** - Performance benchmarks comparing Stoop vs Stitches
+  - Run: `bun run benchmark` (from root)
+  - Bundle analysis: `bun run analyze:bundle` (from package directory)
 
 All apps use `stoop` and `stoop-ui` as workspace dependencies, so changes to the packages are automatically available in the apps after rebuilding.
 
