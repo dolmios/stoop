@@ -25,8 +25,8 @@ These benchmarks test the core CSS-in-JS operations that happen on every render.
 | **Initial Injection** | 0.0067 | 0.0023 | Stitches | 2.95x faster |
 | **Variant Updates** | 0.0041 | 0.0035 | Stitches | 1.16x faster |
 | **CSS Prop Updates** | 0.0034 | 0.0031 | Stitches | 1.10x faster |
-| **Deep Tree (20 levels)** | 0.0132 | 0.0416 | **Stoop** | **3.15x faster** ✅ |
-| **Wide Tree (100 siblings)** | 0.0524 | 0.1692 | **Stoop** | **3.23x faster** ✅ |
+| **Deep Tree (20 levels)** | 0.0132 | 0.0416 | **Stoop** | **3.15x faster** <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> |
+| **Wide Tree (100 siblings)** | 0.0524 | 0.1692 | **Stoop** | **3.23x faster** <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> |
 
 ### Key Findings
 
@@ -42,7 +42,7 @@ These benchmarks test React component creation and CSS generation together.
 | Test | Stoop (ms) | Stitches (ms) | Winner | Factor |
 |------|------------|---------------|--------|--------|
 | **Simple Components** | 0.0022 | 0.0019 | Stitches | 1.14x faster |
-| **Components with Variants** | 0.0026 | 0.0029 | **Stoop** | **1.10x faster** ✅ |
+| **Components with Variants** | 0.0026 | 0.0029 | **Stoop** | **1.10x faster** <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> |
 | **Nested Component Trees** | 0.0112 | 0.0083 | Stitches | 1.35x faster |
 
 ### Observations
@@ -86,20 +86,20 @@ The benchmark suite is located in [`packages/benchmarks`](https://github.com/dol
 - Uses `performance.now()` for high-resolution timing
 
 ### Fairness Considerations
-- ✅ Both libraries use identical theme configurations
-- ✅ Both test equivalent operations
-- ✅ Same measurement methodology
-- ⚠️ API differences may affect results (Stitches `$primary` vs Stoop `$colors.primary`)
+- <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Both libraries use identical theme configurations
+- <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Both test equivalent operations
+- <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Same measurement methodology
+- <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> API differences may affect results (Stitches `$primary` vs Stoop `$colors.primary`)
 
 ## What's Next
 
 We're actively working on:
 
-1. ✅ **Fixed variant/CSS prop benchmarks** - Now test actual usage patterns
-2. ✅ **Added React component benchmarks** - Testing component creation
-3. ⚠️ **Full React rendering benchmarks** - Testing actual DOM operations (in progress)
-4. ⚠️ **Browser-based benchmarks** - Real-world performance testing (planned)
-5. ⚠️ **Memory usage comparisons** - Runtime memory footprint (planned)
+1. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Fixed variant/CSS prop benchmarks** - Now test actual usage patterns
+2. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Added React component benchmarks** - Testing component creation
+3. <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Full React rendering benchmarks** - Testing actual DOM operations (in progress)
+4. <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Browser-based benchmarks** - Real-world performance testing (planned)
+5. <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Memory usage comparisons** - Runtime memory footprint (planned)
 
 ## Conclusion
 
