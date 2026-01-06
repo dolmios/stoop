@@ -21,7 +21,7 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 | **Near-zero runtime** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Both optimize runtime performance |
 | **Compound variants** | Yes | No | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches advantage |
 | **Multi-theme support** | Manual | Built-in Provider | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
-| **Theme switching** | Recompile CSS | Instant (CSS vars) | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **Theme switching** | Manual CSS class switching | Instant (CSS vars) | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
 | **Utility functions** | Many built-ins | Flexible system | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches has more built-ins, but Stoop utilities are equally capable |
 | **SSR support** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
 | **getCssText()** | `getCssText(theme?)` | `getCssText()` | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop improvement - always includes all themes automatically |
@@ -29,7 +29,7 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 | **Next.js Pages Router** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
 | **Next.js App Router** | Limited | Full support | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
 | **React 18 Server Components** | Issues | Supported | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
-| **Active maintenance** | No (as of 2024) | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **Active maintenance** | No (as of June 2023) | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
 
 ## Key Differences
 
@@ -49,9 +49,9 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 
 **Stitches:** Generates CSS at runtime with near-zero runtime overhead by avoiding unnecessary prop interpolations and defining variants upfront.
 
-**Stoop:** Also generates CSS at runtime with optimized performance. Both libraries focus on minimizing runtime overhead rather than build-time extraction. 
+**Stoop:** Also generates CSS at runtime with optimized performance. Both libraries focus on minimizing runtime overhead. 
 
-**Note:** If you need build-time CSS extraction, consider alternatives like [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
+**Build-time extraction:** We're exploring build-time CSS extraction for future releases. If you need it today, consider [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
 
 ### Compound Variants
 

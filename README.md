@@ -19,7 +19,7 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 - Some of Stitches' built-in utility functions (Stoop has a flexible utility system but fewer built-ins)
 - Additional Stitches APIs
 
-**Note:** Both Stitches and Stoop generate CSS at runtime. For build-time CSS extraction, see the separate [`stoop-swc`](./packages/stoop-swc) package (in development), or consider [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
+**Note:** Both Stitches and Stoop generate CSS at runtime. We're exploring build-time extraction in future releases. For immediate build-time needs, consider [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
 
 ## Features
 
