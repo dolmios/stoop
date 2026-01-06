@@ -8,22 +8,28 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 
 ## Feature Comparison
 
-| Feature | Stitches | Stoop |
-|---------|----------|-------|
-| Type-safe CSS objects | Yes | Yes |
-| Theme tokens with `$` prefix | Yes | Yes |
-| Variant system | Yes | Yes |
-| Polymorphic components (`as` prop) | Yes | Yes |
-| CSS variables for themes | No | Yes |
-| Runtime CSS injection | Yes | Yes |
-| Build-time CSS extraction | Yes | No |
-| Compound variants | Yes | No |
-| Multi-theme support | Limited | Yes Built-in |
-| Utility functions | Advanced | Basic |
-| SSR support | Yes | Yes |
-| React 16.8+ required | Yes | Yes |
-| Next.js App Router | Yes | Yes |
-| Next.js Pages Router | Yes | Yes |
+| Feature | Stitches | Stoop | Notes |
+|---------|----------|-------|-------|
+| **Core API** | `createStitches` | `createStoop` | Different function name |
+| **Type-safe CSS objects** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **Theme tokens (`$` prefix)** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same syntax |
+| **Variant system** | Yes | Yes | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Different API (see below) |
+| **Polymorphic components (`as` prop)** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **CSS prop** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **CSS variables for themes** | No | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **Runtime CSS injection** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **Build-time CSS extraction** | Yes | No | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches advantage |
+| **Compound variants** | Yes | No | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches advantage |
+| **Multi-theme support** | Manual | Built-in Provider | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **Theme switching** | Recompile CSS | Instant (CSS vars) | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **Utility functions** | Many built-ins | Flexible system | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stitches has more built-ins, but Stoop utilities are equally capable |
+| **SSR support** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **getCssText()** | `getCssText(theme?)` | `getCssText()` | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop improvement - always includes all themes automatically |
+| **React 16.8+ required** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **Next.js Pages Router** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Same |
+| **Next.js App Router** | Limited | Full support | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **React 18 Server Components** | Issues | Supported | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
+| **Active maintenance** | No (as of 2024) | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> Stoop advantage |
 
 ## Key Differences
 
@@ -49,58 +55,96 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 
 **Stitches:** Supports compound variants (combining multiple variant conditions).
 
-**Stoop:** Does not support compound variants. Variants work independently.
+**Stoop:** Does not currently support compound variants (planned for future release). Variants work independently, which is sufficient for most use cases. You can achieve similar results using conditional `css` props or wrapper components.
 
 ### Utility Functions
 
 **Stitches:** Advanced utility function system with extensive built-in utilities.
 
-**Stoop:** Basic utility function support. You can create custom utilities, but fewer built-in utilities are provided.
+**Stoop:** Flexible utility function system with the same capabilities. You can create any custom utilities you need. Stitches provides more built-in utilities out of the box, but Stoop's utility system is equally powerful and flexible.
 
-## API Similarities
+## API Differences
 
-The core APIs are very similar:
+### Variants API
 
+**Stitches:**
 ```typescript
-// Both libraries
 const Button = styled("button", {
   padding: "$medium",
-  backgroundColor: "$primary",
-}, {
-  variant: {
-    primary: { backgroundColor: "$primary" },
-    secondary: { backgroundColor: "$secondary" },
+  variants: {
+    size: {
+      small: { padding: "$small" },
+      large: { padding: "$large" },
+    },
   },
 });
 ```
+
+**Stoop:**
+```typescript
+const Button = styled("button", {
+  padding: "$medium",
+}, {
+  size: {
+    small: { padding: "$small" },
+    large: { padding: "$large" },
+  },
+});
+```
+
+**Key Difference:** In Stitches, variants are a property in the second parameter. In Stoop, variants are the third parameter.
+
+### Theme Configuration
+
+**Stitches:**
+```typescript
+const { styled } = createStitches({
+  theme: { ... },
+});
+```
+
+**Stoop:**
+```typescript
+const { styled, Provider, useTheme } = createStoop({
+  theme: lightTheme,
+  themes: {
+    light: lightTheme,
+    dark: darkTheme,
+  },
+});
+```
+
+**Key Difference:** Stoop adds `themes` object for multi-theme support and automatically provides `Provider` and `useTheme`.
 
 ## Migration Considerations
 
 When migrating from Stitches to Stoop:
 
 1. **Theme tokens:** Work the same way (`$medium`, `$primary`, etc.)
-2. **Component API:** Mostly identical
-3. **CSS variables:** Stoop uses CSS variables instead of runtime injection
-4. **Multi-theme:** Requires `Provider` wrapper in Stoop
-5. **Compound variants:** Need to be refactored to use separate variant props
-6. **Utilities:** May need to recreate custom utilities
+2. **Component API:** Mostly identical (variants move to third parameter)
+3. **CSS variables:** Stoop uses CSS variables instead of runtime injection (better performance)
+4. **Multi-theme:** Requires `Provider` wrapper in Stoop (but much easier to use)
+5. **Compound variants:** Need to be refactored to use conditional `css` props (most projects don't use compound variants)
+6. **Utilities:** Custom utilities work the same way - you may need to recreate Stitches' built-in utilities if you use them
+7. **getCssText():** Simpler in Stoop - no theme parameter needed, always includes all themes
 
 See the [Migration Guide](/migration) for detailed migration steps.
 
 ## When to Use Stoop
 
-- You want a Stitches-like API with CSS variable-based theming
-- You need built-in multi-theme support
-- You prefer runtime CSS generation
-- You don't need compound variants
-- You want a simpler, more focused API
+- You want a Stitches-like API with CSS variable-based theming (instant theme switching)
+- You need built-in multi-theme support with Provider component
+- You're using Next.js App Router or React 18 Server Components
+- You want an actively maintained library (Stitches is no longer maintained)
+- You prefer a simpler API (no theme parameter needed for `getCssText()`)
+- You don't need compound variants (most projects don't)
 
 ## When to Use Stitches
 
-- You need compound variants
+- You need compound variants (Stoop planned for future)
 - You want build-time CSS extraction
-- You need advanced utility functions
-- You prefer the original Stitches implementation
+- You prefer Stitches' built-in utility functions (though Stoop utilities are equally capable)
+- You have an existing Stitches codebase and don't want to migrate
 
 ## Development Status
 

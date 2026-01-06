@@ -1,82 +1,515 @@
 # Migration from Stitches
 
-Migrate your Stitches codebase to Stoop
+A step-by-step guide to migrate your Stitches codebase to Stoop. Stoop is designed as a modern, actively maintained replacement for Stitches with CSS variable-based theming and built-in multi-theme support.
 
-## Key Differences
+## Why Migrate?
 
-Stoop is similar to Stitches but with some key differences:
+- **Stitches is no longer maintained** (as of 2024)
+- **CSS variables** for instant theme switching without recompiling CSS
+- **Built-in multi-theme support** with Provider component and `useTheme()` hook
+- **Full Next.js App Router support** with React 18 Server Components compatibility
+- **Active maintenance** and community support
 
-- Stoop uses CSS variables for theme tokens (no runtime theme injection)
-- Stoop supports 13 approved theme scales (same as Stitches)
-- Stoop has built-in multi-theme support via Provider
-- Stoop uses `$` prefix for theme tokens (same as Stitches)
+## Feature Comparison
+
+| Feature | Stitches | Stoop | Migration Impact |
+|---------|----------|-------|------------------|
+| **Core API** | `createStitches` | `createStoop` | Simple rename |
+| **Theme tokens** | `$token` syntax | `$token` syntax | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** |
+| **Variants API** | `variants` property (2nd param) | Third parameter | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Breaking change** |
+| **Compound variants** | Supported | Not supported | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Breaking change** |
+| **Theme system** | Runtime values | CSS variables | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** (instant switching) |
+| **Multi-theme** | Manual management | Built-in Provider | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** (easier) |
+| **SSR support** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** |
+| **Next.js App Router** | Limited | Full support | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** |
+| **Build-time extraction** | Yes | No | <Icon name="Warning" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Not available** |
+| **Utility functions** | Many built-ins | Flexible system | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same capabilities** (Stitches has more built-ins, but Stoop utilities are equally powerful) |
 
 ## Migration Steps
 
-1. **Install Stoop**
+### Step 1: Install Stoop
 
 ```bash
+npm uninstall @stitches/react
 npm install stoop
 ```
 
-2. **Update Imports**
+### Step 2: Update Theme Configuration
 
+**Before (Stitches):**
 ```typescript
-// Before (Stitches)
-import { styled, css } from "@stitches/react";
+import { createStitches } from '@stitches/react';
 
-// After (Stoop)
-import { styled, css } from "./theme";
+const { styled, css, globalCss, keyframes, getCssText } = createStitches({
+  theme: {
+    colors: {
+      primary: '#0070f3',
+      secondary: '#7928ca',
+      background: '#ffffff',
+      text: '#000000',
+    },
+    space: {
+      small: '8px',
+      medium: '16px',
+      large: '24px',
+    },
+  },
+  media: {
+    bp1: '(min-width: 640px)',
+    bp2: '(min-width: 768px)',
+  },
+  utils: {
+    mx: (value) => ({
+      marginLeft: value,
+      marginRight: value,
+    }),
+  },
+});
 ```
 
-3. **Update Theme Configuration**
-
+**After (Stoop):**
 ```typescript
-// Before (Stitches)
-const { styled, css } = createStitches({
-  theme: { ... },
-});
+import { createStoop } from 'stoop';
 
-// After (Stoop)
-const { styled, css } = createStoop({
-  theme: { ... },
+// Define your themes
+const lightTheme = {
+  colors: {
+    primary: '#0070f3',
+    secondary: '#7928ca',
+    background: '#ffffff',
+    text: '#000000',
+  },
+  space: {
+    small: '8px',
+    medium: '16px',
+    large: '24px',
+  },
+};
+
+const darkTheme = {
+  colors: {
+    primary: '#3291ff',
+    background: '#000000',
+    text: '#ffffff',
+  },
+  // Other scales (space, etc.) automatically inherit from lightTheme
+};
+
+export const { styled, css, globalCss, keyframes, getCssText, Provider, useTheme } = createStoop({
+  theme: lightTheme, // Default theme
   themes: {
     light: lightTheme,
     dark: darkTheme,
   },
+  media: {
+    bp1: '(min-width: 640px)',
+    bp2: '(min-width: 768px)',
+  },
+  utils: {
+    mx: (value) => ({
+      marginLeft: value,
+      marginRight: value,
+    }),
+  },
 });
 ```
 
-4. **Update Component Usage**
+**Key Changes:**
+- `createStitches` → `createStoop`
+- Add `themes` object for multi-theme support (optional but recommended)
+- `theme` becomes the default theme
+- Get `Provider` and `useTheme` automatically when `themes` is provided
 
-Component API is mostly the same:
+### Step 3: Update Component Variants
 
+This is the main breaking change. Variants move from a property in the second parameter to the third parameter.
+
+**Before (Stitches):**
 ```typescript
-// Stitches
-const Button = styled("button", {
-  padding: "$medium",
+const Button = styled('button', {
+  padding: '$medium',
+  borderRadius: '$default',
   variants: {
     size: {
-      small: { padding: "$small" },
+      small: { padding: '$small', fontSize: '$small' },
+      medium: { padding: '$medium', fontSize: '$medium' },
+      large: { padding: '$large', fontSize: '$large' },
+    },
+    variant: {
+      primary: { backgroundColor: '$primary', color: '$background' },
+      secondary: { backgroundColor: '$secondary', color: '$background' },
     },
   },
 });
+```
 
-// Stoop (variants are the third parameter)
-const Button = styled("button", {
-  padding: "$medium",
+**After (Stoop):**
+```typescript
+const Button = styled('button', {
+  padding: '$medium',
+  borderRadius: '$default',
 }, {
   size: {
-    small: { padding: "$small" },
+    small: { padding: '$small', fontSize: '$small' },
+    medium: { padding: '$medium', fontSize: '$medium' },
+    large: { padding: '$large', fontSize: '$large' },
+  },
+  variant: {
+    primary: { backgroundColor: '$primary', color: '$background' },
+    secondary: { backgroundColor: '$secondary', color: '$background' },
   },
 });
 ```
 
-## Breaking Changes
+**Key Change:** Move `variants` from second parameter to third parameter.
 
-- Theme tokens resolve to CSS variables instead of runtime values
-- Multi-theme requires Provider wrapper
-- Some utility functions may differ
+### Step 4: Handle Compound Variants
+
+Stoop does not currently support compound variants (planned for future release). However, most projects don't use compound variants, and regular variants are usually sufficient. If you do use compound variants, you'll need to refactor them using one of these approaches:
+
+**Before (Stitches):**
+```typescript
+const Button = styled('button', {
+  variants: {
+    size: { small: {}, large: {} },
+    variant: { primary: {}, secondary: {} },
+  },
+  compoundVariants: [
+    {
+      size: 'small',
+      variant: 'primary',
+      css: { fontWeight: '$bold', textTransform: 'uppercase' },
+    },
+  ],
+});
+```
+
+**Option 1: Use conditional `css` prop (Recommended)**
+```typescript
+const Button = styled('button', {}, {
+  size: { small: {}, large: {} },
+  variant: { primary: {}, secondary: {} },
+});
+
+// In your component
+function MyButton({ size, variant, ...props }) {
+  const isSmallPrimary = size === 'small' && variant === 'primary';
+
+  return (
+    <Button
+      size={size}
+      variant={variant}
+      css={isSmallPrimary ? { fontWeight: '$bold', textTransform: 'uppercase' } : undefined}
+      {...props}
+    />
+  );
+}
+```
+
+**Option 2: Create a wrapper component**
+```typescript
+const ButtonBase = styled('button', {}, {
+  size: { small: {}, large: {} },
+  variant: { primary: {}, secondary: {} },
+});
+
+const Button = ({ size, variant, ...props }) => {
+  const compoundStyles = size === 'small' && variant === 'primary'
+    ? { fontWeight: '$bold', textTransform: 'uppercase' }
+    : undefined;
+
+  return <ButtonBase size={size} variant={variant} css={compoundStyles} {...props} />;
+};
+```
+
+**Option 3: Use separate variant values**
+```typescript
+const Button = styled('button', {}, {
+  size: {
+    small: {},
+    'small-primary': { fontWeight: '$bold', textTransform: 'uppercase' },
+    large: {},
+  },
+  variant: { primary: {}, secondary: {} },
+});
+```
+
+### Step 5: Update Imports
+
+**Before (Stitches):**
+```typescript
+import { styled, css } from '@stitches/react';
+```
+
+**After (Stoop):**
+```typescript
+import { styled, css } from './stoop.theme'; // or wherever you export from
+```
+
+### Step 6: Update SSR Setup
+
+#### Next.js Pages Router
+
+**Before (Stitches):**
+```typescript
+// pages/_document.tsx
+import { Html, Head, Main, NextScript } from 'next/document';
+import { getCssText } from '../stitches.config';
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <style id="stitches" dangerouslySetInnerHTML={{ __html: getCssText() }} />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+**After (Stoop):**
+```typescript
+// pages/_document.tsx
+import { Html, Head, Main, NextScript } from 'next/document';
+import { getCssText } from '../stoop.theme';
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <style id="stoop-styles" dangerouslySetInnerHTML={{ __html: getCssText() }} />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+**Key Change:** `getCssText()` no longer accepts a theme parameter - it always includes all configured themes.
+
+#### Next.js App Router
+
+**Before (Stitches):**
+Stitches has limited support for App Router.
+
+**After (Stoop):**
+```typescript
+// app/components/Styles.tsx
+'use client';
+
+import { useServerInsertedHTML } from 'next/navigation';
+import { getCssText } from '../stoop.theme';
+
+export function Styles() {
+  useServerInsertedHTML(() => {
+    return (
+      <style
+        id="stoop-styles"
+        dangerouslySetInnerHTML={{ __html: getCssText() }}
+        suppressHydrationWarning
+      />
+    );
+  });
+  return null;
+}
+
+// app/layout.tsx
+import { Styles } from './components/Styles';
+import { Providers } from './providers';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <Styles />
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+### Step 7: Add Theme Provider (Recommended)
+
+Stoop provides a built-in `Provider` component for theme management.
+
+**Before (Stitches):**
+No built-in Provider - manual theme management required.
+
+**After (Stoop):**
+```typescript
+// app/providers.tsx
+'use client';
+
+import { Provider } from './stoop.theme';
+
+export function Providers({ children }) {
+  return <Provider>{children}</Provider>;
+}
+```
+
+### Step 8: Update Theme Switching
+
+**Before (Stitches):**
+```typescript
+// Manual theme management
+const darkTheme = createTheme('dark-theme', { ... });
+// Manual CSS variable updates
+```
+
+**After (Stoop):**
+```typescript
+// app/components/ThemeToggle.tsx
+'use client';
+
+import { useTheme } from './stoop.theme';
+
+export function ThemeToggle() {
+  const { theme, setTheme, toggleTheme } = useTheme();
+
+  return (
+    <button onClick={toggleTheme}>
+      Current theme: {theme}
+    </button>
+  );
+}
+```
+
+## What Stays the Same
+
+These features work exactly the same in Stoop:
+
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Theme token syntax** - `$token` and `$scale.token` work identically
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Base styles** - Same CSS object syntax
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **CSS prop** - Same usage and behavior
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Polymorphic components** - `as` prop works the same
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Media queries** - Same configuration and usage
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **Utility functions** - Same syntax (if you use custom utilities)
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **globalCss** - Same API
+<Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **keyframes** - Same API
+
+## Common Migration Patterns
+
+### Pattern 1: Simple Variants
+
+**Stitches:**
+```typescript
+const Button = styled('button', {
+  variants: {
+    size: { small: {}, large: {} },
+  },
+});
+```
+
+**Stoop:**
+```typescript
+const Button = styled('button', {}, {
+  size: { small: {}, large: {} },
+});
+```
+
+### Pattern 2: Boolean Variants
+
+**Stitches:**
+```typescript
+const Toggle = styled('button', {
+  variants: {
+    active: {
+      true: { backgroundColor: '$primary' },
+      false: { backgroundColor: '$background' },
+    },
+  },
+});
+```
+
+**Stoop:**
+```typescript
+const Toggle = styled('button', {}, {
+  active: {
+    true: { backgroundColor: '$primary' },
+    false: { backgroundColor: '$background' },
+  },
+});
+```
+
+### Pattern 3: Multiple Variants
+
+**Stitches:**
+```typescript
+const Card = styled('div', {
+  variants: {
+    variant: { outlined: {}, filled: {} },
+    size: { small: {}, large: {} },
+  },
+});
+```
+
+**Stoop:**
+```typescript
+const Card = styled('div', {}, {
+  variant: { outlined: {}, filled: {} },
+  size: { small: {}, large: {} },
+});
+```
+
+## Breaking Changes Summary
+
+1. **Variants API** - Move `variants` from second parameter to third parameter
+2. **Compound Variants** - Not currently supported (planned for future) - use conditional logic or `css` prop (most projects don't need compound variants)
+3. **Theme Configuration** - Add `themes` object for multi-theme support (optional but recommended)
+4. **getCssText()** - No longer accepts theme parameter - always includes all themes automatically (simpler API)
+5. **Multi-theme** - Requires Provider wrapper (but much easier to use than manual theme management)
+
+## Troubleshooting
+
+### Issue: Compound variants not working
+
+**Solution:** Refactor to use conditional `css` prop, wrapper component, or separate variant values. See Step 4 above.
+
+### Issue: Theme switching not working
+
+**Solution:** Make sure you're using the `Provider` component and `useTheme()` hook. Provider must wrap your app.
+
+### Issue: SSR styles not appearing
+
+**Solution:** Ensure `getCssText()` is called in your document/layout and styles are injected before React hydrates. For App Router, use `useServerInsertedHTML`.
+
+### Issue: Type errors with variants
+
+**Solution:** Variants are now in the third parameter, not nested in the second parameter. Update your component definitions.
+
+### Issue: Theme tokens not resolving
+
+**Solution:** Make sure your theme configuration includes all scales you're using. Stoop uses CSS variables, so tokens resolve at runtime.
+
+## Migration Time Estimate
+
+- **Small project** (< 50 components): 1-2 hours
+- **Medium project** (50-200 components): 2-4 hours
+- **Large project** (> 200 components): 4-8 hours
+
+**Factors affecting time:**
+- Number of compound variants (major factor)
+- Custom utility functions
+- Complex theme setup
+- SSR configuration complexity
+
+## Next Steps
+
+After migration:
+
+1. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Test all components thoroughly
+2. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Verify theme switching works
+3. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Check SSR rendering
+4. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Update any custom utilities if needed
+5. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Consider using Stoop's built-in multi-theme features
 
 ## Related Pages
 
@@ -84,4 +517,4 @@ const Button = styled("button", {
 - [Theme Setup](/theme-setup) - Configure your theme
 - [Creating Components](/creating-components) - Learn how to create styled components
 - [Comparison: Stitches vs Stoop](/comparison) - Detailed feature comparison
-
+- [API Reference](/api) - Complete API documentation

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
+import { GithubLogo, RocketLaunch } from "phosphor-react";
 import { Badge, Button, Code, Stack, Text } from "stoop-ui";
 
 /**
@@ -52,17 +53,35 @@ export default function HomePage(): ReactNode {
             margin: 0,
             maxWidth: "600px",
           }}>
-          CSS-in-JS library with type inference, theme creation, and variants support. Similar to
-          Stitches, built for modern React. Currently in active development.
+          A Stitches-like CSS-in-JS library with CSS variables for instant theme switching, built-in
+          multi-theme support, and perfect Next.js App Router integration. Type-safe, performant,
+          and actively maintained.
         </Text>
+        <Stack align="center" css={{ marginTop: "$medium", maxWidth: "700px" }} gap="small">
+          <Text
+            css={{
+              color: "$textSecondary",
+              fontSize: "$small",
+              margin: 0,
+              textAlign: "center",
+            }}>
+            Key features: CSS variables for instant theme switching • Built-in multi-theme Provider
+            • Full Next.js App Router support • Same API as Stitches with modern improvements
+          </Text>
+        </Stack>
       </Stack>
       <Stack align="center" direction="row" gap="medium" justify="center" wrap>
-        <Button as={Link} href="/installation" variant="primary">
+        <Button
+          as={Link}
+          href="/installation"
+          icon={<RocketLaunch size={18} />}
+          variant="primary">
           Get Started
         </Button>
         <Button
           as="a"
           href="https://github.com/dolmios/stoop"
+          icon={<GithubLogo size={18} />}
           rel="noopener noreferrer"
           target="_blank"
           variant="secondary">
@@ -80,14 +99,15 @@ export default function HomePage(): ReactNode {
             margin: 0,
             textAlign: "center",
           }}>
-          Migrating from Stitches? See the{" "}
+          Migrating from Stitches? See our{" "}
           <Link
             href="/migration"
             style={{
               color: "inherit",
+              fontWeight: "bold",
               textDecoration: "underline",
             }}>
-            migration guide
+            step-by-step migration guide
           </Link>{" "}
           or check out the{" "}
           <Link
@@ -98,7 +118,7 @@ export default function HomePage(): ReactNode {
             }}>
             comparison
           </Link>
-          .
+          . Actively maintained with modern improvements.
         </Text>
       </Stack>
     </Stack>
