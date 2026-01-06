@@ -1,6 +1,6 @@
 # Theme Setup
 
-Create your theme configuration with design tokens
+<Icon name="Palette" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Create your theme configuration with design tokens
 
 ## Step 1: Create Theme File
 
@@ -44,7 +44,8 @@ const darkTheme = {
     text: "#ffffff",
     border: "#333333",
   },
-  // Other scales inherit from lightTheme
+  // Other scales (space, fonts, etc.) automatically inherit from lightTheme
+  // All themes are merged with the default theme automatically
 };
 
 export const { styled, css, Provider, useTheme } = createStoop({
@@ -185,7 +186,8 @@ media: {
 
 ### Notes
 
-- Media queries can be defined in the `media` option **or** in the theme's `media` property (theme takes precedence)
+- Media queries can be defined in the `media` option **or** in the theme's `media` property
+- Theme media queries override config media queries when both are present
 - Media query names are arbitrary - use whatever makes sense for your project
 - Media queries work with theme tokens, utilities, and all CSS properties
 
@@ -195,7 +197,7 @@ Stoop only allows 13 approved theme scales for type safety and consistency. See 
 
 ## Related Pages
 
-- [Creating Components](/creating-components) - Use theme tokens in styled components
-- [API Reference: Theme Tokens](/api/theme-tokens/overview) - Complete theme tokens documentation
-- [Migration from Stitches](/migration) - Migrate your Stitches theme configuration
+- <Icon name="Code" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Creating Components](/creating-components) - Use theme tokens in styled components
+- <Icon name="Book" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [API Reference: Theme Tokens](/api/theme-tokens/overview) - Complete theme tokens documentation
+- <Icon name="ArrowRight" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Migration from Stitches](/migration) - Migrate your Stitches theme configuration
 

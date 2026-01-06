@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
-import { GithubLogo, RocketLaunch } from "phosphor-react";
 import { Badge, Button, Code, Stack, Text } from "stoop-ui";
+
+import { GithubLogo, RocketLaunch } from "../lib/icons";
 
 /**
  * Home page component with hero section and call-to-action.
@@ -71,11 +72,7 @@ export default function HomePage(): ReactNode {
         </Stack>
       </Stack>
       <Stack align="center" direction="row" gap="medium" justify="center" wrap>
-        <Button
-          as={Link}
-          href="/installation"
-          icon={<RocketLaunch size={18} />}
-          variant="primary">
+        <Button as={Link} href="/installation" icon={<RocketLaunch size={18} />} variant="primary">
           Get Started
         </Button>
         <Button

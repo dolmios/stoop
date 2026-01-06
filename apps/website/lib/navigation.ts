@@ -6,10 +6,11 @@ import type { TabItem } from "stoop-ui";
  */
 export const mainNavTabs: TabItem[] = [
   { label: "Getting Started", value: "/installation" },
-  { label: "Creating Components", value: "/creating-components" },
   { label: "Theme Setup", value: "/theme-setup" },
-  { label: "Utilities", value: "/utility-functions" },
+  { label: "Creating Components", value: "/creating-components" },
   { label: "SSR", value: "/ssr" },
+  { label: "Utilities", value: "/utility-functions" },
   { label: "Migration", value: "/migration" },
+  { label: "Benchmarks", value: "/benchmarks" },
   { label: "API Reference", value: "/api" },
 ];

@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 
+import { Icon } from "./app/components/Icon";
 import {
   Code,
   HeadingOne,
@@ -23,6 +24,7 @@ const components: MDXComponents = {
   h2: HeadingTwo,
   h3: HeadingThree,
   h4: HeadingFour,
+  Icon,
   p: Paragraph,
   table: Table,
   tbody: TableBody,

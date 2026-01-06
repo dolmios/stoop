@@ -4,6 +4,8 @@ import type { ReactElement } from "react";
 
 import { Button, Stack, Text, useTheme } from "stoop-ui";
 
+import { Moon, Sun } from "../../lib/icons";
+
 /**
  * Footer component with theme toggle and copyright information.
  *
@@ -35,7 +37,10 @@ export function Footer(): ReactElement {
         © 2025 Jackson Dolman, MIT License
       </Text>
 
-      <Button size="small" onClick={toggleTheme}>
+      <Button
+        icon={themeName === "light" ? <Moon size={16} /> : <Sun size={16} />}
+        size="small"
+        onClick={toggleTheme}>
         {themeName === "light" ? "Dark" : "Light"}
       </Button>
     </Stack>

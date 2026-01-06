@@ -1,27 +1,21 @@
 # getCssText
 
-Get all generated CSS text for server-side rendering
+<Icon name="Server" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Get all generated CSS text for server-side rendering
 
 ## Usage
 
 ```typescript
 import { getCssText } from "./theme";
 
-// Default theme
+// Always call with no parameters
 const cssText = getCssText();
-
-// Specific theme by name
-const darkCss = getCssText("dark");
-
-// Theme object directly
-const customCss = getCssText(customTheme);
 ```
 
 ## Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. The function always includes all themes configured in `themes` config. |
+| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. Always call `getCssText()` with no parameters. The function always includes all themes configured in `themes` config. |
 
 ## Returns
 

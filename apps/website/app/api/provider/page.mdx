@@ -1,6 +1,6 @@
 # Provider
 
-React component for theme switching and management
+<Icon name="Layers" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> React component for theme switching and management
 
 ## Usage
 
@@ -28,6 +28,27 @@ function App() {
 ## Theme Persistence
 
 The Provider automatically saves the selected theme to localStorage and restores it on page load.
+
+## Cookie Sync
+
+When `cookieKey` is provided, the Provider syncs theme preferences between cookie and localStorage:
+
+- Cookie is checked first (for SSR compatibility)
+- localStorage is checked as fallback
+- Changes sync bidirectionally
+- Useful for SSR where localStorage isn't available
+
+```typescript
+<Provider
+  defaultTheme="light"
+  storageKey="stoop-theme"
+  cookieKey="stoop-theme"
+>
+  <App />
+</Provider>
+```
+
+This enables server-side theme detection from cookies while maintaining client-side persistence in localStorage.
 
 ## Custom Attribute
 

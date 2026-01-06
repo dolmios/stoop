@@ -1,24 +1,22 @@
 # preloadTheme
 
-Preload theme CSS variables before React renders to prevent FOUC (Flash of Unstyled Content)
+<Icon name="Lightning" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Preload theme CSS variables before React renders to prevent FOUC (Flash of Unstyled Content)
 
 ## Usage
 
 ```typescript
 import { preloadTheme } from "./theme";
 
-// Preload theme by name
-preloadTheme("dark");
-
-// Preload theme object directly
-preloadTheme(customTheme);
+// Parameter is required by TypeScript but ignored at runtime
+// Always injects all themes configured in createStoop
+preloadTheme("dark"); // or any value - parameter is ignored
 ```
 
 ## Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. The function always injects CSS variables for **all** themes configured in `themes` config. |
+| theme | `string \| Theme` | **Required by TypeScript but ignored at runtime** - The function always injects CSS variables for **all** themes configured in `themes` config. Only works when `themes` config is provided to `createStoop`. |
 
 ## Preventing FOUC
 
@@ -46,10 +44,30 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ### Script Tag Approach (Recommended)
 
+For a more robust solution, you can use a script tag. However, note that `preloadTheme()` must be available in the global scope. This typically requires exposing your Stoop instance:
+
 ```typescript
+// stoop.theme.ts
+import { createStoop } from "stoop";
+
+const stoop = createStoop({
+  theme: { /* ... */ },
+  themes: { /* ... */ },
+});
+
+// Expose for script tag usage (optional)
+if (typeof window !== "undefined") {
+  (window as any).stoopPreloadTheme = stoop.preloadTheme;
+}
+
+export const { styled, css, Provider, useTheme, getCssText, preloadTheme } = stoop;
+```
+
+```typescript
+// app/layout.tsx
 import Script from "next/script";
 import { type ReactNode } from "react";
-import { getCssText } from "./theme";
+import { getCssText } from "./stoop.theme";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -66,8 +84,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             __html: `
               (function() {
                 const savedTheme = localStorage.getItem('stoop-theme');
-                if (savedTheme) {
-                  // Preload theme CSS variables synchronously
+                if (savedTheme && typeof window.stoopPreloadTheme === 'function') {
+                  window.stoopPreloadTheme(savedTheme);
                 }
               })();
             `,
@@ -80,11 +98,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 }
 ```
 
+**Note**: The Provider component automatically handles theme preloading, so manual `preloadTheme()` calls are usually not needed.
+
 ## Notes
 
-- Use `preloadTheme()` to prevent FOUC when loading themes from localStorage
-- Must be called before React renders (use `beforeInteractive` script strategy or in a script tag)
+- The Provider component automatically handles theme preloading - manual calls are usually not needed
+- Must be called before React renders if used manually (use `beforeInteractive` script strategy or in a script tag)
 - Injects CSS variables for **all** configured themes synchronously using attribute selectors
-- The `theme` parameter is deprecated and ignored - all themes are always injected
+- The `theme` parameter is required by TypeScript but ignored at runtime - all themes are always injected
 - Only works when `themes` config is provided to `createStoop`
 

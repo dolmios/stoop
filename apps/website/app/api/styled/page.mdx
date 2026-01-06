@@ -1,6 +1,6 @@
 # styled
 
-Create styled components with type-safe props and variants
+<Icon name="Code" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Create styled components with type-safe props and variants
 
 ## Usage
 
@@ -85,3 +85,40 @@ The `css` prop merges with the component's base styles and supports:
 - Media queries (if configured)
 - All CSS properties
 
+**Merging order**: Base styles → Variants → CSS props → `css` prop (later styles override earlier ones)
+
+## CSS Properties as Props
+
+CSS properties can be passed as props and are automatically converted to CSS styles:
+
+```typescript
+const Box = styled("div", {
+  padding: "$medium",
+});
+
+<Box marginTop="$large" padding="$small">
+  Content
+</Box>
+```
+
+CSS properties passed as props are merged before the `css` prop, allowing for prop-based overrides.
+
+## Component Targeting
+
+Styled components expose a `.selector` property for targeting in nested styles:
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium",
+  backgroundColor: "$primary",
+});
+
+const Card = styled("div", {
+  padding: "$large",
+  [Button.selector]: {
+    marginTop: "$medium",
+  },
+});
+```
+
+The selector is based on the component's base styles hash, making it stable across renders even if variants or CSS props change.

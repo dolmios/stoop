@@ -5,6 +5,8 @@ import type { ReactElement } from "react";
 import Link from "next/link";
 import { Button, Stack, Text } from "stoop-ui";
 
+import { GithubLogo } from "../../lib/icons";
+
 /**
  * Header component with logo and navigation links.
  *
@@ -46,6 +48,7 @@ export function Header(): ReactElement {
         <Button
           as={Link}
           href="https://github.com/dolmios/stoop"
+          icon={<GithubLogo size={16} />}
           rel="noopener noreferrer"
           size="small"
           target="_blank">

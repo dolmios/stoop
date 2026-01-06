@@ -1,6 +1,6 @@
 # createTheme
 
-Create additional themes by merging overrides with the base theme
+<Icon name="Palette" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Create additional themes by merging overrides with the base theme
 
 ## Usage
 
@@ -24,6 +24,8 @@ const darkTheme = createTheme({
 - Properties in the override replace base theme properties
 - Nested objects (like `colors`, `space`) are merged, not replaced
 - Properties not in the override are preserved from the base theme
+
+**Note**: All themes configured in `createStoop` automatically merge with the default theme. This ensures all themes extend the base theme, keeping all original properties. This merging happens automatically in both `getCssText()` and theme injection.
 
 ## Adding Themes
 

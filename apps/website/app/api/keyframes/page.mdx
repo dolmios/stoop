@@ -1,6 +1,6 @@
 # keyframes
 
-Create CSS keyframe animations with theme tokens
+<Icon name="Play" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Create CSS keyframe animations with theme tokens
 
 ## Usage
 
@@ -23,11 +23,25 @@ const animatedClass = css({
 
 ## With Theme Tokens
 
+Theme tokens in keyframes must use template literals or explicit CSS variables:
+
 ```typescript
 const slideUp = keyframes({
   from: {
     opacity: 0,
-    transform: "translateY($medium)",
+    transform: `translateY($medium)`, // Use template literal
+  },
+  to: {
+    opacity: 1,
+    transform: "translateY(0)",
+  },
+});
+
+// Or use explicit CSS variable
+const slideUpExplicit = keyframes({
+  from: {
+    opacity: 0,
+    transform: "translateY(var(--stoop-space-medium))",
   },
   to: {
     opacity: 1,
