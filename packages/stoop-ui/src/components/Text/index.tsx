@@ -49,22 +49,19 @@ const CopyButton = styled("button", {
   transition: "$default",
 });
 
-export const Text = styled(
-  "p",
-  {
-    "&:last-child": {
-      marginBottom: 0,
-    },
-    color: "$text",
-    fontFamily: "$body",
-    fontSize: "$default",
-    fontWeight: "$default",
-    lineHeight: "1.4",
-    margin: 0,
-    marginBlock: 0,
-    marginBottom: "$medium",
+export const Text = styled("p", {
+  "&:last-child": {
+    marginBottom: 0,
   },
-  {
+  color: "$text",
+  fontFamily: "$body",
+  fontSize: "$default",
+  fontWeight: "$default",
+  lineHeight: "1.4",
+  margin: 0,
+  marginBlock: 0,
+  marginBottom: "$medium",
+  variants: {
     bottom: {
       none: {
         marginBottom: 0,
@@ -141,7 +138,7 @@ export const Text = styled(
       },
     },
   },
-);
+});
 
 function getHeadingId(children: ReactNode, id?: string): string | undefined {
   if (id) return id;
@@ -210,7 +207,7 @@ export function TextComponent<T extends ElementType = "p">({
   const [copied, setCopied] = useState(false);
 
   // Determine variant from level if provided
-  const finalVariant = variant || (level ? (`h${level}` as const) : undefined);
+  const finalVariant = variant || (level ? `h${level}` : undefined);
 
   // Determine if this is a heading variant
   const isHeading = finalVariant?.startsWith("h");
@@ -220,7 +217,7 @@ export function TextComponent<T extends ElementType = "p">({
   const href = headingId ? `#${headingId}` : undefined;
 
   // Determine element type
-  const elementType = as || (isHeading ? (`h${level || finalVariant?.slice(1)}` as const) : "p");
+  const elementType = as || (isHeading ? `h${level || finalVariant?.slice(1)}` : "p");
 
   const handleCopy = async (): Promise<void> => {
     const text = extractText(children);

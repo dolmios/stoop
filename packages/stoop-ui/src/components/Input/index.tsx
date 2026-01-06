@@ -17,7 +17,7 @@ const InputLabel = styled("label", {
   fontWeight: "$default",
 });
 
-const InputStyled = styled("input" as const, {
+const InputStyled = styled("input", {
   "&:disabled": {
     cursor: "not-allowed",
     opacity: "$disabled",

@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 
 import { styled } from "../../stoop.theme";
 
-export const Card = styled("div" as const, {
+export const Card = styled("div", {
   backgroundColor: "$surface",
   border: "1px solid $borderStrong",
   borderBottomColor: "$borderEmphasis",

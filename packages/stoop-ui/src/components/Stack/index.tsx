@@ -4,13 +4,10 @@ import type { ComponentProps } from "react";
 
 import { styled } from "../../stoop.theme";
 
-export const Stack = styled(
-  "div" as const,
-  {
-    display: "flex",
-    flexDirection: "column",
-  },
-  {
+export const Stack = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  variants: {
     align: {
       center: {
         alignItems: "center",
@@ -153,6 +150,6 @@ export const Stack = styled(
       },
     },
   },
-);
+});
 
 export type StackProps = ComponentProps<typeof Stack>;

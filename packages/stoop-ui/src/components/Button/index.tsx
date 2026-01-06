@@ -13,7 +13,7 @@ const pulse = keyframes({
   },
 });
 
-const ButtonStyled = styled("button" as const, {
+const ButtonStyled = styled("button", {
   "&:active": {
     boxShadow: "$inset",
     transform: "translateY(0)",

@@ -26,7 +26,7 @@ function extractText(children: ReactNode): string {
 }
 
 // Inline code styling
-const InlineCode = styled("code" as const, {
+const InlineCode = styled("code", {
   backgroundColor: "$hover",
   borderRadius: "$small",
   fontFamily: "$mono",
