@@ -1,9 +1,8 @@
 "use client";
 
-import { useId, type MouseEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
-import { useEventListener } from "../../hooks/useEventListener";
 import { useFloatingUI } from "../../hooks/useFloatingUI";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { keyframes, styled } from "../../stoop.theme";
@@ -101,6 +100,7 @@ export type TooltipProps = {
   children: ReactNode | ((onClose: () => void) => ReactNode);
   disabled?: boolean;
   minimal?: boolean;
+  mode?: "click" | "hover";
   small?: boolean;
   trigger: ReactNode;
 };
@@ -110,49 +110,93 @@ export function Tooltip({
   children,
   disabled,
   minimal = false,
+  mode = "click",
   small = false,
   trigger,
 }: TooltipProps): ReactNode {
-  const { contentRef, handleClick, handleClose, isMounted, isOpen, triggerRef } = useFloatingUI();
+  const floatingUI = useFloatingUI();
   const reactId = useId();
   const instanceId = `tooltip-${reactId}`;
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Check if the tooltip is inside a modal
-  const isInsideModal = triggerRef.current?.closest('[role="dialog"]') !== null;
+  const isInsideModal = floatingUI.triggerRef.current?.closest('[role="dialog"]') !== null;
 
-  function handleKeyDown(event: KeyboardEvent): void {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      handleClose();
+  const handleClick = useCallback((): void => {
+    if (disabled) return;
+    floatingUI.handleClick();
+  }, [disabled, floatingUI]);
+
+  const handleMouseEnter = useCallback((): void => {
+    if (disabled || mode !== "hover") return;
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     }
-  }
-
-  function handleTriggerClick(e: MouseEvent): void {
-    e.stopPropagation();
-    if (!disabled) {
-      handleClick();
+    // Only open if not already open
+    if (!floatingUI.isOpen && !floatingUI.isMounted) {
+      floatingUI.handleClick();
     }
-  }
+  }, [disabled, floatingUI, mode]);
 
-  useOutsideClick(contentRef, () => handleClose());
-  useEventListener("keydown", handleKeyDown);
+  const handleMouseLeave = useCallback((): void => {
+    if (mode !== "hover") return;
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      floatingUI.handleClose();
+      hoverTimeoutRef.current = null;
+    }, 150);
+  }, [floatingUI, mode]);
+
+  const handleContentMouseEnter = useCallback((): void => {
+    if (mode !== "hover") return;
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  }, [mode]);
+
+  const handleContentMouseLeave = useCallback((): void => {
+    if (mode !== "hover") return;
+    floatingUI.handleClose();
+  }, [floatingUI, mode]);
+
+  // Handle outside click for click mode
+  useOutsideClick(floatingUI.contentRef, (): void => {
+    if (mode === "click" && floatingUI.isOpen) {
+      floatingUI.handleClose();
+    }
+  });
+
+  // Cleanup timeout on unmount
+  useEffect((): (() => void) => {
+    return (): void => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <PopoverStyled>
       <PopoverTriggerStyled
-        ref={triggerRef}
+        ref={floatingUI.triggerRef}
         aria-controls={`${instanceId}-content`}
-        aria-expanded={isOpen}
+        aria-expanded={floatingUI.isOpen}
         aria-haspopup="dialog"
-        onClick={(e: MouseEvent) => handleTriggerClick(e)}>
+        onClick={mode === "click" ? handleClick : undefined}
+        onMouseEnter={mode === "hover" ? handleMouseEnter : undefined}
+        onMouseLeave={mode === "hover" ? handleMouseLeave : undefined}>
         {trigger}
       </PopoverTriggerStyled>
 
-      {isMounted &&
+      {floatingUI.isMounted &&
         createPortal(
           <PopoverContentStyled
-            ref={contentRef}
-            animation={isOpen}
+            ref={floatingUI.contentRef}
+            animation={floatingUI.isOpen}
             aria-label={ariaLabel}
             css={{
               width: "auto",
@@ -162,8 +206,10 @@ export function Tooltip({
             id={`${instanceId}-content`}
             minimal={minimal}
             role="region"
-            small={small}>
-            {typeof children === "function" ? children(handleClose) : children}
+            small={small}
+            onMouseEnter={mode === "hover" ? handleContentMouseEnter : undefined}
+            onMouseLeave={mode === "hover" ? handleContentMouseLeave : undefined}>
+            {typeof children === "function" ? children(floatingUI.handleClose) : children}
           </PopoverContentStyled>,
           document.body,
         )}

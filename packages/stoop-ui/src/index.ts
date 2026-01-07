@@ -30,6 +30,8 @@ export { Code, type CodeProps } from "./components/Code";
 export { Input, type InputProps } from "./components/Input";
 export { Menu, type MenuProps, type MenuOption } from "./components/Menu";
 export { Modal, type ModalProps } from "./components/Modal";
+export { Select, type SelectProps, type SelectOption } from "./components/Select";
+export { Spinner, type SpinnerProps } from "./components/Spinner";
 export { Stack, type StackProps } from "./components/Stack";
 export {
   Table,

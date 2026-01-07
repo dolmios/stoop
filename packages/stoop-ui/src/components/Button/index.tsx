@@ -22,9 +22,10 @@ const ButtonStyled = styled("button", {
   "&:disabled": {
     cursor: "not-allowed",
     opacity: "$disabled",
+    pointerEvents: "none",
   },
   "&:focus-visible": {
-    outline: "2px solid $border",
+    outline: "2px solid $text",
     outlineOffset: "2px",
   },
   "&:hover:not(:disabled)": {
@@ -46,9 +47,14 @@ const ButtonStyled = styled("button", {
   display: "inline-flex",
   fontFamily: "$body",
   fontSize: "$default",
+  fontWeight: "$default",
+  gap: "$smaller",
   justifyContent: "center",
+  lineHeight: 1.5,
   padding: "$small $medium",
+  position: "relative",
   transition: "$default",
+  userSelect: "none",
   variants: {
     active: {
       false: {},
@@ -67,6 +73,7 @@ const ButtonStyled = styled("button", {
       true: {
         cursor: "wait",
         opacity: "$light",
+        pointerEvents: "none",
         position: "relative",
       },
     },
@@ -78,6 +85,20 @@ const ButtonStyled = styled("button", {
       },
     },
     variant: {
+      danger: {
+        "&:active": {
+          backgroundColor: "#991b1b",
+          borderColor: "#991b1b",
+        },
+        "&:hover:not(:disabled)": {
+          backgroundColor: "#dc2626",
+          borderColor: "#dc2626",
+          boxShadow: "$default",
+        },
+        backgroundColor: "#ef4444",
+        borderColor: "#ef4444",
+        color: "#ffffff",
+      },
       minimal: {
         "&:hover:not(:disabled)": {
           backgroundColor: "$surfaceHover",

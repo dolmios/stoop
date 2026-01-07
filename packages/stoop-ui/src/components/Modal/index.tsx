@@ -179,8 +179,9 @@ const ModalHeaderStyled = styled("div", {
   display: "flex",
   flexShrink: 0,
   fontFamily: "$heading",
+  fontWeight: "$bold",
   justifyContent: "space-between",
-  padding: "$small $medium",
+  padding: "$medium $large",
   position: "sticky",
   top: 0,
   zIndex: "$sticky",
@@ -194,7 +195,7 @@ const ModalContentStyled = styled("div", {
   flex: 1,
   overflowX: "hidden",
   overflowY: "auto",
-  padding: "$medium",
+  padding: "$large",
 });
 
 const ModalFooterStyled = styled("div", {
@@ -207,8 +208,8 @@ const ModalFooterStyled = styled("div", {
   flexDirection: "row",
   flexShrink: 0,
   gap: "$small",
-  justifyContent: "space-between",
-  padding: "$small $medium",
+  justifyContent: "flex-end",
+  padding: "$medium $large",
   position: "sticky",
   width: "100%",
   zIndex: "$sticky",

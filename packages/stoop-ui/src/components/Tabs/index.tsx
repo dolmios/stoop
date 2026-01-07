@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
-import { Button as ButtonComponent } from "../Button";
 
 const TabsContainer = styled("div", {
   "&::-webkit-scrollbar": {
@@ -21,36 +20,58 @@ const TabsContainer = styled("div", {
   width: "100%",
 });
 
-const TabButton = styled(ButtonComponent, {
-  "&:hover": {
+const TabButton = styled("button", {
+  "&:active": {
+    transform: "none",
+  },
+  "&:disabled": {
+    cursor: "not-allowed",
+    opacity: "$disabled",
+  },
+  "&:focus-visible": {
+    outline: "2px solid $text",
+    outlineOffset: "2px",
+  },
+  "&:hover:not(:disabled)": {
     backgroundColor: "$hover",
   },
+  alignItems: "center",
   backgroundColor: "transparent",
   border: "none",
   borderBottom: "2px solid transparent",
+  borderLeft: "none",
   borderRadius: 0,
   borderRight: "1px solid $border",
+  borderTop: "none",
+  boxShadow: "none",
   color: "$text",
+  cursor: "pointer",
+  display: "inline-flex",
   flexShrink: 0,
-  fontSize: "$small !important",
+  fontFamily: "$body",
+  fontSize: "$small",
   fontWeight: "$default",
+  justifyContent: "center",
   mobile: {
-    fontSize: "13px !important",
+    fontSize: "13px",
     padding: "$smaller $small",
   },
   opacity: "0.7",
   padding: "$small $medium",
+  position: "relative",
+  transition: "$default",
+  userSelect: "none",
   variants: {
     active: {
       false: {},
       true: {
-        "&:hover": {
-          backgroundColor: "$hover !important",
+        "&:hover:not(:disabled)": {
+          backgroundColor: "$hover",
         },
-        backgroundColor: "$hover !important",
+        backgroundColor: "$hover",
         borderBottomColor: "$text",
         color: "$text",
-        fontWeight: "$bold !important",
+        fontWeight: "$bold",
         opacity: "1",
       },
     },
@@ -81,15 +102,18 @@ export function Tabs({
   // Use controlled value if provided, otherwise use internal state
   const value = controlledValue ?? internalValue;
 
-  const handleTabClick = (item: TabItem): void => {
-    // Update internal state if not controlled
-    if (!controlledValue) {
-      setInternalValue(item.value);
-    }
+  const handleTabClick = useCallback(
+    (item: TabItem): void => {
+      // Update internal state if not controlled
+      if (!controlledValue) {
+        setInternalValue(item.value);
+      }
 
-    // Call callback
-    onTabChange?.(item.value);
-  };
+      // Call callback
+      onTabChange?.(item.value);
+    },
+    [controlledValue, onTabChange],
+  );
 
   return (
     <TabsContainer>
@@ -97,8 +121,7 @@ export function Tabs({
         <TabButton
           key={item.value}
           active={value === item.value}
-          variant="minimal"
-          onClick={() => handleTabClick(item)}>
+          onClick={(): void => handleTabClick(item)}>
           {item.label}
         </TabButton>
       ))}

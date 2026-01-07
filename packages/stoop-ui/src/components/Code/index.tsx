@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentProps, type ReactNode } from "react";
+import { useCallback, useState, type ComponentProps, type ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -42,8 +42,11 @@ const CodeBlockContainer = styled("div", {
 // Code block styling
 const CodeBlock = styled("pre", {
   backgroundColor: "$hover",
-  border: "1px solid $border",
-  borderRadius: "$small",
+  border: "1px solid $borderStrong",
+  borderBottomColor: "$borderEmphasis",
+  borderRadius: "$default",
+  borderTopColor: "$borderLight",
+  boxShadow: "$subtle",
   fontFamily: "$mono",
   fontSize: "$small",
   lineHeight: "1.6",
@@ -59,28 +62,36 @@ const CodeBlockCode = styled("code", {
 
 // Copy button styling
 const CopyButton = styled("button", {
-  "&:hover": {
-    backgroundColor: "$border",
+  "&:active": {
+    boxShadow: "$inset",
+    transform: "translateY(0)",
   },
-  [`${CodeBlockContainer}:hover &`]: {
-    opacity: 1,
+  "&:hover": {
+    backgroundColor: "$surfaceHover",
+    borderColor: "$borderStrong",
+    boxShadow: "$subtle",
   },
   alignItems: "center",
-  backgroundColor: "$background",
-  border: "1px solid $border",
+  backgroundColor: "$surface",
+  border: "1px solid $borderStrong",
+  borderBottomColor: "$borderEmphasis",
   borderRadius: "$small",
+  borderTopColor: "$borderLight",
+  boxShadow: "$subtle",
   color: "$text",
   cursor: "pointer",
   display: "flex",
   fontFamily: "$body",
   fontSize: "$small",
+  fontWeight: "$default",
+  gap: "$smaller",
   justifyContent: "center",
-  opacity: 0,
-  padding: "$small",
+  padding: "$smaller $small",
   position: "absolute",
   right: "$small",
   top: "$small",
   transition: "$default",
+  zIndex: 1,
 });
 
 export interface CodeProps extends ComponentProps<typeof InlineCode> {
@@ -91,13 +102,13 @@ export interface CodeProps extends ComponentProps<typeof InlineCode> {
 export function Code({ block, children, ...props }: CodeProps): ReactNode {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = async (): Promise<void> => {
+  const handleCopy = useCallback(async (): Promise<void> => {
     const text = extractText(children);
 
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [children]);
 
   if (block) {
     return (

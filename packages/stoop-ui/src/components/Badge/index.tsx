@@ -1,27 +1,48 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
+import { Spinner } from "../Spinner";
 
-export const Badge = styled("span", {
+const BadgeStyled = styled("span", {
+  alignItems: "center",
   borderRadius: "$small",
-  display: "inline-block",
+  display: "inline-flex",
   fontSize: "$small",
   fontWeight: "$default",
-  padding: "$small $medium",
+  lineHeight: 1,
+  padding: "$smaller $small",
+  position: "relative",
+  transition: "$default",
   variants: {
+    loading: {
+      false: {},
+      true: {
+        opacity: "$disabled",
+        pointerEvents: "none",
+      },
+    },
     size: {
       default: {},
       small: {
-        fontSize: "12px",
-        padding: "$smaller $small",
+        fontSize: "11px",
+        padding: "2px $smaller",
       },
     },
     variant: {
+      error: {
+        backgroundColor: "#fee2e2",
+        border: "1px solid #fca5a5",
+        borderBottomColor: "#ef4444",
+        borderTopColor: "#fecaca",
+        color: "#991b1b",
+      },
       outline: {
         backgroundColor: "transparent",
-        border: "1px solid $border",
+        border: "1px solid $borderStrong",
+        borderBottomColor: "$borderEmphasis",
+        borderTopColor: "$borderLight",
         color: "$text",
       },
       primary: {
@@ -32,8 +53,47 @@ export const Badge = styled("span", {
         backgroundColor: "$hover",
         color: "$text",
       },
+      success: {
+        backgroundColor: "#dcfce7",
+        border: "1px solid #86efac",
+        borderBottomColor: "#4ade80",
+        borderTopColor: "#bbf7d0",
+        color: "#166534",
+      },
+      warning: {
+        backgroundColor: "#fef3c7",
+        border: "1px solid #fcd34d",
+        borderBottomColor: "#f59e0b",
+        borderTopColor: "#fde68a",
+        color: "#92400e",
+      },
     },
   },
 });
 
-export type BadgeProps = ComponentProps<typeof Badge>;
+const BadgeLoadingOverlay = styled("div", {
+  alignItems: "center",
+  display: "flex",
+  inset: 0,
+  justifyContent: "center",
+  position: "absolute",
+  zIndex: 1,
+});
+
+export type BadgeProps = Omit<ComponentProps<typeof BadgeStyled>, "loading"> & {
+  children?: ReactNode;
+  loading?: boolean;
+};
+
+export function Badge({ children, loading = false, ...props }: BadgeProps): ReactNode {
+  return (
+    <BadgeStyled loading={loading} {...props}>
+      {children}
+      {loading && (
+        <BadgeLoadingOverlay>
+          <Spinner size="small" />
+        </BadgeLoadingOverlay>
+      )}
+    </BadgeStyled>
+  );
+}
