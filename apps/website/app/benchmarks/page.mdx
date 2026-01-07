@@ -45,10 +45,10 @@ Benchmarks are reproducible. Run them using the [`stoop-benchmarks` package](htt
 | Test | Stoop (ms) | Stitches (ms) | Ratio |
 |------|------------|---------------|-------|
 | Initial Injection | ~0.010 | ~0.003 | Stitches 3-4x faster |
-| Variant Updates | ~0.006 | ~0.006 | Negligible difference |
-| CSS Prop Updates | ~0.005 | ~0.004 | Stitches 1.2x faster |
-| Deep Tree (20 levels) | ~0.027 | ~0.050 | Stoop 1.7-1.9x faster |
-| Wide Tree (100 siblings) | ~0.105 | ~0.220 | Stoop 2.1x faster |
+| Variant Updates | ~0.006 | ~0.005 | Stitches 1.1x faster |
+| CSS Prop Updates | ~0.005 | ~0.004 | Stitches 1.1x faster |
+| Deep Tree (20 levels) | ~0.027 | ~0.049 | Stoop 1.8x faster |
+| Wide Tree (100 siblings) | ~0.106 | ~0.223 | Stoop 2.1x faster |
 
 Results are approximate averages. Actual results vary by system. Run `bun run benchmark` for full statistical analysis.
 
@@ -64,9 +64,9 @@ Results are approximate averages. Actual results vary by system. Run `bun run be
 
 | Test | Stoop (ms) | Stitches (ms) | Ratio |
 |------|------------|---------------|-------|
-| CSS Text Generation | ~0.012 | ~0.004 | Stitches 3.2x faster |
-| Multiple Requests | ~0.012 | ~0.034 | Stoop 2.8x faster |
-| Theme Switching | ~0.014 | ~0.032 | Stoop 2.3x faster |
+| CSS Text Generation | ~0.012 | ~0.006 | Stitches 2.0x faster |
+| Multiple Requests | ~0.014 | ~0.034 | Stoop 2.4x faster |
+| Theme Switching | ~0.012 | ~0.033 | Stoop 2.7x faster |
 
 ## Running the Benchmarks
 
