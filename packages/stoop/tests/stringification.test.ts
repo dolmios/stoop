@@ -476,5 +476,59 @@ describe("Stringification", () => {
       const result = cssObjectToString(styles);
       expect(result).toContain("@media");
     });
+
+    it("should automatically add px to unitless numeric values for dimensional properties", () => {
+      const styles: CSS = {
+        width: 32,
+        height: 100,
+        minWidth: 200,
+        maxHeight: 500,
+        margin: 16,
+        padding: 8,
+        top: 10,
+        fontSize: 14,
+      };
+      const result = cssObjectToString(styles);
+      expect(result).toContain("width: 32px");
+      expect(result).toContain("height: 100px");
+      expect(result).toContain("min-width: 200px");
+      expect(result).toContain("max-height: 500px");
+      expect(result).toContain("margin: 16px");
+      expect(result).toContain("padding: 8px");
+      expect(result).toContain("top: 10px");
+      expect(result).toContain("font-size: 14px");
+    });
+
+    it("should not add px to string values that already have units", () => {
+      const styles: CSS = {
+        width: "100%",
+        height: "50vh",
+        margin: "1rem",
+        padding: "2em",
+        fontSize: "16px",
+      };
+      const result = cssObjectToString(styles);
+      expect(result).toContain("width: 100%");
+      expect(result).toContain("height: 50vh");
+      expect(result).toContain("margin: 1rem");
+      expect(result).toContain("padding: 2em");
+      expect(result).toContain("font-size: 16px");
+    });
+
+    it("should not add px to properties that don't require units", () => {
+      const styles: CSS = {
+        zIndex: 10,
+        opacity: 0.5,
+        order: 1,
+        flexGrow: 2,
+        fontWeight: 400,
+      };
+      const result = cssObjectToString(styles);
+      expect(result).toContain("z-index: 10");
+      expect(result).toContain("opacity: 0.5");
+      expect(result).toContain("order: 1");
+      expect(result).toContain("flex-grow: 2");
+      expect(result).toContain("font-weight: 400");
+    });
   });
 });

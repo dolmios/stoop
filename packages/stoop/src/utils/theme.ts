@@ -377,6 +377,7 @@ export function replaceThemeTokensWithVars(
   // Quick scan to see if we need to process (only check top-level strings)
   for (const key of keys) {
     const value = obj[key];
+
     if (typeof value === "string" && value.includes("$")) {
       hasAnyTokens = true;
       break;
@@ -413,7 +414,7 @@ export function replaceThemeTokensWithVars(
         value.startsWith("$") &&
         !value.includes(" ") &&
         !value.includes("calc(") &&
-        (value === value.trim()); // No leading/trailing whitespace
+        value === value.trim(); // No leading/trailing whitespace
 
       if (isSingleToken) {
         // Ultra-fast path for explicit tokens (e.g., "$colors.background")
@@ -429,15 +430,24 @@ export function replaceThemeTokensWithVars(
             // Fast inline conversion - most theme scale names are already valid
             // Only sanitize if needed (contains invalid chars) - use fast char check
             let needsSanitization = false;
+
             for (let i = 0; i < parts.length; i++) {
               const part = parts[i];
+
               for (let j = 0; j < part.length; j++) {
                 const char = part.charCodeAt(j);
+
                 // Check if char is not alphanumeric, dash, or underscore
-                if (!((char >= 48 && char <= 57) || // 0-9
-                      (char >= 65 && char <= 90) || // A-Z
-                      (char >= 97 && char <= 122) || // a-z
-                      char === 45 || char === 95)) { // - or _
+                if (
+                  !(
+                    (char >= 48 && char <= 57) || // 0-9
+                    (char >= 65 && char <= 90) || // A-Z
+                    (char >= 97 && char <= 122) || // a-z
+                    char === 45 ||
+                    char === 95
+                  )
+                ) {
+                  // - or _
                   needsSanitization = true;
                   break;
                 }
@@ -449,36 +459,47 @@ export function replaceThemeTokensWithVars(
               // Fall back to sanitized version for edge cases
               const sanitizedParts = parts.map((part) => sanitizeCSSVariableName(part));
               const cssVarName = `--${sanitizedParts.join("-")}`;
+
               result[key] = `calc(-1 * var(${cssVarName}))`;
             } else {
               // Fast path: no sanitization needed
               const cssVarName = `--${parts.join("-")}`;
+
               result[key] = `calc(-1 * var(${cssVarName}))`;
             }
           } else {
             // Simple token - use existing function
             const cssVar = tokenToCSSVar(positiveToken, theme, cssProperty, themeMap);
+
             result[key] = `calc(-1 * ${cssVar})`;
           }
         } else {
           // Check if it's an explicit token path (contains . or $ after the $)
           const tokenName = value.slice(1);
+
           if (tokenName.includes(".") || tokenName.includes("$")) {
-            const parts = tokenName.includes("$")
-              ? tokenName.split("$")
-              : tokenName.split(".");
+            const parts = tokenName.includes("$") ? tokenName.split("$") : tokenName.split(".");
             // Fast inline conversion - most theme scale names are already valid
             // Only sanitize if needed (contains invalid chars) - use fast char check
             let needsSanitization = false;
+
             for (let i = 0; i < parts.length; i++) {
               const part = parts[i];
+
               for (let j = 0; j < part.length; j++) {
                 const char = part.charCodeAt(j);
+
                 // Check if char is not alphanumeric, dash, or underscore
-                if (!((char >= 48 && char <= 57) || // 0-9
-                      (char >= 65 && char <= 90) || // A-Z
-                      (char >= 97 && char <= 122) || // a-z
-                      char === 45 || char === 95)) { // - or _
+                if (
+                  !(
+                    (char >= 48 && char <= 57) || // 0-9
+                    (char >= 65 && char <= 90) || // A-Z
+                    (char >= 97 && char <= 122) || // a-z
+                    char === 45 ||
+                    char === 95
+                  )
+                ) {
+                  // - or _
                   needsSanitization = true;
                   break;
                 }
@@ -490,10 +511,12 @@ export function replaceThemeTokensWithVars(
               // Fall back to sanitized version for edge cases
               const sanitizedParts = parts.map((part) => sanitizeCSSVariableName(part));
               const cssVarName = `--${sanitizedParts.join("-")}`;
+
               result[key] = `var(${cssVarName})`;
             } else {
               // Fast path: no sanitization needed
               const cssVarName = `--${parts.join("-")}`;
+
               result[key] = `var(${cssVarName})`;
             }
           } else {

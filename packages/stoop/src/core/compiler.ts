@@ -21,6 +21,105 @@ import { classNameCache, cssStringCache } from "./cache";
 import { sanitizeCSSPropertyName } from "./stringify";
 
 /**
+ * Set of CSS properties that require length units for numeric values.
+ * These properties should have 'px' automatically appended to unitless numbers.
+ */
+const DIMENSIONAL_PROPERTIES = new Set([
+  "width",
+  "height",
+  "min-width",
+  "min-height",
+  "max-width",
+  "max-height",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "margin",
+  "margin-top",
+  "margin-right",
+  "margin-bottom",
+  "margin-left",
+  "padding",
+  "padding-top",
+  "padding-right",
+  "padding-bottom",
+  "padding-left",
+  "border-width",
+  "border-top-width",
+  "border-right-width",
+  "border-bottom-width",
+  "border-left-width",
+  "border-radius",
+  "border-top-left-radius",
+  "border-top-right-radius",
+  "border-bottom-left-radius",
+  "border-bottom-right-radius",
+  "font-size",
+  "letter-spacing",
+  "word-spacing",
+  "text-indent",
+  "line-height",
+  "flex-basis",
+  "gap",
+  "row-gap",
+  "column-gap",
+  "grid-template-rows",
+  "grid-template-columns",
+  "grid-auto-rows",
+  "grid-auto-columns",
+  "perspective",
+  "outline-width",
+  "outline-offset",
+  "clip",
+  "vertical-align",
+  "object-position",
+  "background-position",
+  "background-size",
+  "mask-position",
+  "mask-size",
+  "scroll-margin",
+  "scroll-padding",
+  "shape-margin",
+]);
+
+/**
+ * Checks if a CSS property requires length units for numeric values.
+ *
+ * @param property - CSS property name (in kebab-case)
+ * @returns True if the property requires units
+ */
+function requiresUnit(property: string): boolean {
+  return DIMENSIONAL_PROPERTIES.has(property);
+}
+
+/**
+ * Normalizes a CSS value by adding 'px' unit to unitless numeric values
+ * for properties that require units.
+ *
+ * @param property - CSS property name (in kebab-case)
+ * @param value - CSS value (string or number)
+ * @returns Normalized value string
+ */
+function normalizeCSSValue(property: string, value: string | number): string {
+  if (typeof value === "string") {
+    // If it's already a string, check if it's a unitless number
+    // Only add px if it's a pure number and the property requires units
+    if (requiresUnit(property) && /^-?\d+\.?\d*$/.test(value.trim())) {
+      return `${value}px`;
+    }
+    return value;
+  }
+
+  // For numeric values, add px if the property requires units
+  if (typeof value === "number" && requiresUnit(property)) {
+    return `${value}px`;
+  }
+
+  return String(value);
+}
+
+/**
  * Checks if a key/value pair represents a styled component reference.
  *
  * @param key - Property key to check
@@ -201,7 +300,8 @@ export function cssObjectToString(
       const property = sanitizeCSSPropertyName(key);
 
       if (property && (typeof value === "string" || typeof value === "number")) {
-        const escapedValue = escapeCSSValue(value);
+        const normalizedValue = normalizeCSSValue(property, value);
+        const escapedValue = escapeCSSValue(normalizedValue);
 
         cssProperties.push(`${property}: ${escapedValue};`);
       }
@@ -266,7 +366,8 @@ function extractCSSPropertiesForHash(obj: CSS, media?: Record<string, string>): 
       const property = sanitizeCSSPropertyName(key);
 
       if (property && (typeof value === "string" || typeof value === "number")) {
-        const escapedValue = escapeCSSValue(value);
+        const normalizedValue = normalizeCSSValue(property, value);
+        const escapedValue = escapeCSSValue(normalizedValue);
 
         cssProperties.push(`${property}: ${escapedValue};`);
       }
@@ -299,7 +400,7 @@ export function compileCSS(
   const sanitizedPrefix = sanitizePrefix(prefix);
   const stylesWithUtils = applyUtilities(styles, utils);
   const themedStyles = replaceThemeTokensWithVars(stylesWithUtils, currentTheme, themeMap);
-  
+
   // Optimize: Try to extract properties for hash first (fast path for simple CSS)
   const propertiesString = extractCSSPropertiesForHash(themedStyles, media);
   let cssString: string;

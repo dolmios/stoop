@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-01-07
+
+### Fixed
+
+- Fixed unitless numeric values for dimensional CSS properties (e.g., `width: 32`, `height: 100`) now automatically get `px` units appended, matching behavior of other CSS-in-JS libraries like styled-components and emotion
+- Prevents browser warnings for invalid CSS property values like `height: 32` (now correctly outputs `height: 32px`)
+
 ## [0.5.1] - 2026-01-06
 
 ### Performance
