@@ -6,16 +6,17 @@ import { sharedTheme } from "../shared-theme";
 import { measureTime, type BenchmarkResult } from "../utils";
 
 /**
- * React rendering benchmarks that test actual component rendering,
- * not just CSS generation. These test component creation and CSS generation together.
+ * React rendering benchmarks that test component creation and CSS generation together.
+ * Note: These benchmarks use createElement which creates React elements but doesn't
+ * actually render to the DOM. For true DOM rendering benchmarks, see browser-based tests.
  */
 export function benchmarkReactRendering(): {
   simple: { stoop: BenchmarkResult; stitches: BenchmarkResult };
   variants: { stoop: BenchmarkResult; stitches: BenchmarkResult };
   nested: { stoop: BenchmarkResult; stitches: BenchmarkResult };
 } {
+  // Create fresh instances for isolation
   const stoop = createStoop({ theme: sharedTheme });
-
   const stitches = createStitches({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     theme: sharedTheme as any,
@@ -25,12 +26,14 @@ export function benchmarkReactRendering(): {
   const BoxStoop = stoop.styled("div", {
     backgroundColor: "$colors.background",
     color: "$colors.text",
+    margin: "$space.small",
     padding: "$space.medium",
   });
 
   const BoxStitches = stitches.styled("div", {
     backgroundColor: "$background",
     color: "$text",
+    margin: "$small",
     padding: "$medium",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
@@ -39,13 +42,19 @@ export function benchmarkReactRendering(): {
     "button",
     {
       backgroundColor: "$colors.primary",
+      borderRadius: "4px",
       color: "white",
       padding: "$space.small",
     },
     {
       size: {
         large: { fontSize: "18px", padding: "$space.large" },
+        medium: { fontSize: "14px", padding: "$space.medium" },
         small: { fontSize: "12px", padding: "$space.small" },
+      },
+      variant: {
+        primary: { backgroundColor: "$colors.primary" },
+        secondary: { backgroundColor: "$colors.secondary" },
       },
     },
   );
@@ -54,20 +63,25 @@ export function benchmarkReactRendering(): {
     "button",
     {
       backgroundColor: "$primary",
+      borderRadius: "4px",
       color: "white",
       padding: "$small",
     },
     {
       size: {
         large: { fontSize: "18px", padding: "$large" },
+        medium: { fontSize: "14px", padding: "$medium" },
         small: { fontSize: "12px", padding: "$small" },
       },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      variant: {
+        primary: { backgroundColor: "$primary" },
+        secondary: { backgroundColor: "$secondary" },
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
   );
 
   // Test simple component creation and CSS generation
-  // This measures the CSS compilation that happens when components are created
   const stoopSimple = measureTime(
     "React Rendering (Simple)",
     "stoop",
@@ -75,8 +89,14 @@ export function benchmarkReactRendering(): {
       // Creating elements triggers CSS generation
       createElement(BoxStoop, { children: "Hello" });
       createElement(BoxStoop, { children: "World" });
+      createElement(BoxStoop, { children: "Test" });
     },
     200,
+    {
+      maxIterations: 2000,
+      minIterations: 100,
+      targetPrecision: 0.05,
+    },
   );
 
   const stitchesSimple = measureTime(
@@ -85,8 +105,14 @@ export function benchmarkReactRendering(): {
     () => {
       createElement(BoxStitches, { children: "Hello" });
       createElement(BoxStitches, { children: "World" });
+      createElement(BoxStitches, { children: "Test" });
     },
     200,
+    {
+      maxIterations: 2000,
+      minIterations: 100,
+      targetPrecision: 0.05,
+    },
   );
 
   // Test component with variants - this triggers variant CSS generation
@@ -94,22 +120,34 @@ export function benchmarkReactRendering(): {
     "React Rendering (With Variants)",
     "stoop",
     () => {
-      createElement(ButtonStoop, { children: "Small", size: "small" });
-      createElement(ButtonStoop, { children: "Large", size: "large" });
-      createElement(ButtonStoop, { children: "Small Again", size: "small" }); // Test caching
+      createElement(ButtonStoop, { children: "Small", size: "small", variant: "primary" });
+      createElement(ButtonStoop, { children: "Large", size: "large", variant: "secondary" });
+      createElement(ButtonStoop, { children: "Medium", size: "medium", variant: "primary" });
+      createElement(ButtonStoop, { children: "Small Again", size: "small", variant: "primary" }); // Test caching
     },
     200,
+    {
+      maxIterations: 2000,
+      minIterations: 100,
+      targetPrecision: 0.05,
+    },
   );
 
   const stitchesVariants = measureTime(
     "React Rendering (With Variants)",
     "stitches",
     () => {
-      createElement(ButtonStitches, { children: "Small", size: "small" });
-      createElement(ButtonStitches, { children: "Large", size: "large" });
-      createElement(ButtonStitches, { children: "Small Again", size: "small" }); // Test caching
+      createElement(ButtonStitches, { children: "Small", size: "small", variant: "primary" });
+      createElement(ButtonStitches, { children: "Large", size: "large", variant: "secondary" });
+      createElement(ButtonStitches, { children: "Medium", size: "medium", variant: "primary" });
+      createElement(ButtonStitches, { children: "Small Again", size: "small", variant: "primary" }); // Test caching
     },
     200,
+    {
+      maxIterations: 2000,
+      minIterations: 100,
+      targetPrecision: 0.05,
+    },
   );
 
   // Test nested component tree - measures CSS generation for many components
@@ -139,6 +177,11 @@ export function benchmarkReactRendering(): {
       createNestedTreeStoop(10);
     },
     100,
+    {
+      maxIterations: 1000,
+      minIterations: 50,
+      targetPrecision: 0.1,
+    },
   );
 
   const stitchesNested = measureTime(
@@ -148,6 +191,11 @@ export function benchmarkReactRendering(): {
       createNestedTreeStitches(10);
     },
     100,
+    {
+      maxIterations: 1000,
+      minIterations: 50,
+      targetPrecision: 0.1,
+    },
   );
 
   return {

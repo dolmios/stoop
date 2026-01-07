@@ -5,29 +5,54 @@ import { sharedTheme } from "../shared-theme";
 import { measureTime, type BenchmarkResult } from "../utils";
 
 export function benchmarkInitialInjection(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
+  // Create fresh instances for each run to ensure isolation
   const stoop = createStoop({ theme: sharedTheme });
-
   const stitches = createStitches({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     theme: sharedTheme as any,
   });
 
-  const stoopResult = measureTime("Initial Injection", "stoop", () => {
-    stoop.css({
-      backgroundColor: "$colors.background",
-      color: "$colors.primary",
-      padding: "$space.medium",
-    });
-  });
+  // Test CSS generation with various token types to ensure fair comparison
+  const stoopResult = measureTime(
+    "Initial Injection",
+    "stoop",
+    () => {
+      stoop.css({
+        backgroundColor: "$colors.background",
+        boxShadow: "$shadows.medium",
+        color: "$colors.primary",
+        margin: "$space.small",
+        padding: "$space.medium",
+      });
+    },
+    1000,
+    {
+      maxIterations: 5000,
+      minIterations: 500,
+      targetPrecision: 0.03, // 3% precision for this critical benchmark
+    },
+  );
 
-  const stitchesResult = measureTime("Initial Injection", "stitches", () => {
-    stitches.css({
-      backgroundColor: "$background",
-      color: "$primary",
-      padding: "$medium",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
-  });
+  const stitchesResult = measureTime(
+    "Initial Injection",
+    "stitches",
+    () => {
+      stitches.css({
+        backgroundColor: "$background",
+        boxShadow: "$medium",
+        color: "$primary",
+        margin: "$small",
+        padding: "$medium",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+    },
+    1000,
+    {
+      maxIterations: 5000,
+      minIterations: 500,
+      targetPrecision: 0.03,
+    },
+  );
 
   return { stitches: stitchesResult, stoop: stoopResult };
 }
