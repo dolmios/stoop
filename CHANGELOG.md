@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-01-06
+
+### Performance
+
+- Optimized token index caching using WeakMap to avoid rebuilding indices
+- Added fast path for explicit tokens (e.g., `$colors.background`) with inline CSS variable conversion
+- Optimized CSS compilation to avoid double stringification for simple CSS objects
+- Improved token replacement performance with early returns and conditional sanitization
+- Reduced key sorting overhead by only sorting when needed for deterministic hashing
+- Optimized utility function application with early return when no utilities present
+
+### Changed
+
+- Token resolution now caches theme indices per theme instance for better performance
+- Explicit token paths are converted directly to CSS variables without function call overhead
+- CSS property extraction optimized for simple cases without nested rules
+
 ## [0.5.0] - 2026-01-06
 
 ### Added

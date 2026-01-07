@@ -94,7 +94,9 @@ export function cssObjectToString(
   const cssProperties: string[] = [];
   const nestedRulesList: string[] = [];
 
-  const keys = Object.keys(obj).sort();
+  // Only sort keys when selector is empty (for hashing/deterministic output)
+  // When selector is provided, we don't need deterministic ordering for performance
+  const keys = selector === "" ? Object.keys(obj).sort() : Object.keys(obj);
 
   for (const key of keys) {
     const value = obj[key];
@@ -218,6 +220,63 @@ export function cssObjectToString(
 }
 
 /**
+ * Extracts CSS properties string from a CSS object for hashing.
+ * Only processes top-level properties (no nested rules, media queries, etc.).
+ * This is optimized for simple CSS objects without nesting.
+ *
+ * @param obj - CSS object to process
+ * @param media - Optional media query breakpoints
+ * @returns CSS properties string without selector wrapper, or empty string if complex
+ */
+function extractCSSPropertiesForHash(obj: CSS, media?: Record<string, string>): string {
+  if (!obj || typeof obj !== "object") {
+    return "";
+  }
+
+  const cssProperties: string[] = [];
+  const keys = Object.keys(obj).sort(); // Sort for deterministic hashing
+
+  for (const key of keys) {
+    const value = obj[key];
+
+    // Check for nested rules - if found, we need full stringification
+    if (isValidCSSObject(value)) {
+      return ""; // Complex CSS, use full stringification
+    }
+
+    // Check for media queries
+    if (media && key in media) {
+      return ""; // Has media queries, use full stringification
+    }
+
+    // Check for pseudo-selectors, combinators, etc.
+    if (
+      key.startsWith("@") ||
+      key.includes("&") ||
+      key.startsWith(":") ||
+      key.includes(" ") ||
+      key.includes(">") ||
+      key.includes("+") ||
+      key.includes("~")
+    ) {
+      return ""; // Complex selector, use full stringification
+    }
+
+    if (value !== undefined && !isStyledComponentKey(key, value)) {
+      const property = sanitizeCSSPropertyName(key);
+
+      if (property && (typeof value === "string" || typeof value === "number")) {
+        const escapedValue = escapeCSSValue(value);
+
+        cssProperties.push(`${property}: ${escapedValue};`);
+      }
+    }
+  }
+
+  return cssProperties.join(" ");
+}
+
+/**
  * Compiles CSS objects into CSS strings and generates unique class names.
  * Handles nested selectors, media queries, styled component targeting, and theme tokens.
  *
@@ -240,8 +299,22 @@ export function compileCSS(
   const sanitizedPrefix = sanitizePrefix(prefix);
   const stylesWithUtils = applyUtilities(styles, utils);
   const themedStyles = replaceThemeTokensWithVars(stylesWithUtils, currentTheme, themeMap);
-  const cssString = cssObjectToString(themedStyles, "", 0, media);
-  const stylesHash = hash(cssString);
+  
+  // Optimize: Try to extract properties for hash first (fast path for simple CSS)
+  const propertiesString = extractCSSPropertiesForHash(themedStyles, media);
+  let cssString: string;
+  let stylesHash: string;
+
+  if (propertiesString) {
+    // Fast path: simple CSS without nested rules - use properties string for hash
+    cssString = propertiesString;
+    stylesHash = hash(cssString);
+  } else {
+    // Fallback: complex CSS with nested rules - need full stringification
+    cssString = cssObjectToString(themedStyles, "", 0, media);
+    stylesHash = hash(cssString);
+  }
+
   const className = sanitizedPrefix ? `${sanitizedPrefix}-${stylesHash}` : `css-${stylesHash}`;
   const cacheKey = `${sanitizedPrefix}:${className}`;
 
@@ -253,7 +326,16 @@ export function compileCSS(
     return className;
   }
 
-  const fullCSS = cssObjectToString(themedStyles, `.${className}`, 0, media);
+  // Generate final CSS with className selector
+  let fullCSS: string;
+
+  if (propertiesString) {
+    // Fast path: wrap properties with selector
+    fullCSS = `.${className} { ${propertiesString} }`;
+  } else {
+    // Fallback: full stringification with selector
+    fullCSS = cssObjectToString(themedStyles, `.${className}`, 0, media);
+  }
 
   cssStringCache.set(cacheKey, fullCSS);
   classNameCache.set(cacheKey, className);

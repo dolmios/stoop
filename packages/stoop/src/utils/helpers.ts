@@ -151,8 +151,24 @@ export function applyUtilities(styles: CSS, utils?: Record<string, UtilityFuncti
     return styles;
   }
 
-  const result: CSS = {};
   const utilityKeys = Object.keys(utils);
+
+  // Fast path: check if any utility keys are present before creating new object
+  let hasUtilities = false;
+
+  for (const key in styles) {
+    if (utilityKeys.includes(key)) {
+      hasUtilities = true;
+      break;
+    }
+  }
+
+  // If no utility keys found, return original object
+  if (!hasUtilities) {
+    return styles;
+  }
+
+  const result: CSS = {};
 
   for (const key in styles) {
     const value = styles[key];

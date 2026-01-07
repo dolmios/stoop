@@ -39,7 +39,8 @@ async function clean() {
 async function buildMain() {
   console.log("📦 Building main bundle...");
   try {
-    const result = await $`NODE_ENV=production bun build ${mainEntry} --outfile ${mainOutput} --target browser --format esm --minify --jsx=automatic --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='"production"'`.quiet();
+    const result =
+      await $`NODE_ENV=production bun build ${mainEntry} --outfile ${mainOutput} --target browser --format esm --minify --jsx=automatic --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='"production"'`.quiet();
 
     if (result.exitCode !== 0) {
       throw new Error(`Main build failed: ${result.stderr}`);
@@ -55,7 +56,8 @@ async function buildMain() {
 async function buildSSR() {
   console.log("📦 Building SSR bundle...");
   try {
-    const result = await $`NODE_ENV=production bun build ${ssrEntry} --outfile ${ssrOutput} --target browser --format esm --minify --jsx=automatic --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='"production"'`.quiet();
+    const result =
+      await $`NODE_ENV=production bun build ${ssrEntry} --outfile ${ssrOutput} --target browser --format esm --minify --jsx=automatic --external react --external react-dom --external react/jsx-runtime --define process.env.NODE_ENV='"production"'`.quiet();
 
     if (result.exitCode !== 0) {
       throw new Error(`SSR build failed: ${result.stderr}`);
@@ -100,7 +102,10 @@ async function copyDeclarations() {
     }
   } catch (error) {
     // Non-fatal error, just log it
-    console.log("ℹ️  Could not copy declarations:", error instanceof Error ? error.message : String(error));
+    console.log(
+      "ℹ️  Could not copy declarations:",
+      error instanceof Error ? error.message : String(error),
+    );
   }
 }
 

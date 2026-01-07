@@ -15,13 +15,23 @@ import {
 const TOKEN_REGEX =
   /(-?\$[a-zA-Z][a-zA-Z0-9]*(?:\$[a-zA-Z][a-zA-Z0-9]*)?(?:\.[a-zA-Z][a-zA-Z0-9]*)?)/g;
 
+// Cache token indices per theme to avoid rebuilding them
+const tokenIndexCache = new WeakMap<Theme, Map<string, string[][]>>();
+
 /**
  * Builds an index of all tokens in a theme for fast lookups.
+ * Results are cached per theme instance to avoid rebuilding.
  *
  * @param theme - Theme to index
  * @returns Map of token names to their paths in the theme
  */
 function buildTokenIndex(theme: Theme): Map<string, string[][]> {
+  const cached = tokenIndexCache.get(theme);
+
+  if (cached) {
+    return cached;
+  }
+
   const index = new Map<string, string[][]>();
 
   function processThemeObject(obj: Theme, path: string[] = []): void {
@@ -63,6 +73,8 @@ function buildTokenIndex(theme: Theme): Map<string, string[][]> {
       });
     }
   }
+
+  tokenIndexCache.set(theme, index);
 
   return index;
 }
@@ -123,6 +135,7 @@ export function themesAreEqual(theme1: Theme | null, theme2: Theme | null): bool
 
 /**
  * Finds a token in the theme, optionally scoped to a specific scale.
+ * Uses cached token index for performance.
  *
  * @param theme - Theme to search
  * @param tokenName - Token name to find
@@ -130,6 +143,7 @@ export function themesAreEqual(theme1: Theme | null, theme2: Theme | null): bool
  * @returns Path to token or null if not found
  */
 function findTokenInTheme(theme: Theme, tokenName: string, scale?: ThemeScale): string[] | null {
+  // Fast path: check specific scale first if provided
   if (scale && scale in theme) {
     const scaleValue = theme[scale];
 
@@ -143,6 +157,7 @@ function findTokenInTheme(theme: Theme, tokenName: string, scale?: ThemeScale): 
     }
   }
 
+  // Use cached index (buildTokenIndex uses WeakMap cache)
   const index = buildTokenIndex(theme);
   const paths = index.get(tokenName);
 
@@ -174,6 +189,8 @@ export function tokenToCSSVar(
 
   const tokenName = token.slice(1);
 
+  // Fast path: explicit token paths (e.g., "$colors.background", "$space$medium")
+  // These don't need theme lookup - convert directly to CSS variable
   if (tokenName.includes("$") || tokenName.includes(".")) {
     const parts = tokenName.includes("$") ? tokenName.split("$") : tokenName.split(".");
     const sanitizedParts = parts.map((part) => sanitizeCSSVariableName(part));
@@ -196,6 +213,7 @@ export function tokenToCSSVar(
       }
     }
 
+    // Reuse the index from findTokenInTheme if available, otherwise build it once
     const index = buildTokenIndex(theme);
     const paths = index.get(tokenName);
 
@@ -215,9 +233,9 @@ export function tokenToCSSVar(
       }
     }
 
-    const foundPath = findTokenInTheme(theme, tokenName);
-
-    if (foundPath) {
+    // Use the already-built index instead of calling findTokenInTheme again
+    if (paths && paths.length > 0) {
+      const foundPath = paths[0];
       const sanitizedParts = foundPath.map((part) => sanitizeCSSVariableName(part));
       const cssVarName = `--${sanitizedParts.join("-")}`;
 
@@ -238,9 +256,9 @@ export function tokenToCSSVar(
       }
     }
 
-    const foundPath = findTokenInTheme(theme, tokenName);
-
-    if (foundPath) {
+    // Use the already-built index instead of calling findTokenInTheme again
+    if (paths && paths.length > 0) {
+      const foundPath = paths[0];
       const sanitizedParts = foundPath.map((part) => sanitizeCSSVariableName(part));
       const cssVarName = `--${sanitizedParts.join("-")}`;
 
@@ -352,10 +370,26 @@ export function replaceThemeTokensWithVars(
     return obj;
   }
 
+  // Fast pre-check: scan for tokens before creating new object
+  const keys = Object.keys(obj);
+  let hasAnyTokens = false;
+
+  // Quick scan to see if we need to process (only check top-level strings)
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "string" && value.includes("$")) {
+      hasAnyTokens = true;
+      break;
+    }
+  }
+
+  // If no tokens found and no theme needed, return original
+  if (!hasAnyTokens && !theme) {
+    return obj;
+  }
+
   const result: CSS = {};
   let hasTokens = false;
-
-  const keys = Object.keys(obj).sort();
 
   for (const key of keys) {
     const value = obj[key];
@@ -372,21 +406,120 @@ export function replaceThemeTokensWithVars(
       hasTokens = true;
       const cssProperty = property || key;
 
-      result[key] = value.replace(TOKEN_REGEX, (token) => {
-        if (token.startsWith("-$")) {
-          const positiveToken = token.slice(1);
-          const cssVar = tokenToCSSVar(positiveToken, theme, cssProperty, themeMap);
+      // Fast path: if value is exactly a single token (most common case), skip regex
+      // Check if it's a single token by ensuring it starts with $ and has no spaces or calc()
+      // This covers cases like "$colors.background", "$primary", "-$space.small"
+      const isSingleToken =
+        value.startsWith("$") &&
+        !value.includes(" ") &&
+        !value.includes("calc(") &&
+        (value === value.trim()); // No leading/trailing whitespace
 
-          return `calc(-1 * ${cssVar})`;
+      if (isSingleToken) {
+        // Ultra-fast path for explicit tokens (e.g., "$colors.background")
+        // Convert directly to CSS variable without function call overhead
+        if (value.startsWith("-$")) {
+          const positiveToken = value.slice(1);
+
+          // Check if it's an explicit token path (contains . or $)
+          if (positiveToken.includes(".") || positiveToken.includes("$")) {
+            const parts = positiveToken.includes("$")
+              ? positiveToken.split("$")
+              : positiveToken.split(".");
+            // Fast inline conversion - most theme scale names are already valid
+            // Only sanitize if needed (contains invalid chars) - use fast char check
+            let needsSanitization = false;
+            for (let i = 0; i < parts.length; i++) {
+              const part = parts[i];
+              for (let j = 0; j < part.length; j++) {
+                const char = part.charCodeAt(j);
+                // Check if char is not alphanumeric, dash, or underscore
+                if (!((char >= 48 && char <= 57) || // 0-9
+                      (char >= 65 && char <= 90) || // A-Z
+                      (char >= 97 && char <= 122) || // a-z
+                      char === 45 || char === 95)) { // - or _
+                  needsSanitization = true;
+                  break;
+                }
+              }
+              if (needsSanitization) break;
+            }
+
+            if (needsSanitization) {
+              // Fall back to sanitized version for edge cases
+              const sanitizedParts = parts.map((part) => sanitizeCSSVariableName(part));
+              const cssVarName = `--${sanitizedParts.join("-")}`;
+              result[key] = `calc(-1 * var(${cssVarName}))`;
+            } else {
+              // Fast path: no sanitization needed
+              const cssVarName = `--${parts.join("-")}`;
+              result[key] = `calc(-1 * var(${cssVarName}))`;
+            }
+          } else {
+            // Simple token - use existing function
+            const cssVar = tokenToCSSVar(positiveToken, theme, cssProperty, themeMap);
+            result[key] = `calc(-1 * ${cssVar})`;
+          }
+        } else {
+          // Check if it's an explicit token path (contains . or $ after the $)
+          const tokenName = value.slice(1);
+          if (tokenName.includes(".") || tokenName.includes("$")) {
+            const parts = tokenName.includes("$")
+              ? tokenName.split("$")
+              : tokenName.split(".");
+            // Fast inline conversion - most theme scale names are already valid
+            // Only sanitize if needed (contains invalid chars) - use fast char check
+            let needsSanitization = false;
+            for (let i = 0; i < parts.length; i++) {
+              const part = parts[i];
+              for (let j = 0; j < part.length; j++) {
+                const char = part.charCodeAt(j);
+                // Check if char is not alphanumeric, dash, or underscore
+                if (!((char >= 48 && char <= 57) || // 0-9
+                      (char >= 65 && char <= 90) || // A-Z
+                      (char >= 97 && char <= 122) || // a-z
+                      char === 45 || char === 95)) { // - or _
+                  needsSanitization = true;
+                  break;
+                }
+              }
+              if (needsSanitization) break;
+            }
+
+            if (needsSanitization) {
+              // Fall back to sanitized version for edge cases
+              const sanitizedParts = parts.map((part) => sanitizeCSSVariableName(part));
+              const cssVarName = `--${sanitizedParts.join("-")}`;
+              result[key] = `var(${cssVarName})`;
+            } else {
+              // Fast path: no sanitization needed
+              const cssVarName = `--${parts.join("-")}`;
+              result[key] = `var(${cssVarName})`;
+            }
+          } else {
+            // Simple token - use existing function
+            result[key] = tokenToCSSVar(value, theme, cssProperty, themeMap);
+          }
         }
+      } else {
+        // Complex case: multiple tokens or tokens in expressions - use regex
+        result[key] = value.replace(TOKEN_REGEX, (token) => {
+          if (token.startsWith("-$")) {
+            const positiveToken = token.slice(1);
+            const cssVar = tokenToCSSVar(positiveToken, theme, cssProperty, themeMap);
 
-        return tokenToCSSVar(token, theme, cssProperty, themeMap);
-      });
+            return `calc(-1 * ${cssVar})`;
+          }
+
+          return tokenToCSSVar(token, theme, cssProperty, themeMap);
+        });
+      }
     } else {
       result[key] = value;
     }
   }
 
+  // Return original object if no tokens were found (avoid unnecessary object creation)
   if (!hasTokens) {
     return obj;
   }

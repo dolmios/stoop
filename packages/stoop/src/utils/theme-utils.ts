@@ -25,11 +25,17 @@ const variableNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT
  * @returns Hashed string
  */
 export function hash(str: string): string {
+  // Fast path for empty strings
+  if (str.length === 0) {
+    return "0";
+  }
+
   const FNV_OFFSET_BASIS = 2166136261;
   const FNV_PRIME = 16777619;
 
   let hash = FNV_OFFSET_BASIS;
 
+  // Optimize: use charCodeAt in a tight loop
   for (let i = 0; i < str.length; i++) {
     hash ^= str.charCodeAt(i);
     hash = Math.imul(hash, FNV_PRIME);
