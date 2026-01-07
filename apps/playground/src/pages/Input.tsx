@@ -24,6 +24,8 @@ export default function InputDemo(): JSX.Element {
         <Text variant="h3">States</Text>
         <Input error errorMessage="This field has an error" label="Error" />
         <Input label="Success" success successMessage="This field is valid" />
+        <Input disabled label="Disabled" placeholder="This input is disabled" />
+        <Input label="Loading" loading placeholder="This input is loading" />
       </Stack>
     </Stack>
   );

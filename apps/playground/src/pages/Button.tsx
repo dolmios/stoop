@@ -11,6 +11,7 @@ export default function ButtonDemo(): JSX.Element {
           <Button variant="primary">Primary</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="minimal">Minimal</Button>
+          <Button variant="danger">Danger</Button>
         </Stack>
       </Stack>
       <Stack gap="medium">

@@ -8,6 +8,8 @@ import CodeDemo from "./pages/Code";
 import InputDemo from "./pages/Input";
 import MenuDemo from "./pages/Menu";
 import ModalDemo from "./pages/Modal";
+import SelectDemo from "./pages/Select";
+import SpinnerDemo from "./pages/Spinner";
 import StackDemo from "./pages/Stack";
 import TableDemo from "./pages/Table";
 import TabsDemo from "./pages/Tabs";
@@ -22,6 +24,8 @@ const components = [
   { component: InputDemo, label: "Input", value: "input" },
   { component: MenuDemo, label: "Menu", value: "menu" },
   { component: ModalDemo, label: "Modal", value: "modal" },
+  { component: SelectDemo, label: "Select", value: "select" },
+  { component: SpinnerDemo, label: "Spinner", value: "spinner" },
   { component: StackDemo, label: "Stack", value: "stack" },
   { component: TableDemo, label: "Table", value: "table" },
   { component: TabsDemo, label: "Tabs", value: "tabs" },
