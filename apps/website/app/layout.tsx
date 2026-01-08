@@ -121,6 +121,7 @@ export default async function RootLayout({
           <Stack
             as="main"
             bottom="medium"
+            css={{ margin: "0 auto", maxWidth: "1100px", width: "100%" }}
             left="small"
             right="small"
             top="medium">
