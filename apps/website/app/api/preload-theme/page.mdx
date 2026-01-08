@@ -7,13 +7,13 @@
 ```typescript
 import { preloadTheme } from "./theme";
 
-// Always injects all themes configured in createStoop
+// Injects all themes configured in createStoop
 preloadTheme();
 ```
 
 ## Parameters
 
-None. The function always injects CSS variables for **all** themes configured in `themes` config. Only works when `themes` config is provided to `createStoop`.
+None. The function injects CSS variables for all themes configured in `themes` config. Only works when `themes` config is provided to `createStoop`.
 
 ## Preventing FOUC
 
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ### Script Tag Approach (Recommended)
 
-For a more robust solution, you can use a script tag. However, note that `preloadTheme()` must be available in the global scope. This typically requires exposing your Stoop instance:
+Use a script tag for a more robust solution. `preloadTheme()` must be available in the global scope, which requires exposing your Stoop instance:
 
 ```typescript
 // stoop.theme.ts
@@ -92,13 +92,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 }
 ```
 
-**Note**: The Provider component automatically handles theme preloading, so manual `preloadTheme()` calls are usually not needed.
+**Note**: The Provider handles theme preloading when it mounts, so manual `preloadTheme()` calls are usually not needed. Call `preloadTheme()` manually only if you need to preload themes before React renders (e.g., to prevent FOUC when loading theme from localStorage).
 
 ## Notes
 
-- The Provider component automatically handles theme preloading - manual calls are usually not needed
-- Must be called before React renders if used manually (use `beforeInteractive` script strategy or in a script tag)
-- Injects CSS variables for **all** configured themes synchronously using attribute selectors
-- Takes no parameters - always injects all themes
+- Provider calls `preloadTheme()` when it mounts, injecting CSS variables for all configured themes
+- Manual `preloadTheme()` calls are usually not needed, but useful for preventing FOUC before React renders
+- If calling manually, call before React renders (use `beforeInteractive` script strategy or in a script tag)
+- Injects CSS variables for all configured themes synchronously using attribute selectors
+- Takes no parameters; injects all themes
 - Only works when `themes` config is provided to `createStoop`
 

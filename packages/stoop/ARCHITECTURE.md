@@ -167,7 +167,9 @@ Stoop fully supports server-side rendering with Next.js App Router:
 ```tsx
 // stoop.theme.ts (client-side)
 import { createStoop } from "stoop";
-export const { styled, Provider, useTheme, getCssText, globalCss } = createStoop(config);
+
+const stoop = createStoop(config);
+export const { styled, Provider, useTheme, getCssText, globalCss } = stoop;
 
 // app/components/Styles.tsx (client component)
 ("use client");
@@ -223,12 +225,14 @@ Utility functions allow you to create shorthand properties that transform into C
 ### Example
 
 ```tsx
-const { styled } = createStoop({
+const stoop = createStoop({
   theme: { space: { medium: "16px" } },
   utils: {
     px: (value) => ({ paddingLeft: value, paddingRight: value }),
   },
 });
+
+export const { styled } = stoop;
 
 // Usage
 const Button = styled("button", {

@@ -4,7 +4,7 @@
 
 ## What are Theme Tokens?
 
-Theme tokens are design values (colors, spacing, typography, etc.) that can be referenced in your styles using the `$` prefix. They resolve to CSS variables automatically.
+Theme tokens are design values (colors, spacing, typography, etc.) referenced in styles using the `$` prefix. They resolve to CSS variables.
 
 ## Usage
 
@@ -18,10 +18,10 @@ const Button = styled("button", {
 
 ## Shorthand vs Explicit
 
-You can use shorthand (property-aware resolution) or explicit scale specification:
+Use shorthand (property-aware resolution) or explicit scale specification:
 
 ```typescript
-// Shorthand (automatically resolves to correct scale)
+// Shorthand (resolves to correct scale)
 padding: "$medium"  // → space.medium
 color: "$text"      // → colors.text
 
@@ -46,11 +46,32 @@ color: var(--stoop-colors-text)
 
 ## Property-Aware Resolution
 
-Stoop automatically resolves tokens based on the CSS property:
+Stoop resolves tokens based on the CSS property name. Using a shorthand token (like `$primary`), Stoop checks the CSS property to determine which theme scale to search:
 
+**How it works:**
+1. Check if token is explicit path (`$colors.primary`) → convert directly
+2. If shorthand (`$primary`), check the CSS property name
+3. Map property to scale using `DEFAULT_THEME_MAP` or custom `themeMap`
+4. Search theme in the mapped scale first
+5. If not found, search all scales (with warning if ambiguous)
+6. Convert to CSS variable: `var(--stoop-colors-primary)`
+
+**Property mappings:**
 - `color`, `backgroundColor`, `borderColor` → `colors` scale
 - `padding`, `margin`, `gap` → `space` scale
 - `fontSize` → `fontSizes` scale
 - `fontWeight` → `fontWeights` scale
+- `borderRadius` → `radii` scale
+- `boxShadow` → `shadows` scale
 - And more...
 
+**Example:**
+```typescript
+const Button = styled("button", {
+  color: "$text",        // Property: color → maps to colors scale
+  padding: "$medium",    // Property: padding → maps to space scale
+  fontSize: "$large",    // Property: fontSize → maps to fontSizes scale
+});
+```
+
+Shorthand tokens (`$text`, `$medium`) work without specifying the scale explicitly.

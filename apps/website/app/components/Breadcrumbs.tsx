@@ -11,7 +11,6 @@ const baseUrl = "https://stoop.dolmios.com";
 // Label mapping for better breadcrumb readability
 const routeLabels: Record<string, string> = {
   api: "API Reference",
-  comparison: "Comparison",
   "create-stoop": "createStoop",
   "create-theme": "createTheme",
   "creating-components": "Creating Components",

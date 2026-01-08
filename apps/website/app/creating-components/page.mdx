@@ -56,7 +56,7 @@ const Button = styled("button", {
 
 ### Boolean Variants
 
-You can also create boolean variants:
+Create boolean variants:
 
 ```typescript
 const ToggleButton = styled("button", {
@@ -80,7 +80,7 @@ const ToggleButton = styled("button", {
 
 ### Multiple Variants
 
-Components can have multiple variant props:
+Components support multiple variant props:
 
 ```typescript
 const Card = styled("div", {
@@ -103,7 +103,7 @@ const Card = styled("div", {
 
 ## Polymorphic Components
 
-Use the `as` prop to render as different elements:
+Use the `as` prop to render different elements:
 
 ```typescript
 const Box = styled("div", {
@@ -148,6 +148,44 @@ The `css` prop merges with the component's base styles and supports:
 - Pseudo-classes (`&:hover`, `&:focus`, etc.)
 - Media queries (if configured)
 - All CSS properties
+
+**Merging order**: Base styles → Variants → CSS properties as props → `css` prop (later styles override earlier ones)
+
+## CSS Properties as Props
+
+CSS properties can be passed directly as props and convert to CSS styles:
+
+```typescript
+const Box = styled("div", {
+  padding: "$medium",
+});
+
+<Box marginTop="$large" padding="$small">
+  Content
+</Box>
+```
+
+CSS properties passed as props are merged after variants but before the `css` prop, allowing for prop-based overrides.
+
+## Component Targeting
+
+Styled components expose a `.selector` property for targeting in nested styles:
+
+```typescript
+const Button = styled("button", {
+  padding: "$medium",
+  backgroundColor: "$primary",
+});
+
+const Card = styled("div", {
+  padding: "$large",
+  [Button.selector]: {
+    marginTop: "$medium",
+  },
+});
+```
+
+The selector is based on the component's base styles hash, making it stable across renders even if variants or CSS props change.
 
 ## Related Pages
 

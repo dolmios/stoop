@@ -2,9 +2,7 @@
 
 <Icon name="Wrench" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Create custom shorthand properties that transform into CSS
 
-## Overview
-
-Utility functions allow you to create shorthand properties that transform into full CSS objects. They're applied before theme token resolution, so you can use theme tokens in utility values.
+Utility functions create shorthand properties that transform into CSS objects. They're applied before theme token resolution, enabling theme tokens in utility values.
 
 ## How Utilities Work
 
@@ -38,7 +36,7 @@ const utils: Record<string, UtilityFunction> = {
   },
 };
 
-export const { styled, css } = createStoop({
+const stoop = createStoop({
   theme: {
     space: {
       small: "8px",
@@ -48,6 +46,8 @@ export const { styled, css } = createStoop({
   },
   utils,
 });
+
+export const { styled, css } = stoop;
 ```
 
 ## Common Utility Examples
@@ -86,7 +86,7 @@ const Button = styled("button", {
 
 ### Complex Utilities
 
-Utilities can return complex CSS objects, including nested selectors and media queries:
+Utilities return complex CSS objects, including nested selectors and media queries:
 
 ```typescript
 const utils = {
@@ -165,20 +165,20 @@ type UtilityFunction = (
 ) => CSS;
 ```
 
-- **Input**: Can be a string, number, CSS object, or undefined
-- **Output**: Must return a CSS object
+- **Input**: string, number, CSS object, or undefined
+- **Output**: CSS object
 
 ## Best Practices
 
-1. **Use theme tokens** - Utilities work great with theme tokens (`$medium`, `$primary`, etc.)
-2. **Keep utilities simple** - Each utility should do one thing well
-3. **Handle edge cases** - Always handle undefined/null values gracefully
-4. **Type safety** - Use TypeScript to ensure type safety
-5. **Documentation** - Document complex utilities with examples
+1. Use theme tokens; utilities work great with theme tokens (`$medium`, `$primary`, etc.)
+2. Keep utilities simple; each utility should do one thing well
+3. Handle edge cases; handle undefined/null values gracefully
+4. Use TypeScript for type safety
+5. Document complex utilities with examples
 
 ## Advanced Example
 
-Here's a complete example with multiple utilities:
+Complete example with multiple utilities:
 
 ```typescript
 import { createStoop } from "stoop";
@@ -218,12 +218,14 @@ const utils: Record<string, UtilityFunction> = {
   },
 };
 
-export const { styled, css } = createStoop({
+const stoop = createStoop({
   theme: {
     space: { small: "8px", medium: "16px", large: "24px" },
   },
   utils,
 });
+
+export const { styled, css } = stoop;
 
 // Usage
 const Card = styled("div", {

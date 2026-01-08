@@ -13,8 +13,8 @@ import { getCssText } from "stoop-ui";
  * 2. CSS is injected into a <style id="stoop-ssr"> tag in the HTML stream
  * 3. On client hydration, the same tag is reused (no FOUC)
  * 4. CSS variables for all configured themes are included (using attribute selectors)
- * 5. Global styles are automatically included from the theme config
- *    (Provider handles injection automatically from globalCss config)
+ * 5. Global styles are included from the theme config
+ *    (Provider handles injection from globalCss config)
  *
  * @param initialTheme - The initial theme name (e.g., "light" or "dark")
  */
@@ -29,9 +29,9 @@ export function Styles({ initialTheme }: { initialTheme: string }): null {
 
     isInjected.current = true;
 
-    // Global styles are automatically included from theme config
-    // Provider handles injection automatically
-    // Note: getCssText() always includes all themes, the parameter is ignored
+    // Global styles are included from theme config
+    // Provider handles injection
+    // Note: getCssText() includes all themes, the parameter is ignored
     const cssText = getCssText();
 
     if (!cssText) {

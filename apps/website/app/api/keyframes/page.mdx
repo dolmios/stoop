@@ -23,22 +23,47 @@ const animatedClass = css({
 
 ## With Theme Tokens
 
-Theme tokens work directly in keyframes:
+Theme tokens work directly in keyframes and are resolved to CSS variables:
 
 ```typescript
 const slideUp = keyframes({
   from: {
     opacity: 0,
-    transform: "translateY($medium)",
-    backgroundColor: "$primary",
+    transform: "translateY($medium)",  // Token in transform function
+    backgroundColor: "$primary",        // Token resolves to var(--stoop-colors-primary)
   },
   to: {
     opacity: 1,
     transform: "translateY(0)",
-    backgroundColor: "$secondary",
+    backgroundColor: "$secondary",     // Token resolves to var(--stoop-colors-secondary)
   },
 });
 ```
 
-Tokens are automatically resolved to CSS variables, just like in regular styles.
+**How it works:**
+- Tokens in keyframes are resolved using the same property-aware resolution as regular styles
+- `$medium` in `transform: "translateY($medium)"` maps to `space` scale (property-aware)
+- `$primary` maps to `colors` scale (property-aware)
+- Tokens in complex expressions (like `translateY()`) are replaced using regex
+- All tokens resolve to CSS variables: `var(--stoop-space-medium)`, `var(--stoop-colors-primary)`
+
+**Example with multiple tokens:**
+```typescript
+const fadeAndSlide = keyframes({
+  "0%": {
+    opacity: 0,
+    transform: "translateY($large)",
+    backgroundColor: "$background",
+  },
+  "50%": {
+    opacity: "$opacities.hover",
+    transform: "translateY($medium)",
+  },
+  "100%": {
+    opacity: 1,
+    transform: "translateY(0)",
+    backgroundColor: "$primary",
+  },
+});
+```
 

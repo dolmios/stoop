@@ -2,20 +2,18 @@
 
 <Icon name="Server" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> Use Stoop with Next.js App Router for perfect SSR support
 
-## Overview
+Stoop supports Next.js App Router with zero FOUC (Flash of Unstyled Content). Use `useServerInsertedHTML` to capture styles during SSR streaming.
 
-Stoop fully supports Next.js App Router with zero FOUC (Flash of Unstyled Content). The recommended pattern uses `useServerInsertedHTML` to capture styles during SSR streaming.
-
-For detailed API documentation, see:
-- <Icon name="FileCode" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **[getCssText API](/api/get-css-text)** - Get all generated CSS text for SSR
-- <Icon name="Lightning" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> **[preloadTheme API](/api/preload-theme)** - Preload theme CSS variables to prevent FOUC
+For API details, see [getCssText](/api/get-css-text) and [preloadTheme](/api/preload-theme).
 
 ## SSR Entry Point (`stoop/ssr`)
 
 For Server Components in Next.js App Router, use the SSR entry point to avoid bundling React code:
 
+**Important**: Even for SSR, you should create your Stoop instance in `stoop.theme.ts` at module level, not inside components:
+
 ```typescript
-// app/components/ServerComponent.tsx
+// stoop.theme.ts - Create SSR instance at module level
 import { createStoop } from "stoop/ssr";
 
 const stoop = createStoop({
@@ -25,16 +23,24 @@ const stoop = createStoop({
   },
 });
 
-// Returns StoopServerInstance (no React APIs)
-// Available: css, globalCss, keyframes, getCssText, warmCache, preloadTheme, createTheme, theme, config
-// NOT available: styled, Provider, useTheme
+// Export APIs in Server Components
+export const { css, globalCss, keyframes, getCssText, warmCache, preloadTheme, createTheme } = stoop;
+```
+
+```typescript
+// app/components/ServerComponent.tsx
+import { css } from "../../stoop.theme";
 
 // Usage in Server Component
-const className = stoop.css({
+const className = css({
   padding: "$medium",
   color: "$primary",
 });
 ```
+
+**Note**: SSR instance returns `StoopServerInstance` (no React APIs)
+- Available: `css`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`, `createTheme`, `theme`, `config`
+- NOT available: `styled`, `Provider`, `useTheme` (React APIs)
 
 **When to use**:
 - Server Components (no React APIs needed)
@@ -47,7 +53,7 @@ const className = stoop.css({
 
 **Note:** The core `stoop` package generates CSS at runtime. We're exploring build-time extraction for future releases. If you need it today, consider [Vanilla Extract](https://vanilla-extract.style) or [Panda CSS](https://panda-css.com).
 
-## Next.js App Router (Recommended)
+## Next.js App Router
 
 ### Step 1: Create Styles Component
 
@@ -62,9 +68,7 @@ import { getCssText } from "../../stoop.theme";
 
 export function Styles({ initialTheme }: { initialTheme: string }) {
   useServerInsertedHTML(() => {
-    // Global styles are automatically included from theme config
-    // No need to call them manually - Provider handles this automatically
-    // Note: getCssText() always includes all themes, the parameter is ignored
+    // getCssText() includes all themes, global CSS, and component styles
     const cssText = getCssText();
 
     if (!cssText) return null;
@@ -209,7 +213,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 import { getCssText } from "../theme";
 
 export default function Document() {
-  // Always call with no parameters - includes all themes automatically
+  // Call with no parameters - includes all themes
   const cssText = getCssText();
 
   return (
@@ -229,26 +233,22 @@ export default function Document() {
 }
 ```
 
-## API Reference
-
-For complete API documentation, see:
-- **[getCssText](/api/get-css-text)** - Complete API reference with parameters and examples
-- **[preloadTheme](/api/preload-theme)** - Complete API reference with FOUC prevention examples
 
 ## Hydration Behavior
 
-The Provider always starts with the default theme to match SSR output, preventing hydration mismatches. Theme preferences are restored from storage in `useLayoutEffect` after mount. This ensures:
+The Provider starts with the default theme to match SSR output, preventing hydration mismatches. Theme preferences restore from storage in `useLayoutEffect` after mount:
+
 - Server renders with default theme
 - Client hydrates with default theme (matches server)
-- Theme preference is restored after hydration (no mismatch)
+- Theme preference restores after hydration (no mismatch)
 
 ## Best Practices
 
-1. **Always call `getCssText()` in your document/layout** - This ensures styles are available on initial render
-2. **Use Provider for theme management** - The Provider automatically handles theme preloading and prevents FOUC
-3. **Include theme variables** - `getCssText()` automatically includes CSS variables for all configured themes
-4. **No theme parameter needed** - Always call `getCssText()` with no parameters - it includes all themes automatically
-5. **Use SSR entry point for Server Components** - Import from `stoop/ssr` in Server Components to avoid bundling React code
+1. Call `getCssText()` in your document/layout so styles are available on initial render
+2. Use Provider for theme management; it handles theme preloading and prevents FOUC
+3. `getCssText()` includes CSS variables for all configured themes
+4. Call `getCssText()` with no parameters; it includes all themes
+5. Use SSR entry point for Server Components; import from `stoop/ssr` to avoid bundling React code
 
 ## Common Issues
 
@@ -258,7 +258,7 @@ Make sure you're calling `getCssText()` in your document/layout and the styles a
 
 ### FOUC with theme switching
 
-The Provider component automatically handles theme preloading. If you need manual control, use `preloadTheme()` before React renders, but this is usually not necessary.
+The Provider handles theme preloading. For manual control, use `preloadTheme()` before React renders, but this is usually not necessary.
 
 ### Theme not found warning
 
@@ -267,6 +267,6 @@ This warning should not occur since `getCssText()` doesn't use the theme paramet
 ## Related Pages
 
 - <Icon name="Palette" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Theme Setup](/theme-setup) - Configure themes for SSR
-- <Icon name="Book" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [API Reference: getCssText](/api/get-css-text) - Complete getCssText documentation
-- <Icon name="Book" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [API Reference: preloadTheme](/api/preload-theme) - Complete preloadTheme documentation
+- <Icon name="FileCode" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [getCssText API](/api/get-css-text) - Get all generated CSS text for SSR
+- <Icon name="Lightning" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [preloadTheme API](/api/preload-theme) - Preload theme CSS variables
 

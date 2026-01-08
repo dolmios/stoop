@@ -2,10 +2,14 @@
 
 <Icon name="Layers" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> React component for theme switching and management
 
+## Availability
+
+The `Provider` component is only available when you provide a `themes` config to `createStoop()`. If `themes` is not provided, `Provider` is `undefined`.
+
 ## Usage
 
 ```typescript
-import { Provider } from "./theme";
+import { Provider } from "./stoop.theme";
 
 function App() {
   return (
@@ -15,6 +19,10 @@ function App() {
   );
 }
 ```
+
+## Global CSS Injection
+
+When `themes` config is provided, `globalCss` from your config is injected during `createStoop()` execution (module level), before React renders. Provider enables this injection but doesn't perform it - the CSS is already injected when Provider mounts.
 
 ## Props
 
@@ -27,7 +35,7 @@ function App() {
 
 ## Theme Persistence
 
-The Provider automatically saves the selected theme to localStorage and restores it on page load.
+The Provider saves the selected theme to localStorage and restores it on page load.
 
 ## Cookie Sync
 
@@ -48,11 +56,11 @@ When `cookieKey` is provided, the Provider syncs theme preferences between cooki
 </Provider>
 ```
 
-This enables server-side theme detection from cookies while maintaining client-side persistence in localStorage.
+Enables server-side theme detection from cookies while maintaining client-side persistence in localStorage.
 
 ## Custom Attribute
 
-By default, the Provider applies the theme name to the `data-theme` attribute on the root element. You can customize this with the `attribute` prop:
+By default, the Provider applies the theme name to the `data-theme` attribute on the root element. Customize this with the `attribute` prop:
 
 ```typescript
 // Default: applies data-theme="light" or data-theme="dark"
@@ -71,5 +79,5 @@ By default, the Provider applies the theme name to the `data-theme` attribute on
 </Provider>
 ```
 
-This is useful if you want to use CSS attribute selectors or integrate with other systems that use different attribute names.
+Useful for CSS attribute selectors or integrating with other systems that use different attribute names.
 

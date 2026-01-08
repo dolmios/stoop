@@ -40,3 +40,12 @@ const dynamicClass = css({
 });
 ```
 
+## Returns
+
+Returns a string containing the generated CSS class name. Use this class name in your JSX:
+
+```typescript
+const buttonClass = css({ padding: "$medium" });
+
+<button className={buttonClass}>Click me</button>
+```

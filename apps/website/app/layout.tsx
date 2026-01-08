@@ -120,23 +120,10 @@ export default async function RootLayout({
           <Navigation />
           <Stack
             as="main"
-            css={{
-              flex: 1,
-              margin: "0 auto",
-              maxWidth: "1000px",
-              mobile: {
-                paddingBottom: "$medium",
-                paddingLeft: "$small",
-                paddingRight: "$small",
-                paddingTop: "$medium",
-              },
-              overflowY: "auto",
-              paddingBottom: "$large",
-              paddingTop: "$large",
-              width: "100%",
-            }}
-            left="medium"
-            right="medium">
+            bottom="medium"
+            left="small"
+            right="small"
+            top="medium">
             <Breadcrumbs />
             {children}
           </Stack>

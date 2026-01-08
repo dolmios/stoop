@@ -4,15 +4,20 @@
 
 ## Configuration-based Usage (Recommended)
 
-Global CSS can now be defined directly in your Stoop config for automatic injection:
+Define global CSS directly in your Stoop config for automatic injection. When `themes` config is provided, global CSS injects during `createStoop()` execution (at module level), before React renders.
 
 ```typescript
+// stoop.theme.ts
 import { createStoop } from "stoop";
 
 const stoop = createStoop({
   theme: {
     colors: { background: "#fff", text: "#000" },
     fonts: { body: "system-ui, sans-serif" },
+  },
+  themes: {
+    light: { /* ... */ },
+    dark: { /* ... */ },
   },
   globalCss: {
     "*": {
@@ -36,12 +41,20 @@ const stoop = createStoop({
   },
 });
 
-// Global styles are automatically injected by the Provider
+// Global styles are injected during createStoop() execution
+// Injection happens at module level, before React renders
+// Provider enables this automatic injection (only when themes config provided)
+export const { styled, css, Provider, useTheme, getCssText } = stoop;
 ```
 
-## Manual Usage (Advanced)
+**Important Notes**:
+- Injection happens during `createStoop()` execution (module level), before React renders
+- Requires `themes` config - without it, you must call `globalCss()` manually
+- Provider enables this automatic injection but doesn't perform it
 
-For advanced use cases, you can still use the globalCss function directly:
+## Manual Usage
+
+Use the `globalCss` function directly for advanced cases:
 
 ```typescript
 import { globalCss } from "./theme";
@@ -59,7 +72,7 @@ customGlobalStyles();
 
 ## CSS Reset Example
 
-Here's a comprehensive CSS reset example for your config:
+CSS reset example:
 
 ```typescript
 const stoopConfig = {
@@ -113,11 +126,11 @@ const stoopConfig = {
 
 ## Best Practices
 
-- Use the `globalCss` config property for theme-related global styles
-- Use the `globalCss()` function for dynamic or conditional global styles
+- Use `globalCss` config for theme-related global styles
+- Use `globalCss()` function for dynamic or conditional styles
 - Use theme tokens for colors, spacing, and typography
-- Keep global styles minimal - prefer component-level styles
+- Keep global styles minimal; prefer component-level styles
 - Use nested selectors for pseudo-classes (`&:hover`, etc.)
-- Global styles automatically update when the theme changes
-- No layout shift - styles are injected before React renders
+- Global styles update when theme changes
+- Styles inject before React renders (no layout shift)
 

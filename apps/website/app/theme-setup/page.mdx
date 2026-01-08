@@ -4,9 +4,10 @@
 
 ## Step 1: Create Theme File
 
-Create a theme file (e.g., `theme.ts`) to define your Stoop instance with design tokens. Stoop supports 13 approved theme scales.
+Create a theme file named `stoop.theme.ts` (or `theme.ts`) to define your Stoop instance with design tokens. **Required convention**: `createStoop()` must be called at module level in this file. Stoop supports 13 approved theme scales.
 
 ```typescript
+// stoop.theme.ts (or theme.ts) - REQUIRED CONVENTION
 import { createStoop } from "stoop";
 
 const lightTheme = {
@@ -44,11 +45,12 @@ const darkTheme = {
     text: "#ffffff",
     border: "#333333",
   },
-  // Other scales (space, fonts, etc.) automatically inherit from lightTheme
-  // All themes are merged with the default theme automatically
+  // Other scales (space, fonts, etc.) inherit from lightTheme
+  // All themes merge with the default theme
 };
 
-export const { styled, css, Provider, useTheme } = createStoop({
+// Create Stoop instance at module level (required convention)
+const stoop = createStoop({
   theme: lightTheme,
   themes: {
     light: lightTheme,
@@ -75,7 +77,15 @@ export const { styled, css, Provider, useTheme } = createStoop({
     },
   },
 });
+
+// Export APIs throughout your app
+export const { styled, css, Provider, useTheme, getCssText } = stoop;
 ```
+
+**Important**:
+- `createStoop()` is called at module level (when the file is imported/evaluated)
+- Global CSS from `globalCss` config injects during `createStoop()` execution
+- All consumers import from this single file: `import { styled } from './stoop.theme'`
 
 ## Configuration Options
 
@@ -89,14 +99,14 @@ export const { styled, css, Provider, useTheme } = createStoop({
 | media | `Record<string, string>` | undefined | Media query breakpoints for responsive styles |
 | utils | `Record<string, UtilityFunction>` | undefined | Custom utility functions |
 | themeMap | `Record<string, ThemeScale>` | undefined | Custom theme scale mapping for property-aware token resolution |
-| globalCss | CSS | undefined | Global styles to inject automatically (recommended over manual globalCss calls) |
+| globalCss | CSS | undefined | Global styles to inject (recommended over manual globalCss calls) |
 
 ## Media Queries
 
 Define responsive breakpoints using the `media` option in `createStoop`, or include them in your theme object:
 
 ```typescript
-export const { styled, css } = createStoop({
+const stoop = createStoop({
   theme: lightTheme,
   media: {
     mobile: "@media (max-width: 768px)",
@@ -104,6 +114,8 @@ export const { styled, css } = createStoop({
     desktop: "@media (min-width: 1025px)",
   },
 });
+
+export const { styled, css } = stoop;
 ```
 
 ### Using Media Queries in Styles
@@ -186,9 +198,9 @@ media: {
 
 ### Notes
 
-- Media queries can be defined in the `media` option **or** in the theme's `media` property
+- Media queries can be defined in the `media` option or in the theme's `media` property
 - Theme media queries override config media queries when both are present
-- Media query names are arbitrary - use whatever makes sense for your project
+- Media query names are arbitrary; use whatever makes sense for your project
 - Media queries work with theme tokens, utilities, and all CSS properties
 
 ## Approved Theme Scales

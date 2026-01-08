@@ -58,3 +58,27 @@ const Input = styled("input", {
 });
 ```
 
+## Tokens in Complex Expressions
+
+Tokens work in complex CSS expressions using regex replacement:
+
+```typescript
+const Box = styled("div", {
+  // Tokens in calc() expressions
+  width: "calc(100% - $medium)",
+  margin: "calc($large * 2)",
+
+  // Tokens in transform functions
+  transform: "translateY($medium)",
+  transform: "scale($opacity.hover)",
+
+  // Tokens in gradients
+  background: "linear-gradient(135deg, $primary 0%, $secondary 100%)",
+
+  // Multiple tokens in single value
+  border: "2px solid $border",
+  boxShadow: "$shadows.default, 0 0 0 1px $border",
+});
+```
+
+**Note**: Tokens in complex expressions are replaced using regex, so they work anywhere a token appears in a string value.

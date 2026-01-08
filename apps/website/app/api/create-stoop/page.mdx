@@ -4,17 +4,29 @@
 
 ## Usage
 
+**Important Convention**: `createStoop()` must be called at module level in a file named `stoop.theme.ts` (or `theme.ts`). Required pattern:
+
 ```typescript
+// stoop.theme.ts (or theme.ts) - REQUIRED CONVENTION
 import { createStoop } from "stoop";
 
-const { styled, css, Provider, useTheme } = createStoop({
+const stoop = createStoop({
   theme: lightTheme,
   themes: {
     light: lightTheme,
     dark: darkTheme,
   },
 });
+
+// Export APIs throughout your app
+export const { styled, css, Provider, useTheme, getCssText } = stoop;
 ```
+
+**Why this convention matters**:
+- `createStoop()` is called at module level (when file is imported/evaluated)
+- Global CSS injection happens immediately during module evaluation
+- All consumers import from this single file: `import { styled } from './stoop.theme'`
+- Global CSS is available before React renders
 
 ## Parameters
 
@@ -22,11 +34,11 @@ const { styled, css, Provider, useTheme } = createStoop({
 |-----------|------|-------------|
 | theme | Theme | Base theme object with design tokens |
 | themes | `Record<string, Theme>` | Object mapping theme names to theme objects (optional, enables Provider and useTheme) |
-| media | `Record<string, string>` | Media query breakpoints for responsive styles (optional, can also be defined in theme) |
+| media | `Record<string, string>` | Media query breakpoints for responsive styles (optional; can also be defined in theme) |
 | utils | `Record<string, UtilityFunction>` | Custom utility functions (optional) |
 | prefix | string | Prefix for CSS class names and variables (default: "stoop") |
 | themeMap | `Record<string, ThemeScale>` | Custom theme scale mapping (optional) |
-| globalCss | CSS | Global styles to inject automatically (optional, recommended over manual globalCss calls) |
+| globalCss | CSS | Global styles to inject (optional; recommended over manual globalCss calls) |
 
 ## Returns
 

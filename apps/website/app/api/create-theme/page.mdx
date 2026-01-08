@@ -25,12 +25,13 @@ const darkTheme = createTheme({
 - Nested objects (like `colors`, `space`) are merged, not replaced
 - Properties not in the override are preserved from the base theme
 
-**Note**: All themes configured in `createStoop` automatically merge with the default theme. This ensures all themes extend the base theme, keeping all original properties. This merging happens automatically in both `getCssText()` and theme injection.
+**Note**: All themes configured in `createStoop` merge with the default theme, ensuring all themes extend the base theme. This merging happens in both `getCssText()` and theme injection.
 
 ## Adding Themes
 
 ```typescript
-const { Provider } = createStoop({
+// stoop.theme.ts
+const stoop = createStoop({
   theme: lightTheme,
   themes: {
     light: lightTheme,
@@ -44,5 +45,7 @@ const { Provider } = createStoop({
     }),
   },
 });
+
+export const { Provider, useTheme } = stoop;
 ```
 

@@ -15,9 +15,10 @@ yarn add stoop
 ## Quick Start
 
 ```tsx
+// stoop.theme.ts
 import { createStoop } from "stoop";
 
-const { styled, css, Provider, useTheme } = createStoop({
+const stoop = createStoop({
   theme: {
     colors: {
       primary: "#0070f3",
@@ -40,6 +41,9 @@ const { styled, css, Provider, useTheme } = createStoop({
   },
 });
 
+export const { styled, css, Provider, useTheme } = stoop;
+
+// Usage
 const Button = styled("button", {
   padding: "$medium",
   backgroundColor: "$primary",

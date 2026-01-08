@@ -1,14 +1,16 @@
 # Migration from Stitches
 
-<Icon name="ArrowRight" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> A step-by-step guide to migrate your Stitches codebase to Stoop. Stoop is designed as a modern, actively maintained replacement for Stitches with CSS variable-based theming and built-in multi-theme support.
+<Icon name="ArrowRight" size={24} style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} /> A complete guide to migrating from Stitches to Stoop, including feature comparison and step-by-step instructions.
 
 ## Why Migrate?
 
-- **Stitches is no longer maintained** (as of June 2023)
-- **CSS variables** for instant theme switching without recompiling CSS
-- **Built-in multi-theme support** with Provider component and `useTheme()` hook
-- **Full Next.js App Router support** with React 18 Server Components compatibility
-- **Active maintenance** and community support
+Stoop is designed as a modern, actively maintained replacement for Stitches with key improvements:
+
+- **Active maintenance** - Stitches is no longer maintained (as of June 2023)
+- **CSS variables** - Instant theme switching without recompiling CSS
+- **Built-in multi-theme support** - Provider component and `useTheme()` hook included
+- **Full Next.js App Router support** - React 18 Server Components compatibility
+- **Simpler API** - No theme parameter needed for `getCssText()`
 
 ## Feature Comparison
 
@@ -22,8 +24,34 @@
 | **Multi-theme** | Manual management | Built-in Provider | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** (easier) |
 | **SSR support** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** |
 | **Next.js App Router** | Limited | Full support | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Better** |
-| **Runtime CSS generation** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** (both generate CSS at runtime) |
-| **Utility functions** | Many built-ins | Flexible system | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same capabilities** (Stitches has more built-ins, but Stoop utilities are equally powerful) |
+| **Runtime CSS generation** | Yes | Yes | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same** |
+| **Utility functions** | Many built-ins | Flexible system | <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle" }} /> **Same capabilities** |
+
+## Key Differences
+
+### Theme System
+
+**Stitches:** Theme tokens resolve to runtime values injected via JavaScript.
+
+**Stoop:** Theme tokens resolve to CSS variables (`var(--colors-primary)`), enabling instant theme switching without recompiling CSS.
+
+### Multi-Theme Support
+
+**Stitches:** Requires manual theme management with CSS class switching.
+
+**Stoop:** Built-in multi-theme support via `Provider` component with automatic CSS variable switching.
+
+### Compound Variants
+
+**Stitches:** Supports compound variants (combining multiple variant conditions).
+
+**Stoop:** Does not currently support compound variants (planned for future release). Variants work independently, which is sufficient for most use cases. Achieve similar results using conditional `css` props or wrapper components.
+
+### Utility Functions
+
+**Stitches:** Advanced utility function system with extensive built-in utilities.
+
+**Stoop:** Flexible utility function system with the same capabilities. Create any custom utilities you need. Stitches provides more built-in utilities out of the box, but Stoop's utility system is equally powerful and flexible.
 
 ## Migration Steps
 
@@ -69,6 +97,7 @@ const { styled, css, globalCss, keyframes, getCssText } = createStitches({
 
 **After (Stoop):**
 ```typescript
+// stoop.theme.ts (or theme.ts) - REQUIRED CONVENTION
 import { createStoop } from 'stoop';
 
 // Define your themes
@@ -92,10 +121,11 @@ const darkTheme = {
     background: '#000000',
     text: '#ffffff',
   },
-  // Other scales (space, etc.) automatically inherit from lightTheme
+  // Other scales (space, etc.) inherit from lightTheme
 };
 
-export const { styled, css, globalCss, keyframes, getCssText, Provider, useTheme } = createStoop({
+// Create Stoop instance at module level (required convention)
+const stoop = createStoop({
   theme: lightTheme, // Default theme
   themes: {
     light: lightTheme,
@@ -112,13 +142,16 @@ export const { styled, css, globalCss, keyframes, getCssText, Provider, useTheme
     }),
   },
 });
+
+// Export APIs throughout your app
+export const { styled, css, globalCss, keyframes, getCssText, Provider, useTheme } = stoop;
 ```
 
 **Key Changes:**
 - `createStitches` → `createStoop`
 - Add `themes` object for multi-theme support (optional but recommended)
 - `theme` becomes the default theme
-- Get `Provider` and `useTheme` automatically when `themes` is provided
+- Get `Provider` and `useTheme` when `themes` is provided
 
 ### Step 3: Component Variants
 
@@ -143,7 +176,7 @@ const Button = styled('button', {
 
 ### Step 4: Handle Compound Variants
 
-Stoop does not currently support compound variants (planned for future release). However, most projects don't use compound variants, and regular variants are usually sufficient. If you do use compound variants, you'll need to refactor them using one of these approaches:
+Stoop does not currently support compound variants (planned for future release). Most projects don't use compound variants, and regular variants are usually sufficient. If you use compound variants, refactor them using one of these approaches:
 
 **Before (Stitches):**
 ```typescript
@@ -276,7 +309,7 @@ export default function Document() {
 }
 ```
 
-**Key Change:** `getCssText()` no longer accepts a theme parameter - it always includes all configured themes.
+**Key Change:** `getCssText()` no longer accepts a theme parameter - it includes all configured themes.
 
 #### Next.js App Router
 
@@ -379,14 +412,12 @@ These features work identically:
 - Utility functions
 - `globalCss` and `keyframes` APIs
 
-
 ## Breaking Changes Summary
 
 1. **Compound Variants** - Not currently supported (planned for future) - use conditional logic or `css` prop (most projects don't need compound variants)
 2. **Theme Configuration** - Add `themes` object for multi-theme support (optional but recommended)
-3. **getCssText()** - No longer accepts theme parameter - always includes all themes automatically (simpler API)
+3. **getCssText()** - No longer accepts theme parameter - includes all themes (simpler API)
 4. **Multi-theme** - Requires Provider wrapper (but much easier to use than manual theme management)
-
 
 ## Troubleshooting
 
@@ -422,20 +453,17 @@ These features work identically:
 - Complex theme setup
 - SSR configuration complexity
 
-## Next Steps
+## After Migration
 
-After migration:
-
-1. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Test all components thoroughly
-2. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Verify theme switching works
-3. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Check SSR rendering
-4. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Update any custom utilities if needed
-5. <Icon name="CheckCircle" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> Consider using Stoop's built-in multi-theme features
+1. Test all components thoroughly
+2. Verify theme switching works
+3. Check SSR rendering
+4. Update any custom utilities if needed
+5. Consider using Stoop's built-in multi-theme features
 
 ## Related Pages
 
 - <Icon name="Download" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Installation Guide](/installation) - Get started with Stoop
 - <Icon name="Palette" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Theme Setup](/theme-setup) - Configure your theme
 - <Icon name="Code" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Creating Components](/creating-components) - Learn how to create styled components
-- <Icon name="FileText" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [Comparison: Stitches vs Stoop](/comparison) - Detailed feature comparison
 - <Icon name="Book" size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> [API Reference](/api) - Complete API documentation

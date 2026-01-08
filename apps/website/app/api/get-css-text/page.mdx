@@ -7,7 +7,7 @@
 ```typescript
 import { getCssText } from "./theme";
 
-// Always call with no parameters
+// Call with no parameters
 const cssText = getCssText();
 ```
 
@@ -15,17 +15,19 @@ const cssText = getCssText();
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. Always call `getCssText()` with no parameters. The function always includes all themes configured in `themes` config. |
+| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. Call `getCssText()` with no parameters. The function includes all themes configured in `themes` config. |
 
 ## Returns
 
 Returns a string containing all generated CSS including:
 - Theme CSS variables (for **all** configured themes using attribute selectors)
 - All component styles
-- Global styles
+- Global styles (from `globalCss` config; injected during `createStoop()` execution)
 - Keyframe animations
 
-**Note:** When `themes` config is provided, `getCssText()` always includes CSS variables for all themes using attribute selectors (e.g., `[data-theme="light"]`, `[data-theme="dark"]`). This allows instant theme switching without recompiling CSS.
+**Note:** When `themes` config is provided, `getCssText()` includes CSS variables for all themes using attribute selectors (e.g., `[data-theme="light"]`, `[data-theme="dark"]`), enabling instant theme switching without recompiling CSS.
+
+**Global CSS**: Global CSS from `globalCss` config is included because it injects during `createStoop()` execution (at module level) and stores in the injection cache. This happens before React renders, so styles are available for SSR.
 
 ## Next.js App Router
 
@@ -78,9 +80,9 @@ export default function Document() {
 
 ## Notes
 
-- Always call `getCssText()` in your document/layout to ensure styles are available on initial render
-- The function automatically includes theme CSS variables for **all** configured themes
-- The `theme` parameter is deprecated and ignored - all themes are always included
-- Theme variables are always included at the top of the CSS output using attribute selectors
+- Call `getCssText()` in your document/layout so styles are available on initial render
+- Includes theme CSS variables for all configured themes
+- The `theme` parameter is deprecated and ignored; all themes are included
+- Theme variables are included at the top of the CSS output using attribute selectors
 - When `themes` config is provided, all themes are available simultaneously via attribute selectors
 

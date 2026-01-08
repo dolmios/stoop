@@ -11,7 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/utility-functions",
     "/ssr",
     "/migration",
-    "/comparison",
     "/api",
     "/api/create-stoop",
     "/api/styled",

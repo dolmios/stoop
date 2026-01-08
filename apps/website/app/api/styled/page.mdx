@@ -41,7 +41,7 @@ const Button = styled("button", {
 
 ## Polymorphic Components
 
-Use the `as` prop to render as different elements:
+Use the `as` prop to render different elements:
 
 ```typescript
 const Box = styled("div", {
@@ -86,11 +86,16 @@ The `css` prop merges with the component's base styles and supports:
 - Media queries (if configured)
 - All CSS properties
 
-**Merging order**: Base styles → Variants → CSS props → `css` prop (later styles override earlier ones)
+**Merging order**: Base styles → Variants → CSS properties as props → `css` prop (later styles override earlier ones)
+
+1. Base styles apply first
+2. Variant styles merge with base styles
+3. CSS properties passed as props (e.g., `marginTop="$large"`) merge next
+4. The `css` prop merges last (highest priority)
 
 ## CSS Properties as Props
 
-CSS properties can be passed as props and are automatically converted to CSS styles:
+CSS properties passed as props convert to CSS styles:
 
 ```typescript
 const Box = styled("div", {
@@ -102,7 +107,7 @@ const Box = styled("div", {
 </Box>
 ```
 
-CSS properties passed as props are merged before the `css` prop, allowing for prop-based overrides.
+CSS properties passed as props merge before the `css` prop, enabling prop-based overrides.
 
 ## Component Targeting
 
