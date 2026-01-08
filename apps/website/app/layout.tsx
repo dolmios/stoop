@@ -121,9 +121,9 @@ export default async function RootLayout({
           <Stack
             as="main"
             bottom="medium"
-            css={{ margin: "0 auto", maxWidth: "1100px", width: "100%" }}
-            left="small"
-            right="small"
+            css={{ margin: "0 auto", maxWidth: "1100px" }}
+            left="medium"
+            right="medium"
             top="medium">
             <Breadcrumbs />
             {children}
