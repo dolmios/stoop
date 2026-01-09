@@ -16,7 +16,10 @@ export function benchmarkSSR(): {
   themeSwitching: { stoop: BenchmarkResult; stitches: BenchmarkResult };
 } {
   // Test CSS text generation (used in SSR for extracting CSS)
-  const cssTextGeneration = (() => {
+  const cssTextGeneration = ((): {
+    stoop: BenchmarkResult;
+    stitches: BenchmarkResult;
+  } => {
     const stoop = createStoop({ theme: sharedTheme });
     const stitches = createStitches({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +42,7 @@ export function benchmarkSSR(): {
     const stoopResult = measureTime(
       "SSR CSS Text Generation",
       "stoop",
-      () => {
+      (): void => {
         // Simulate SSR: create components and extract CSS
         createElement(BoxStoop, {});
         createElement(BoxStoop, { css: { margin: "$space.small" } });
@@ -57,7 +60,7 @@ export function benchmarkSSR(): {
     const stitchesResult = measureTime(
       "SSR CSS Text Generation",
       "stitches",
-      () => {
+      (): void => {
         createElement(BoxStitches, {});
         createElement(BoxStitches, {
           css: { margin: "$small" },
@@ -77,11 +80,14 @@ export function benchmarkSSR(): {
   })();
 
   // Test multiple request handling (simulating multiple SSR requests)
-  const multipleRequests = (() => {
+  const multipleRequests = ((): {
+    stoop: BenchmarkResult;
+    stitches: BenchmarkResult;
+  } => {
     const stoopResult = measureTime(
       "SSR Multiple Requests",
       "stoop",
-      () => {
+      (): void => {
         // Simulate a new request: create fresh instance
         const stoop = createStoop({ theme: sharedTheme });
         const Box = stoop.styled("div", {
@@ -103,7 +109,7 @@ export function benchmarkSSR(): {
     const stitchesResult = measureTime(
       "SSR Multiple Requests",
       "stitches",
-      () => {
+      (): void => {
         const stitches = createStitches({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           theme: sharedTheme as any,
@@ -129,19 +135,23 @@ export function benchmarkSSR(): {
   })();
 
   // Test theme switching performance (important for multi-theme SSR)
-  const themeSwitching = (() => {
+  const themeSwitching = ((): {
+    stoop: BenchmarkResult;
+    stitches: BenchmarkResult;
+  } => {
     const stoop = createStoop({ theme: sharedTheme });
     const stitches = createStitches({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       theme: sharedTheme as any,
     });
 
-    const BoxStoop = stoop.styled("div", {
+    // Create components for theme switching test
+    stoop.styled("div", {
       backgroundColor: "$colors.background",
       color: "$colors.text",
     });
 
-    const BoxStitches = stitches.styled("div", {
+    stitches.styled("div", {
       backgroundColor: "$background",
       color: "$text",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -164,7 +174,7 @@ export function benchmarkSSR(): {
     const stoopResult = measureTime(
       "SSR Theme Switching",
       "stoop",
-      () => {
+      (): void => {
         // Simulate theme switching by creating new instance with different theme
         const stoopWithTheme = createStoop({ theme: alternateTheme });
         const Box = stoopWithTheme.styled("div", {
@@ -186,7 +196,7 @@ export function benchmarkSSR(): {
     const stitchesResult = measureTime(
       "SSR Theme Switching",
       "stitches",
-      () => {
+      (): void => {
         const stitchesWithTheme = createStitches({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           theme: alternateTheme as any,

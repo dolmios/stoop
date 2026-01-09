@@ -12,6 +12,8 @@ export default function ButtonDemo(): JSX.Element {
           <Button variant="secondary">Secondary</Button>
           <Button variant="minimal">Minimal</Button>
           <Button variant="danger">Danger</Button>
+          {/* @ts-expect-error - Testing: "invalid" is not a valid variant */}
+          <Button variant="invalid">Invalid</Button>
         </Stack>
       </Stack>
       <Stack gap="medium">
@@ -19,6 +21,8 @@ export default function ButtonDemo(): JSX.Element {
         <Stack direction="row" gap="small" wrap>
           <Button size="small">Small</Button>
           <Button>Default</Button>
+          {/* @ts-expect-error - Testing: "huge" is not a valid size */}
+          <Button size="huge">Huge</Button>
         </Stack>
       </Stack>
       <Stack gap="medium">

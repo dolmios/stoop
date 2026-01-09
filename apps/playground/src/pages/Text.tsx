@@ -1,5 +1,5 @@
 import { type JSX } from "react";
-import { Stack, Text, TextComponent } from "stoop-ui";
+import { Stack, Text } from "stoop-ui";
 
 export default function TextDemo(): JSX.Element {
   return (
@@ -13,28 +13,25 @@ export default function TextDemo(): JSX.Element {
       <Text variant="h1">Text</Text>
       <Stack gap="medium">
         <Text variant="h3">Headings</Text>
-        <TextComponent level={1} variant="h1">
-          Heading 1
-        </TextComponent>
-        <TextComponent level={2} variant="h2">
-          Heading 2
-        </TextComponent>
-        <TextComponent level={3} variant="h3">
-          Heading 3
-        </TextComponent>
-        <TextComponent level={4} variant="h4">
-          Heading 4
-        </TextComponent>
+        <Text as="h1">Heading 1</Text>
+        <Text as="h2">Heading 2</Text>
+        <Text as="h3">Heading 3</Text>
+        <Text as="h4">Heading 4</Text>
+        <Text as="h1" variant="h3">
+          Semantic h1 styled as h3
+        </Text>
+        {/* @ts-expect-error - Testing: "red" is not a valid variant */}
+        <Text variant="red">This should error</Text>
+        {/* @ts-expect-error - Testing: "invalid" is not a valid variant */}
+        <Text as="h1" variant="invalid">
+          This should also error
+        </Text>
       </Stack>
       <Stack gap="medium">
         <Text variant="h3">Body Text</Text>
         <Text>This is regular body text.</Text>
-        <Text size="small">This is small text.</Text>
-        <Text size="large">This is large text.</Text>
-      </Stack>
-      <Stack gap="medium">
-        <Text variant="h3">Copyable Text</Text>
-        <TextComponent copyable>Click the copy button to copy this text</TextComponent>
+        <Text variant="small">This is small text.</Text>
+        <Text as="strong">This is bold text using strong element</Text>
       </Stack>
     </Stack>
   );

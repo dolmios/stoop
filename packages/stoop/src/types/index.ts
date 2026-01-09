@@ -112,9 +112,7 @@ export type TokenByPropertyName<
   PropertyName extends string,
   Theme extends DefaultTheme,
   ThemeMap extends Record<string, ThemeScale>,
-> = PropertyName extends keyof ThemeMap
-  ? TokenByScaleName<ThemeMap[PropertyName], Theme>
-  : never;
+> = PropertyName extends keyof ThemeMap ? TokenByScaleName<ThemeMap[PropertyName], Theme> : never;
 
 /**
  * Generates all valid tokens from all theme scales.
@@ -244,9 +242,7 @@ export type CSSWithVariants<
 export type UtilityFunction<
   Theme extends DefaultTheme = DefaultTheme,
   ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
-> = (
-  value: CSSPropertyValue | CSS<Theme, ThemeMap> | undefined,
-) => CSS<Theme, ThemeMap>;
+> = (value: CSSPropertyValue | CSS<Theme, ThemeMap> | undefined) => CSS<Theme, ThemeMap>;
 
 /**
  * Theme scale value type - restricts values to primitives.
@@ -323,11 +319,12 @@ type ExtractVariantKeys<
   T,
   Theme extends DefaultTheme = DefaultTheme,
   ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
-> = T extends Record<string, CSS<Theme, ThemeMap>>
-  ? keyof T extends "true" | "false"
-    ? boolean
-    : keyof T
-  : never;
+> =
+  T extends Record<string, CSS<Theme, ThemeMap>>
+    ? keyof T extends "true" | "false"
+      ? boolean
+      : keyof T
+    : never;
 
 /**
  * Converts variant configuration to prop types.
@@ -523,16 +520,14 @@ export interface AutoPreloadResult {
 export interface StyledComponent<
   DefaultElement extends ElementType,
   VariantsConfig extends Variants = {},
-> extends ForwardRefExoticComponent<
-    StyledComponentProps<DefaultElement, VariantsConfig>
-  > {
+> extends ForwardRefExoticComponent<StyledComponentProps<DefaultElement, VariantsConfig>> {
   /**
    * Call signature without `as` prop - uses default element
    */
   (
     props: StyledComponentProps<DefaultElement, VariantsConfig> & {
       as?: never;
-    }
+    },
   ): ReactElement | null;
 
   /**
@@ -546,7 +541,7 @@ export interface StyledComponent<
         ? Omit<ComponentPropsWithRef<As>, "ref"> & { ref?: unknown }
         : {},
       StyledOwnProps<VariantsConfig> & { as?: As }
-    >
+    >,
   ): ReactElement | null;
 
   selector: StyledComponentRef;

@@ -14,6 +14,8 @@ export default function BadgeDemo(): JSX.Element {
           <Badge variant="success">Success</Badge>
           <Badge variant="error">Error</Badge>
           <Badge variant="warning">Warning</Badge>
+          {/* @ts-expect-error - Testing: "invalid" is not a valid variant */}
+          <Badge variant="invalid">Invalid</Badge>
         </Stack>
       </Stack>
       <Stack gap="medium">
@@ -21,6 +23,8 @@ export default function BadgeDemo(): JSX.Element {
         <Stack align="center" direction="row" gap="small" wrap>
           <Badge size="small">Small</Badge>
           <Badge>Default</Badge>
+          {/* @ts-expect-error - Testing: "large" is not a valid size */}
+          <Badge size="large">Large</Badge>
         </Stack>
       </Stack>
       <Stack gap="medium">
