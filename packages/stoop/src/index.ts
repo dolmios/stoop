@@ -17,4 +17,13 @@ export type {
   VariantProps,
   StyledComponent,
   StyledFunction,
+  // Function interface types
+  CSSFunction,
+  GlobalCSSFunction,
+  KeyframesFunction,
+  CreateThemeFunction,
+  // Provider types
+  ProviderProps,
+  ThemeManagementContextValue,
+  ThemeContextValue,
 } from "./types";

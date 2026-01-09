@@ -25,6 +25,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./ssr": {
+      "types": "./dist/create-stoop-ssr.d.ts",
+      "default": "./dist/create-stoop-ssr.js"
+    },
     "./styled": {
       "types": "./dist/api/styled.d.ts",
       "default": "./dist/api/styled.js"

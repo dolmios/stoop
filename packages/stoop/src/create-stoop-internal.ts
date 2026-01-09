@@ -1,7 +1,7 @@
 /**
  * Internal implementation for creating Stoop instances.
- * This file is used by the SSR entry point and does NOT import React types at module level.
- * React types are only imported conditionally when creating client instances.
+ * SERVER-SAFE: No "use client" dependencies, no React imports.
+ * This file is used by both client (create-stoop.ts) and server (create-stoop-ssr.ts) entry points.
  */
 
 import type { CSS, StoopConfig, Theme, ThemeScale } from "./types";
@@ -13,11 +13,11 @@ import {
   createGlobalCSSFunction,
 } from "./api/core-api";
 import { DEFAULT_THEME_MAP } from "./constants";
-import { compileCSS } from "./core/compiler";
+import { compileCSS, cssObjectToString } from "./core/compiler";
 import { mergeWithDefaultTheme, registerDefaultTheme, injectAllThemes } from "./core/theme-manager";
 import { getCssText as getCssTextBase, removeThemeVariableBlocks } from "./inject";
-import { validateTheme } from "./utils/helpers";
-import { generateAllThemeVariables, generateCSSVariables } from "./utils/theme";
+import { validateTheme, applyUtilities } from "./utils/helpers";
+import { generateAllThemeVariables, generateCSSVariables, replaceThemeTokensWithVars } from "./utils/theme";
 import { sanitizePrefix } from "./utils/theme-utils";
 
 /**
@@ -105,8 +105,9 @@ export function createStoopBase(config: StoopConfig): {
   /**
    * Gets all injected CSS text for server-side rendering.
    * Includes all theme CSS variables using attribute selectors.
+   * Includes global CSS config for SSR (prevents FOUC in Pages Router).
    *
-   * @returns CSS text string with theme variables and component styles
+   * @returns CSS text string with theme variables, global CSS, and component styles
    */
   function getCssText(): string {
     let result = "";
@@ -128,6 +129,23 @@ export function createStoopBase(config: StoopConfig): {
 
       if (themeVars) {
         result += themeVars + "\n";
+      }
+    }
+
+    // Include global CSS from config for SSR
+    // This ensures global styles are present in initial HTML (prevents FOUC)
+    // Provider will call globalCss() on mount but it's deduplicated automatically
+    if (globalCssConfig) {
+      const stylesWithUtils = applyUtilities(globalCssConfig, utils);
+      const themedStyles = replaceThemeTokensWithVars(
+        stylesWithUtils,
+        validatedTheme,
+        mergedThemeMap,
+      );
+      const globalCssText = cssObjectToString(themedStyles, "", 0, media);
+
+      if (globalCssText) {
+        result += (result ? "\n" : "") + globalCssText;
       }
     }
 

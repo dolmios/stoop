@@ -4,6 +4,9 @@
  * Theme Provider component and hook.
  * Manages theme state, localStorage persistence, cookie sync, and centralized theme variable updates.
  * Includes the useTheme hook for accessing theme management context.
+ * 
+ * CLIENT-ONLY: This module uses React hooks (useState, useLayoutEffect, useCallback, useMemo)
+ * and MUST have "use client" directive for Next.js App Router compatibility.
  */
 
 import {

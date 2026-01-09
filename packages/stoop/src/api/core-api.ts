@@ -1,6 +1,8 @@
 /**
  * Core API functions.
  * Consolidates theme creation, CSS class generation, and keyframes animation APIs.
+ * 
+ * SERVER-SAFE: No React dependencies, can be used in server components and SSR.
  */
 
 import type { CSS, Theme, ThemeScale, UtilityFunction } from "../types";
