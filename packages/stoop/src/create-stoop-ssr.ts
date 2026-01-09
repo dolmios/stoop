@@ -2,7 +2,7 @@
  * SSR-safe entry point for Stoop.
  * Exports only server-safe APIs that don't require React.
  * Use this import in Server Components: import { createStoop } from "stoop/ssr"
- * 
+ *
  * SERVER-ONLY: No "use client" modules imported. Safe for React Server Components.
  */
 

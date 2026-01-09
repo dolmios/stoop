@@ -22,10 +22,7 @@
  * ```
  */
 
-
-import {
-  createStoop,
-} from "stoop";
+import { createStoop } from "stoop";
 
 import { utils } from "./utils";
 
@@ -273,12 +270,12 @@ const stoopConfig = {
 const stoopInstance = createStoop(stoopConfig);
 
 // Export APIs needed by components with explicit type annotations for portability
-export const {styled} = stoopInstance;
-export const {keyframes} = stoopInstance;
-export const {globalCss} = stoopInstance;
-export const {getCssText} = stoopInstance; // No args, returns string
-export const {Provider} = stoopInstance;
-export const {useTheme} = stoopInstance;
+export const { styled } = stoopInstance;
+export const { keyframes } = stoopInstance;
+export const { globalCss } = stoopInstance;
+export const { getCssText } = stoopInstance; // No args, returns string
+export const { Provider } = stoopInstance;
+export const { useTheme } = stoopInstance;
 
 // Export type for external use
 export type StoopUITheme = typeof stoopInstance;

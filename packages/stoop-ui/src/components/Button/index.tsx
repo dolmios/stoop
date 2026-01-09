@@ -20,24 +20,16 @@ const pulse = keyframes({
 });
 
 const ButtonStyled = styled("button", {
-  "&:active:not(:disabled)": {
+  "&:active": {
     boxShadow: "$inset",
     transform: "translateY(0)",
     transition: "$fast",
-  },
-  "&:disabled": {
-    "&:focus-visible": {
-      outline: "none",
-    },
-    cursor: "not-allowed",
-    opacity: "$disabled",
-    pointerEvents: "none",
   },
   "&:focus-visible": {
     outline: "2px solid $text",
     outlineOffset: "2px",
   },
-  "&:hover:not(:disabled)": {
+  "&:hover": {
     backgroundColor: "$surfaceHover",
     borderBottomColor: "$borderEmphasis",
     borderTopColor: "$border",
@@ -77,6 +69,17 @@ const ButtonStyled = styled("button", {
         color: "$background",
       },
     },
+    disabled: {
+      false: {},
+      true: {
+        "&:focus-visible": {
+          outline: "none",
+        },
+        cursor: "not-allowed",
+        opacity: "$disabled",
+        pointerEvents: "none",
+      },
+    },
     loading: {
       false: {},
       true: {
@@ -95,11 +98,11 @@ const ButtonStyled = styled("button", {
     },
     variant: {
       danger: {
-        "&:active:not(:disabled)": {
+        "&:active": {
           backgroundColor: "#991b1b",
           borderColor: "#991b1b",
         },
-        "&:hover:not(:disabled)": {
+        "&:hover": {
           backgroundColor: "#dc2626",
           borderColor: "#dc2626",
           boxShadow: "$default",
@@ -109,7 +112,7 @@ const ButtonStyled = styled("button", {
         color: "#ffffff",
       },
       minimal: {
-        "&:hover:not(:disabled)": {
+        "&:hover": {
           backgroundColor: "$surfaceHover",
           boxShadow: "none",
           transform: "none",
@@ -119,7 +122,7 @@ const ButtonStyled = styled("button", {
         boxShadow: "none",
       },
       primary: {
-        "&:hover:not(:disabled)": {
+        "&:hover": {
           backgroundColor: "$text",
           borderColor: "$text",
           boxShadow: "$default",
@@ -129,7 +132,7 @@ const ButtonStyled = styled("button", {
         color: "$background",
       },
       secondary: {
-        "&:hover:not(:disabled)": {
+        "&:hover": {
           backgroundColor: "$surfaceHover",
           borderBottomColor: "$borderEmphasis",
           borderTopColor: "$border",
@@ -167,7 +170,7 @@ const ButtonIconWrapperStyled = styled("span", {
 
 export interface ButtonProps<T extends ElementType = "button"> extends Omit<
   ComponentProps<typeof ButtonStyled>,
-  "loading" | "as"
+  "loading" | "disabled" | "as"
 > {
   as?: T;
   children?: ReactNode;
@@ -194,6 +197,7 @@ export const Button = <T extends ElementType = "button">({
     <ButtonStyled
       {...props}
       aria-busy={loading || undefined}
+      aria-disabled={isDisabled ? true : undefined}
       as={as}
       disabled={isDisabled}
       loading={loading}>

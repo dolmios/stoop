@@ -17,7 +17,11 @@ import { compileCSS, cssObjectToString } from "./core/compiler";
 import { mergeWithDefaultTheme, registerDefaultTheme, injectAllThemes } from "./core/theme-manager";
 import { getCssText as getCssTextBase, removeThemeVariableBlocks } from "./inject";
 import { validateTheme, applyUtilities } from "./utils/helpers";
-import { generateAllThemeVariables, generateCSSVariables, replaceThemeTokensWithVars } from "./utils/theme";
+import {
+  generateAllThemeVariables,
+  generateCSSVariables,
+  replaceThemeTokensWithVars,
+} from "./utils/theme";
 import { sanitizePrefix } from "./utils/theme-utils";
 
 /**

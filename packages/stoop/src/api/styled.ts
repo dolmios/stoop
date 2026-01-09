@@ -4,7 +4,7 @@
  * Styled component API.
  * Creates polymorphic styled components with variant support, theme awareness,
  * and CSS prop merging. Supports component targeting via selector references.
- * 
+ *
  * CLIENT-ONLY: This module uses React hooks (useMemo, useContext, forwardRef, createElement)
  * and MUST have "use client" directive for Next.js App Router compatibility.
  */
