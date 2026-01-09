@@ -3,7 +3,13 @@ import { Stack, Text, TextComponent } from "stoop-ui";
 
 export default function TextDemo(): JSX.Element {
   return (
-    <Stack gap="large">
+    <Stack
+      css={{
+        "& > *:last-child": {
+          marginBottom: 0,
+        },
+      }}
+      gap="large">
       <Text variant="h1">Text</Text>
       <Stack gap="medium">
         <Text variant="h3">Headings</Text>

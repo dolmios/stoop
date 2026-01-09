@@ -136,6 +136,9 @@ export const Text = styled("p", {
         marginBottom: "$small",
         marginTop: "$medium",
       },
+      strong: {
+        fontWeight: "$bold",
+      },
     },
   },
 });

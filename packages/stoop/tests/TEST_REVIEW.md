@@ -5,6 +5,7 @@
 ### Current Test Files Analysis
 
 #### 1. Type Safety Tests (5 files - can be consolidated)
+
 - `type-safety-types.test.ts` - Type-only compilation tests for variant inference
 - `auto-inference-verification.test.ts` - Runtime tests for automatic type inference
 - `test-auto-inference.ts` - Type-only tests for auto inference (redundant with above)
@@ -13,12 +14,14 @@
 - `verify-button-types.ts` - Type-only tests for button component
 
 **Issues:**
+
 - Too many separate files for type testing
 - `test-auto-inference.ts` and `auto-inference-verification.test.ts` overlap significantly
 - Inconsistent naming (.test.ts vs .ts)
 - Type-only tests scattered across multiple files
 
 #### 2. Core Functionality Tests
+
 - `stoop.test.ts` (924 lines) - Main API tests covering:
   - createStoop
   - css function
@@ -32,37 +35,44 @@
   - warmCache
 
 **Issues:**
+
 - Very large file - could be split by feature
 - Some overlap with other test files
 
 #### 3. CSS Generation & Injection Tests (3 files - overlap)
+
 - `stringification.test.ts` - CSS property name conversion
 - `injection.test.ts` - CSS injection and deduplication
 - `css-duplication.test.ts` - CSS duplication prevention
 
 **Issues:**
+
 - `injection.test.ts` and `css-duplication.test.ts` have significant overlap
 - Both test deduplication but from different angles
 - Could be consolidated
 
 #### 4. React-Specific Tests
+
 - `provider.test.tsx` - Provider and useTheme hook tests
 - `stability.test.ts` - Class name consistency and rerender prevention
 
 **Status:** Well organized, minimal overlap
 
 #### 5. Edge Cases & Validation
+
 - `edge-cases.test.ts` - Error handling and boundary conditions
 - `theme-validation.test.ts` - Theme structure validation
 
 **Status:** Well organized
 
 #### 6. Animation Tests
+
 - `keyframes-animation.test.ts` - Keyframes functionality
 
 **Status:** Well organized but could be merged with core tests
 
 #### 7. Utilities
+
 - `helpers.ts` - Test utilities
 
 **Status:** Good
@@ -70,6 +80,7 @@
 ### Coverage Analysis
 
 #### ✅ Well Covered:
+
 - Core API (css, styled, globalCss, keyframes)
 - Type safety and inference
 - Theme management (Provider, useTheme)
@@ -79,6 +90,7 @@
 - Stability (class name consistency)
 
 #### ⚠️ Potentially Missing or Light Coverage:
+
 - **Media queries** - Only basic tests in stoop.test.ts
 - **Utility functions** - Basic tests but could be more comprehensive
 - **Nested selectors** - Some tests but could be more thorough
@@ -112,27 +124,33 @@
 ### Proposed Reorganization
 
 #### Group 1: Type Safety (consolidate to 2 files)
+
 - `type-safety.test.ts` - Runtime type safety tests
 - `type-safety-compile.test.ts` - Compile-time type-only tests (all variants, boolean, button, auto-inference)
 
 #### Group 2: Core API (split stoop.test.ts)
+
 - `core-api.test.ts` - createStoop, css, getCssText, warmCache
 - `styled-components.test.ts` - styled function, variants, polymorphism
 - `global-css.test.ts` - globalCss function
 - `keyframes.test.ts` - keyframes function (merge with keyframes-animation.test.ts)
 
 #### Group 3: CSS Generation (consolidate)
+
 - `css-generation.test.ts` - Stringification, injection, deduplication (merge 3 files)
 
 #### Group 4: Theme Management
+
 - `theme.test.ts` - Theme validation, createTheme (merge theme-validation.test.ts)
 - `theme-provider.test.tsx` - Provider and useTheme (rename from provider.test.tsx)
 
 #### Group 5: Edge Cases & Stability
+
 - `edge-cases.test.ts` - Keep as is
 - `stability.test.ts` - Keep as is
 
 #### Group 6: Utilities
+
 - `helpers.ts` - Keep as is
 
 ### Recommendations
