@@ -91,7 +91,12 @@ export interface TabsProps {
   value?: string;
 }
 
-export const Tabs = ({ defaultValue, items, onTabChange, value: controlledValue }: TabsProps): JSX.Element => {
+export const Tabs = ({
+  defaultValue,
+  items,
+  onTabChange,
+  value: controlledValue,
+}: TabsProps): JSX.Element => {
   const [internalValue, setInternalValue] = useState(defaultValue || items[0]?.value);
 
   // Use controlled value if provided, otherwise use internal state

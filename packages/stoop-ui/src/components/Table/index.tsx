@@ -53,5 +53,7 @@ export const Table = (props: TableProps): JSX.Element => <TableStyled {...props}
 export const TableHead = (props: TableHeadProps): JSX.Element => <TableHeadStyled {...props} />;
 export const TableBody = (props: TableBodyProps): JSX.Element => <TableBodyStyled {...props} />;
 export const TableRow = (props: TableRowProps): JSX.Element => <TableRowStyled {...props} />;
-export const TableHeader = (props: TableHeaderProps): JSX.Element => <TableHeaderStyled {...props} />;
+export const TableHeader = (props: TableHeaderProps): JSX.Element => (
+  <TableHeaderStyled {...props} />
+);
 export const TableCell = (props: TableCellProps): JSX.Element => <TableCellStyled {...props} />;

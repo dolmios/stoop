@@ -1,6 +1,12 @@
 "use client";
 
-import type { ComponentProps, ReactNode, ElementType, ComponentPropsWithoutRef, ReactElement } from "react";
+import type {
+  ComponentProps,
+  ReactNode,
+  ElementType,
+  ComponentPropsWithoutRef,
+  ReactElement,
+} from "react";
 
 import { styled, keyframes } from "../../stoop.theme";
 

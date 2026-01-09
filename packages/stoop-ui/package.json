@@ -27,8 +27,6 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
       "default": "./dist/index.js"
     }
   },
@@ -48,10 +46,7 @@
     "react-dom": ">=16.8.0"
   },
   "scripts": {
-    "build": "bun run build:clean && bun run build:js && bun run build:types",
-    "build:clean": "rm -rf dist",
-    "build:js": "NODE_ENV=production bun build ./src/index.ts --outdir ./dist --target browser --minify --jsx=automatic --splitting --external react --external react-dom --external react/jsx-runtime --external @floating-ui/dom --define process.env.NODE_ENV='\"production\"'",
-    "build:types": "bunx tsc --project tsconfig.build.json",
+    "build": "rm -rf dist && bun build ./src/index.ts --outdir ./dist --target browser --jsx=automatic --external react --external react-dom --external react/jsx-runtime && bun build ./src/stoop.theme.ts --outfile ./dist/stoop.theme.js --target browser --jsx=automatic --external react --external react-dom --external react/jsx-runtime && bunx tsc --project tsconfig.build.json",
     "test": "bun test"
   },
   "sideEffects": false,
