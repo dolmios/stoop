@@ -522,6 +522,7 @@ describe("Stringification", () => {
         order: 1,
         flexGrow: 2,
         fontWeight: 400,
+        lineHeight: 1.4,
       };
       const result = cssObjectToString(styles);
       expect(result).toContain("z-index: 10");
@@ -529,6 +530,7 @@ describe("Stringification", () => {
       expect(result).toContain("order: 1");
       expect(result).toContain("flex-grow: 2");
       expect(result).toContain("font-weight: 400");
+      expect(result).toContain("line-height: 1.4");
     });
   });
 });

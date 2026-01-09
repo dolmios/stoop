@@ -59,7 +59,6 @@ const DIMENSIONAL_PROPERTIES = new Set([
   "letter-spacing",
   "word-spacing",
   "text-indent",
-  "line-height",
   "flex-basis",
   "gap",
   "row-gap",
