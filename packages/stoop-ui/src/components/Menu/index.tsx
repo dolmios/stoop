@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useId, useState, type JSX, type MouseEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { useEventListener } from "../../hooks/useEventListener";
@@ -241,7 +241,7 @@ export const Menu = ({
   onSelection,
   options,
   trigger,
-}: MenuProps) => {
+}: MenuProps): JSX.Element => {
   const reactId = useId();
   const instanceId = `menu-${reactId}`;
 

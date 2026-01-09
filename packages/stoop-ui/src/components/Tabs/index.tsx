@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useState, type JSX } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -91,7 +91,7 @@ export interface TabsProps {
   value?: string;
 }
 
-export const Tabs = ({ defaultValue, items, onTabChange, value: controlledValue }: TabsProps) => {
+export const Tabs = ({ defaultValue, items, onTabChange, value: controlledValue }: TabsProps): JSX.Element => {
   const [internalValue, setInternalValue] = useState(defaultValue || items[0]?.value);
 
   // Use controlled value if provided, otherwise use internal state

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, type ComponentProps, type ReactNode } from "react";
+import { useCallback, useState, type ComponentProps, type JSX, type ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -99,7 +99,7 @@ export interface CodeProps extends ComponentProps<typeof CodeStyled> {
   block?: boolean;
 }
 
-export const Code = ({ block, children, ...props }: CodeProps) => {
+export const Code = ({ block, children, ...props }: CodeProps): JSX.Element => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async (): Promise<void> => {

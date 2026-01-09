@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type MouseEvent, type ReactNode } from "react";
+import { useId, type JSX, type MouseEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { useEventListener } from "../../hooks/useEventListener";
@@ -237,7 +237,7 @@ export const Modal = ({
   small,
   title,
   trigger,
-}: ModalProps) => {
+}: ModalProps): JSX.Element => {
   const titleId = useId();
   const modal = useModal({
     isOpen,

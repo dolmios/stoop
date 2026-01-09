@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, JSX, ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
 import { Spinner } from "../Spinner";
@@ -85,7 +85,7 @@ export interface BadgeProps extends Omit<ComponentProps<typeof BadgeStyled>, "lo
   loading?: boolean;
 }
 
-export const Badge = ({ children, loading = false, ...props }: BadgeProps) => (
+export const Badge = ({ children, loading = false, ...props }: BadgeProps): JSX.Element => (
   <BadgeStyled loading={loading} {...props}>
     {children}
     {loading && (

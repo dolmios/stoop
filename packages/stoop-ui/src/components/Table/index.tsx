@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -49,9 +49,9 @@ export interface TableRowProps extends ComponentProps<typeof TableRowStyled> {}
 export interface TableHeaderProps extends ComponentProps<typeof TableHeaderStyled> {}
 export interface TableCellProps extends ComponentProps<typeof TableCellStyled> {}
 
-export const Table = (props: TableProps) => <TableStyled {...props} />;
-export const TableHead = (props: TableHeadProps) => <TableHeadStyled {...props} />;
-export const TableBody = (props: TableBodyProps) => <TableBodyStyled {...props} />;
-export const TableRow = (props: TableRowProps) => <TableRowStyled {...props} />;
-export const TableHeader = (props: TableHeaderProps) => <TableHeaderStyled {...props} />;
-export const TableCell = (props: TableCellProps) => <TableCellStyled {...props} />;
+export const Table = (props: TableProps): JSX.Element => <TableStyled {...props} />;
+export const TableHead = (props: TableHeadProps): JSX.Element => <TableHeadStyled {...props} />;
+export const TableBody = (props: TableBodyProps): JSX.Element => <TableBodyStyled {...props} />;
+export const TableRow = (props: TableRowProps): JSX.Element => <TableRowStyled {...props} />;
+export const TableHeader = (props: TableHeaderProps): JSX.Element => <TableHeaderStyled {...props} />;
+export const TableCell = (props: TableCellProps): JSX.Element => <TableCellStyled {...props} />;

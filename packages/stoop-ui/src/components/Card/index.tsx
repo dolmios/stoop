@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, JSX, ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
 import { Spinner } from "../Spinner";
@@ -51,7 +51,7 @@ export interface CardProps extends Omit<ComponentProps<typeof CardStyled>, "load
   loading?: boolean;
 }
 
-export const Card = ({ children, loading = false, ...props }: CardProps) => (
+export const Card = ({ children, loading = false, ...props }: CardProps): JSX.Element => (
   <CardStyled loading={loading} {...props}>
     {children}
     {loading && (

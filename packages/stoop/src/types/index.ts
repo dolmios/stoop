@@ -205,14 +205,6 @@ export type Variants<
   };
 };
 
-/**
- * Internal type for variant prop values (used by styled implementation).
- * @internal
- */
-interface InternalVariantProps {
-  [variantName: string]: string | number | boolean | undefined;
-}
-
 export type HTMLElements = keyof JSX.IntrinsicElements;
 export type StylableElement = HTMLElements | ElementType;
 
@@ -372,7 +364,7 @@ export type StyledComponentProps<
   DefaultElement extends ElementType,
   VariantsConfig extends Variants = {},
 > = Merge<
-  DefaultElement extends keyof JSX.IntrinsicElements | ComponentType<any>
+  DefaultElement extends keyof JSX.IntrinsicElements | ComponentType<unknown>
     ? ComponentPropsWithRef<DefaultElement>
     : {},
   StyledOwnProps<VariantsConfig>
@@ -672,7 +664,7 @@ export interface StoopInstance {
  * type ButtonProps = ComponentProps<typeof Button>;
  * ```
  */
-export type ComponentProps<Component> = Component extends (...args: any[]) => any
+export type ComponentProps<Component> = Component extends (...args: unknown[]) => unknown
   ? Parameters<Component>[0]
   : never;
 
@@ -688,5 +680,5 @@ export type ComponentProps<Component> = Component extends (...args: any[]) => an
  * // Result: { size?: "sm" | "lg" }
  * ```
  */
-export type VariantProps<Component extends { selector: any }> =
-  Component extends StyledComponent<any, infer V> ? VariantPropsFromConfig<V> : never;
+export type VariantProps<Component extends { selector: StyledComponentRef }> =
+  Component extends StyledComponent<ElementType, infer V> ? VariantPropsFromConfig<V> : never;

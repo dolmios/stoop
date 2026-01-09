@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, type JSX, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { useFloatingUI } from "../../hooks/useFloatingUI";
@@ -113,7 +113,7 @@ export const Tooltip = ({
   mode = "click",
   small = false,
   trigger,
-}: TooltipProps) => {
+}: TooltipProps): JSX.Element => {
   const floatingUI = useFloatingUI();
   const reactId = useId();
   const instanceId = `tooltip-${reactId}`;

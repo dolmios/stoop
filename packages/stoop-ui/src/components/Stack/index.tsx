@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -165,4 +165,4 @@ export type StackProps = Omit<ComponentProps<typeof StackStyled>, "as"> & {
     | (string & {});
 };
 
-export const Stack = (props: StackProps) => <StackStyled {...props} />;
+export const Stack = (props: StackProps): JSX.Element => <StackStyled {...props} />;

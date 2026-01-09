@@ -19,7 +19,6 @@ import {
 import type {
   CSS,
   CSSPropertyValue,
-  CSSWithVariants,
   StyledComponentProps,
   StyledComponentRef,
   StylableElement,
