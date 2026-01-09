@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps, ReactNode, ElementType, ComponentPropsWithoutRef } from "react";
+import type { ComponentProps, ReactNode, ElementType, ComponentPropsWithoutRef, ReactElement } from "react";
 
 import { styled, keyframes } from "../../stoop.theme";
 
@@ -179,7 +179,7 @@ export const Button = <T extends ElementType = "button">({
   iconPosition = "left",
   loading = false,
   ...props
-}: ButtonProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ButtonProps<T>>) => {
+}: ButtonProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ButtonProps<T>>): ReactElement => {
   const isDisabled = disabled || loading;
   const showLeftIcon = icon && iconPosition === "left";
   const showRightIcon = icon && iconPosition === "right";
@@ -188,7 +188,7 @@ export const Button = <T extends ElementType = "button">({
     <ButtonStyled
       {...props}
       aria-busy={loading || undefined}
-      as={as as any}
+      as={as}
       disabled={isDisabled}
       loading={loading}>
       {loading && (

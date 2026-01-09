@@ -1,7 +1,6 @@
 "use client";
 
-import type { JSX } from "react";
-import type { ComponentProps as StoopComponentProps } from "stoop";
+import type { ComponentProps, JSX } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -91,9 +90,9 @@ const TextStyled = styled("p", {
   },
 });
 
-export interface TextProps extends Omit<StoopComponentProps<typeof TextStyled>, "as" | "variant"> {
-  as?: StoopComponentProps<typeof TextStyled>["variant"] | (string & {});
-  variant?: StoopComponentProps<typeof TextStyled>["variant"];
+export interface TextProps extends Omit<ComponentProps<typeof TextStyled>, "as" | "variant"> {
+  as?: ComponentProps<typeof TextStyled>["variant"] | (string & {});
+  variant?: ComponentProps<typeof TextStyled>["variant"];
 }
 
 export const Text = (props: TextProps): JSX.Element => {
@@ -101,7 +100,7 @@ export const Text = (props: TextProps): JSX.Element => {
 
   const effectiveVariant = (
     as && ["h1", "h2", "h3", "h4", "h5", "h6", "small", "strong"].includes(as) ? as : variant
-  ) as StoopComponentProps<typeof TextStyled>["variant"];
+  ) as ComponentProps<typeof TextStyled>["variant"];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <TextStyled as={as as any} variant={effectiveVariant} {...rest} />;
