@@ -55,8 +55,8 @@ export default function HomePage(): ReactNode {
             maxWidth: "600px",
           }}>
           A Stitches-like CSS-in-JS library with CSS variables for instant theme switching, built-in
-          multi-theme support, and Next.js App Router integration. Type-safe, performant,
-          and actively maintained.
+          multi-theme support, and Next.js App Router integration. Type-safe, performant, and
+          actively maintained.
         </Text>
         <Stack align="center" css={{ marginTop: "$medium", maxWidth: "700px" }} gap="small">
           <Text

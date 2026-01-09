@@ -49,7 +49,7 @@ const CodeBlock = styled("pre", {
   boxShadow: "$subtle",
   fontFamily: "$mono",
   fontSize: "$small",
-  lineHeight: "1.6",
+  lineHeight: 1.6,
   margin: 0,
   overflowX: "auto",
   padding: "$medium",

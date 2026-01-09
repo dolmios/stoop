@@ -129,7 +129,13 @@ function MarkdownCode({
 
   if (isBlock) {
     return (
-      <Stack bottom="medium" top="medium">
+      <Stack
+        bottom="medium"
+        css={{
+          minWidth: 0,
+          width: "100%",
+        }}
+        top="medium">
         <StoopCode block={isBlock} {...props}>
           {children}
         </StoopCode>
@@ -172,9 +178,12 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
 
         if (before.trim()) processedChildren.push(before.trim() + " ");
         processedChildren.push(
-          <Badge key={`badge-${i}`} css={{ fontSize: "inherit", lineHeight: "inherit" }} variant="secondary">
+          <Badge
+            key={`badge-${i}`}
+            css={{ fontSize: "inherit", lineHeight: "inherit" }}
+            variant="secondary">
             {badgeText}
-          </Badge>
+          </Badge>,
         );
         hasBadges = true;
         if (after.trim()) processedChildren.push(" " + after.trim());
@@ -200,9 +209,12 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
 
       if (beforeText) processedChildren.push(beforeText + " ");
       processedChildren.push(
-        <Badge key={`badge-${i}`} css={{ fontSize: "inherit", lineHeight: "inherit" }} variant="secondary">
+        <Badge
+          key={`badge-${i}`}
+          css={{ fontSize: "inherit", lineHeight: "inherit" }}
+          variant="secondary">
           {nextChild.props?.children || nextChild}
-        </Badge>
+        </Badge>,
       );
       hasBadges = true;
       i += 3; // Skip the code element and closing paren
@@ -249,9 +261,12 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
 
         if (before.trim()) processedChildren.push(before.trim() + " ");
         processedChildren.push(
-          <Badge key={`badge-${i}`} css={{ fontSize: "inherit", lineHeight: "inherit" }} variant="secondary">
+          <Badge
+            key={`badge-${i}`}
+            css={{ fontSize: "inherit", lineHeight: "inherit" }}
+            variant="secondary">
             {badgeText}
-          </Badge>
+          </Badge>,
         );
         hasBadges = true;
         if (after.trim()) processedChildren.push(" " + after.trim());
@@ -276,9 +291,12 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
 
       if (beforeText) processedChildren.push(beforeText + " ");
       processedChildren.push(
-        <Badge key={`badge-${i}`} css={{ fontSize: "inherit", lineHeight: "inherit" }} variant="secondary">
+        <Badge
+          key={`badge-${i}`}
+          css={{ fontSize: "inherit", lineHeight: "inherit" }}
+          variant="secondary">
           {nextChild.props?.children || nextChild}
-        </Badge>
+        </Badge>,
       );
       hasBadges = true;
       i += 3; // Skip the code element and closing paren
@@ -323,7 +341,16 @@ function MarkdownParagraph({ children, ...props }: ComponentProps<"p">): ReactNo
 
 function MarkdownTable({ children, ...props }: ComponentProps<"table">): ReactNode {
   return (
-    <StoopTable css={{ marginBottom: "$medium", marginTop: "$medium" }} {...props}>
+    <StoopTable
+      css={{
+        display: "block",
+        marginBottom: "$medium",
+        marginTop: "$medium",
+        maxWidth: "100%",
+        overflowX: "auto",
+        width: "100%",
+      }}
+      {...props}>
       {children}
     </StoopTable>
   );

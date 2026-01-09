@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 
 import localFont from "next/font/local";
 import { cookies } from "next/headers";
-import { Stack } from "stoop-ui";
 
 import { Breadcrumbs } from "./components/Breadcrumbs";
+import { Wrapper } from "./components/Wrapper";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Navigation } from "./components/Navigation";
@@ -118,16 +118,10 @@ export default async function RootLayout({
         <Providers initialTheme={initialTheme}>
           <Header />
           <Navigation />
-          <Stack
-            as="main"
-            bottom="medium"
-            css={{ margin: "0 auto", maxWidth: "1100px" }}
-            left="medium"
-            right="medium"
-            top="medium">
+          <Wrapper>
             <Breadcrumbs />
             {children}
-          </Stack>
+          </Wrapper>
           <Footer />
         </Providers>
       </body>

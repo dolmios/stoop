@@ -160,7 +160,7 @@ const globalCssConfig = {
     fontFamily: "$body",
     fontSize: "$default",
     fontWeight: "$default",
-    lineHeight: "1.6",
+    lineHeight: 1.6,
     margin: 0,
     maxWidth: "100%",
     minHeight: "100vh",
@@ -202,7 +202,7 @@ const globalCssConfig = {
   "h1, h2, h3, h4, h5, h6": {
     fontFamily: "$heading",
     fontWeight: "$bold",
-    lineHeight: "1.2",
+    lineHeight: 1.2,
     margin: 0,
   },
   h2: {

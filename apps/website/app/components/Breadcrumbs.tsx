@@ -84,9 +84,16 @@ export function Breadcrumbs(): ReactElement | null {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         type="application/ld+json"
       />
-      <Stack align="center" css={{ marginBottom: "$medium" }} direction="row" gap="small">
+      <Stack
+        align="center"
+        css={{
+          flexWrap: "wrap",
+          marginBottom: "$medium",
+        }}
+        direction="row"
+        gap="smaller">
         {breadcrumbs.map((crumb, index) => (
-          <Stack key={crumb.href} align="center" direction="row" gap="small">
+          <Stack key={crumb.href} align="center" direction="row" gap="smaller">
             {index > 0 && (
               <Stack
                 align="center"
