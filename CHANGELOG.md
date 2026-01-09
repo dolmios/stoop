@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-01-09
+
+### Added
+
+- Created `src/index.ts` as main entry point for cleaner architecture
+- Build now creates `dist/types/index.js` to support `/types` subpath export
+
+### Fixed
+
+- Fixed TypeScript module resolution errors when consuming packages reference `import("stoop/types")`
+- `/types` subpath export now properly resolves with corresponding runtime `.js` file
+
+### Changed
+
+- Main entry changed from `dist/create-stoop.js` to `dist/index.js`
+- Removed redundant `import` and `require` fields from package.json exports (simplified to `types` + `default`)
+
 ## [0.6.0] - 2026-01-09
 
 ### Changed

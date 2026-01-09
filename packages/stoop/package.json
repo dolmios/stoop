@@ -1,10 +1,10 @@
 {
   "name": "stoop",
   "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "Jackson Dolman <mail@dolmios.com>",
-  "main": "./dist/create-stoop.js",
-  "types": "./dist/create-stoop.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/dolmios/stoop.git"
@@ -22,33 +22,23 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/create-stoop.d.ts",
-      "import": "./dist/create-stoop.js",
-      "require": "./dist/create-stoop.js",
-      "default": "./dist/create-stoop.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./utils/storage": {
       "types": "./dist/utils/storage.d.ts",
-      "import": "./dist/utils/storage.js",
-      "require": "./dist/utils/storage.js",
       "default": "./dist/utils/storage.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.js",
-      "require": "./dist/types/index.js",
       "default": "./dist/types/index.js"
     },
     "./inject": {
       "types": "./dist/inject.d.ts",
-      "import": "./dist/inject.js",
-      "require": "./dist/inject.js",
       "default": "./dist/inject.js"
     },
     "./ssr": {
       "types": "./dist/create-stoop-ssr.d.ts",
-      "import": "./dist/create-stoop-ssr.js",
-      "require": "./dist/create-stoop-ssr.js",
       "default": "./dist/create-stoop-ssr.js"
     }
   },

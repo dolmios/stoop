@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-console */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 /* global Bun */
 /**
  * Unified build script for stoop
@@ -9,17 +9,14 @@
  */
 
 import { $ } from "bun";
-import { rm, mkdir, copyFile } from "fs/promises";
+import { rm, mkdir } from "fs/promises";
 import { existsSync } from "node:fs";
-import { dirname } from "path";
 
 const distDir = "./dist";
-const mainEntry = "./src/create-stoop.ts";
+const mainEntry = "./src/index.ts";
 const ssrEntry = "./src/create-stoop-ssr.ts";
-const mainOutput = "./dist/create-stoop.js";
+const mainOutput = "./dist/index.js";
 const ssrOutput = "./dist/create-stoop-ssr.js";
-const declarationSource = "./src/types/react-polymorphic-types.d.ts";
-const declarationDest = "./dist/types/react-polymorphic-types.d.ts";
 
 async function clean() {
   console.log("🧹 Cleaning dist directory...");
@@ -85,27 +82,26 @@ async function buildTypes() {
   }
 }
 
-async function copyDeclarations() {
-  console.log("📋 Copying type declarations...");
+async function createTypesEntrypoint() {
+  console.log("📝 Creating types/index.js entrypoint...");
   try {
-    if (existsSync(declarationSource)) {
-      // Ensure destination directory exists
-      const destDir = dirname(declarationDest);
+    const typesDir = "./dist/types";
+    const typesIndexPath = `${typesDir}/index.js`;
 
-      await mkdir(destDir, { recursive: true });
+    // Ensure types directory exists
+    await mkdir(typesDir, { recursive: true });
 
-      // Copy the file
-      await copyFile(declarationSource, declarationDest);
-      console.log("✅ Copied type declarations");
-    } else {
-      console.log("ℹ️  Source declaration file not found, skipping");
-    }
+    // Create index.js that re-exports from main module
+    // This is needed because stoop-ui's compiled .d.ts files reference import("stoop/types")
+    // and TypeScript requires a corresponding .js file for the package export to work
+    const content = `// Re-export types from main module for compatibility\nexport * from '../index.js';\n`;
+
+    await Bun.write(typesIndexPath, content);
+
+    console.log("✅ Created types/index.js entrypoint");
   } catch (error) {
-    // Non-fatal error, just log it
-    console.log(
-      "ℹ️  Could not copy declarations:",
-      error instanceof Error ? error.message : String(error),
-    );
+    console.error("❌ Failed to create types entrypoint:", error);
+    throw error;
   }
 }
 
@@ -117,7 +113,7 @@ async function build() {
     await buildMain();
     await buildSSR();
     await buildTypes();
-    await copyDeclarations();
+    await createTypesEntrypoint();
 
     console.log("\n✅ Build completed successfully!");
   } catch (error) {

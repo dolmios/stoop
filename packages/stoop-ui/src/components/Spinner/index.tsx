@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import { keyframes, styled } from "../../stoop.theme";
 
@@ -41,8 +41,8 @@ const SpinnerStyled = styled("div", {
   },
 });
 
-export interface SpinnerProps extends ComponentProps<typeof SpinnerStyled> {}
+export type SpinnerProps = ComponentProps<typeof SpinnerStyled>;
 
-export const Spinner = ({ size = "default", ...props }: SpinnerProps) => (
+export const Spinner = ({ size = "default", ...props }: SpinnerProps): JSX.Element => (
   <SpinnerStyled size={size} {...props} />
 );

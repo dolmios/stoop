@@ -201,17 +201,6 @@ export function createStoopBase(config: StoopConfig): {
  * @param config - Configuration object containing theme, media queries, utilities, and optional prefix/themeMap
  * @returns StoopInstance with all API functions
  */
-export type {
-  CSS,
-  ComponentProps,
-  DefaultTheme,
-  StoopConfig,
-  StoopInstance,
-  Theme,
-  ThemeScale,
-  UtilityFunction,
-} from "./types";
-
 export function createStoop(config: StoopConfig): StoopInstance {
   const base = createStoopBase(config);
 
