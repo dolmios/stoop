@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-01-09
+
+### Fixed
+
+- Eliminated code duplication by consolidating `createStoopBase` into shared `create-stoop-internal.ts`
+- Fixed missing type exports (`CSSFunction`, `GlobalCSSFunction`, `KeyframesFunction`, `CreateThemeFunction`, `ProviderProps`, `ThemeManagementContextValue`, `ThemeContextValue`)
+- Improved import/export architecture to prevent circular dependencies
+
+### Added
+
+- SSR entry point export (`stoop/ssr`) now properly declared in `package.json` exports field
+- Inline documentation for client/server boundaries in source files
+
+### Changed
+
+- Refactored `create-stoop.ts` to import from `create-stoop-internal.ts` instead of duplicating logic
+- Ensured `create-stoop-internal.ts` remains server-safe with no React imports
+
 ## [0.6.1] - 2026-01-09
 
 ### Added
