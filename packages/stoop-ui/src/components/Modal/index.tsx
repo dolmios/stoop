@@ -215,7 +215,7 @@ const ModalFooterStyled = styled("div", {
   zIndex: "$sticky",
 });
 
-export type ModalProps = {
+export interface ModalProps {
   children?: ReactNode | ((onClose: () => void) => ReactNode);
   disabled?: boolean;
   footer?: ReactNode | ((onClose: () => void) => ReactNode);
@@ -225,9 +225,9 @@ export type ModalProps = {
   small?: boolean;
   title?: ReactNode;
   trigger?: ReactNode;
-};
+}
 
-export function Modal({
+export const Modal = ({
   children,
   disabled,
   footer,
@@ -237,7 +237,7 @@ export function Modal({
   small,
   title,
   trigger,
-}: ModalProps): ReactNode {
+}: ModalProps) => {
   const titleId = useId();
   const modal = useModal({
     isOpen,
@@ -314,4 +314,4 @@ export function Modal({
         )}
     </ModalStyled>
   );
-}
+};

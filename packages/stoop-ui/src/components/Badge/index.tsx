@@ -71,7 +71,7 @@ const BadgeStyled = styled("span", {
   },
 });
 
-const BadgeLoadingOverlay = styled("div", {
+const BadgeLoadingOverlayStyled = styled("div", {
   alignItems: "center",
   display: "flex",
   inset: 0,
@@ -80,20 +80,18 @@ const BadgeLoadingOverlay = styled("div", {
   zIndex: 1,
 });
 
-export type BadgeProps = Omit<ComponentProps<typeof BadgeStyled>, "loading"> & {
+export interface BadgeProps extends Omit<ComponentProps<typeof BadgeStyled>, "loading"> {
   children?: ReactNode;
   loading?: boolean;
-};
-
-export function Badge({ children, loading = false, ...props }: BadgeProps): ReactNode {
-  return (
-    <BadgeStyled loading={loading} {...props}>
-      {children}
-      {loading && (
-        <BadgeLoadingOverlay>
-          <Spinner size="small" />
-        </BadgeLoadingOverlay>
-      )}
-    </BadgeStyled>
-  );
 }
+
+export const Badge = ({ children, loading = false, ...props }: BadgeProps) => (
+  <BadgeStyled loading={loading} {...props}>
+    {children}
+    {loading && (
+      <BadgeLoadingOverlayStyled>
+        <Spinner size="small" />
+      </BadgeLoadingOverlayStyled>
+    )}
+  </BadgeStyled>
+);

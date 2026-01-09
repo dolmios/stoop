@@ -229,12 +229,12 @@ const SelectWrapperStyled = styled("div", {
   width: "100%",
 });
 
-const ErrorMessageStyled = styled("div", {
+const SelectErrorMessageStyled = styled("div", {
   color: "#dc2626",
   fontSize: "$small",
 });
 
-const SuccessMessageStyled = styled("div", {
+const SelectSuccessMessageStyled = styled("div", {
   color: "#16a34a",
   fontSize: "$small",
 });
@@ -246,7 +246,7 @@ export type SelectOption = {
   value: string;
 };
 
-export type SelectProps = {
+export interface SelectProps {
   ariaLabel?: string;
   disabled?: boolean;
   error?: boolean;
@@ -258,9 +258,9 @@ export type SelectProps = {
   success?: boolean;
   successMessage?: string;
   value?: string;
-};
+}
 
-export function Select({
+export const Select = ({
   ariaLabel,
   disabled = false,
   error,
@@ -272,14 +272,14 @@ export function Select({
   success,
   successMessage,
   value,
-}: SelectProps): ReactNode {
+}: SelectProps) => {
   const reactId = useId();
   const instanceId = `select-${reactId}`;
 
   const [focused, setFocused] = useState("");
   const [internalValue, setInternalValue] = useState<string | undefined>(value);
 
-  const select = useFloatingUI();
+  const select = useFloatingUI<HTMLButtonElement, HTMLDivElement>();
 
   // Sync internal value with controlled value
   useEffect(() => {
@@ -441,8 +441,10 @@ export function Select({
             document.body,
           )}
       </SelectStyled>
-      {error && errorMessage && <ErrorMessageStyled>{errorMessage}</ErrorMessageStyled>}
-      {success && successMessage && <SuccessMessageStyled>{successMessage}</SuccessMessageStyled>}
+      {error && errorMessage && <SelectErrorMessageStyled>{errorMessage}</SelectErrorMessageStyled>}
+      {success && successMessage && (
+        <SelectSuccessMessageStyled>{successMessage}</SelectSuccessMessageStyled>
+      )}
     </SelectWrapperStyled>
   );
-}
+};

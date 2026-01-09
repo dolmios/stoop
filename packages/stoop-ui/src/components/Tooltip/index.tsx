@@ -29,20 +29,20 @@ const fadeOutDown = keyframes({
   },
 });
 
-const PopoverStyled = styled("div", {
+const TooltipStyled = styled("div", {
   display: "inline-flex",
   position: "relative",
   verticalAlign: "middle",
 });
 
-const PopoverTriggerStyled = styled("div", {
+const TooltipTriggerStyled = styled("div", {
   cursor: "pointer",
   display: "inline-flex",
   position: "relative",
   verticalAlign: "middle",
 });
 
-const PopoverContentStyled = styled("div", {
+const TooltipContentStyled = styled("div", {
   "&::-webkit-scrollbar": {
     display: "none",
   },
@@ -95,7 +95,7 @@ const PopoverContentStyled = styled("div", {
   willChange: "transform, opacity",
 });
 
-export type TooltipProps = {
+export interface TooltipProps {
   ariaLabel?: string;
   children: ReactNode | ((onClose: () => void) => ReactNode);
   disabled?: boolean;
@@ -103,9 +103,9 @@ export type TooltipProps = {
   mode?: "click" | "hover";
   small?: boolean;
   trigger: ReactNode;
-};
+}
 
-export function Tooltip({
+export const Tooltip = ({
   ariaLabel,
   children,
   disabled,
@@ -113,7 +113,7 @@ export function Tooltip({
   mode = "click",
   small = false,
   trigger,
-}: TooltipProps): ReactNode {
+}: TooltipProps) => {
   const floatingUI = useFloatingUI();
   const reactId = useId();
   const instanceId = `tooltip-${reactId}`;
@@ -180,8 +180,8 @@ export function Tooltip({
   }, []);
 
   return (
-    <PopoverStyled>
-      <PopoverTriggerStyled
+    <TooltipStyled>
+      <TooltipTriggerStyled
         ref={floatingUI.triggerRef}
         aria-controls={`${instanceId}-content`}
         aria-expanded={floatingUI.isOpen}
@@ -190,11 +190,11 @@ export function Tooltip({
         onMouseEnter={mode === "hover" ? handleMouseEnter : undefined}
         onMouseLeave={mode === "hover" ? handleMouseLeave : undefined}>
         {trigger}
-      </PopoverTriggerStyled>
+      </TooltipTriggerStyled>
 
       {floatingUI.isMounted &&
         createPortal(
-          <PopoverContentStyled
+          <TooltipContentStyled
             ref={floatingUI.contentRef}
             animation={floatingUI.isOpen}
             aria-label={ariaLabel}
@@ -210,9 +210,9 @@ export function Tooltip({
             onMouseEnter={mode === "hover" ? handleContentMouseEnter : undefined}
             onMouseLeave={mode === "hover" ? handleContentMouseLeave : undefined}>
             {typeof children === "function" ? children(floatingUI.handleClose) : children}
-          </PopoverContentStyled>,
+          </TooltipContentStyled>,
           document.body,
         )}
-    </PopoverStyled>
+    </TooltipStyled>
   );
-}
+};

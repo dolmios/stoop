@@ -26,7 +26,7 @@ function extractText(children: ReactNode): string {
 }
 
 // Inline code styling
-const InlineCode = styled("code", {
+const CodeStyled = styled("code", {
   backgroundColor: "$hover",
   borderRadius: "$small",
   fontFamily: "$mono",
@@ -35,12 +35,12 @@ const InlineCode = styled("code", {
 });
 
 // Code block container with relative positioning for copy button
-const CodeBlockContainer = styled("div", {
+const CodeBlockContainerStyled = styled("div", {
   position: "relative",
 });
 
 // Code block styling
-const CodeBlock = styled("pre", {
+const CodeBlockStyled = styled("pre", {
   backgroundColor: "$hover",
   border: "1px solid $borderStrong",
   borderBottomColor: "$borderEmphasis",
@@ -55,13 +55,13 @@ const CodeBlock = styled("pre", {
   padding: "$medium",
 });
 
-const CodeBlockCode = styled("code", {
+const CodeBlockCodeStyled = styled("code", {
   fontFamily: "inherit",
   fontSize: "inherit",
 });
 
 // Copy button styling
-const CopyButton = styled("button", {
+const CodeCopyButtonStyled = styled("button", {
   "&:active": {
     boxShadow: "$inset",
     transform: "translateY(0)",
@@ -94,12 +94,12 @@ const CopyButton = styled("button", {
   zIndex: 1,
 });
 
-export interface CodeProps extends ComponentProps<typeof InlineCode> {
+export interface CodeProps extends ComponentProps<typeof CodeStyled> {
   children?: ReactNode;
   block?: boolean;
 }
 
-export function Code({ block, children, ...props }: CodeProps): ReactNode {
+export const Code = ({ block, children, ...props }: CodeProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async (): Promise<void> => {
@@ -112,16 +112,16 @@ export function Code({ block, children, ...props }: CodeProps): ReactNode {
 
   if (block) {
     return (
-      <CodeBlockContainer>
-        <CodeBlock>
-          <CodeBlockCode {...props}>{children}</CodeBlockCode>
-        </CodeBlock>
-        <CopyButton type="button" onClick={handleCopy}>
+      <CodeBlockContainerStyled>
+        <CodeBlockStyled>
+          <CodeBlockCodeStyled {...props}>{children}</CodeBlockCodeStyled>
+        </CodeBlockStyled>
+        <CodeCopyButtonStyled type="button" onClick={handleCopy}>
           {copied ? "Copied!" : "Copy"}
-        </CopyButton>
-      </CodeBlockContainer>
+        </CodeCopyButtonStyled>
+      </CodeBlockContainerStyled>
     );
   }
 
-  return <InlineCode {...props}>{children}</InlineCode>;
-}
+  return <CodeStyled {...props}>{children}</CodeStyled>;
+};

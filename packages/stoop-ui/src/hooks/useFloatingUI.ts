@@ -11,21 +11,27 @@ import {
 } from "@floating-ui/dom";
 import { useState, useRef, useEffect, type RefObject } from "react";
 
-export interface UseFloatingUIReturn {
-  contentRef: RefObject<HTMLDivElement | null>;
+export interface UseFloatingUIReturn<
+  TTrigger extends HTMLElement = HTMLElement,
+  TContent extends HTMLElement = HTMLDivElement,
+> {
+  contentRef: RefObject<TContent | null>;
   handleClick: () => void;
   handleClose: () => void;
   isMounted: boolean;
   isOpen: boolean;
-  triggerRef: RefObject<HTMLDivElement | null>;
+  triggerRef: RefObject<TTrigger | null>;
 }
 
-export function useFloatingUI(): UseFloatingUIReturn {
+export function useFloatingUI<
+  TTrigger extends HTMLElement = HTMLElement,
+  TContent extends HTMLElement = HTMLDivElement,
+>(): UseFloatingUIReturn<TTrigger, TContent> {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  const triggerRef = useRef<HTMLDivElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<TTrigger | null>(null);
+  const contentRef = useRef<TContent | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   const updatePosition = (): void => {
@@ -79,7 +85,7 @@ export function useFloatingUI(): UseFloatingUIReturn {
     });
   };
 
-  const prepareFloatingElement = (element: HTMLDivElement): void => {
+  const prepareFloatingElement = (element: TContent): void => {
     if (!element) return;
     element.style.position = "fixed";
     element.style.top = "0";

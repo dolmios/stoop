@@ -48,5 +48,5 @@ export {
   type TableCellProps,
 } from "./components/Table";
 export { Tabs, type TabsProps, type TabItem } from "./components/Tabs";
-export { Text, TextComponent, type TextProps } from "./components/Text";
+export { Text, type TextProps } from "./components/Text";
 export { Tooltip, type TooltipProps } from "./components/Tooltip";

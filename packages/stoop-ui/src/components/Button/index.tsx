@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, ReactNode, ElementType, ComponentPropsWithoutRef } from "react";
 
 import { styled, keyframes } from "../../stoop.theme";
 
@@ -14,12 +14,15 @@ const pulse = keyframes({
 });
 
 const ButtonStyled = styled("button", {
-  "&:active": {
+  "&:active:not(:disabled)": {
     boxShadow: "$inset",
     transform: "translateY(0)",
     transition: "$fast",
   },
   "&:disabled": {
+    "&:focus-visible": {
+      outline: "none",
+    },
     cursor: "not-allowed",
     opacity: "$disabled",
     pointerEvents: "none",
@@ -86,7 +89,7 @@ const ButtonStyled = styled("button", {
     },
     variant: {
       danger: {
-        "&:active": {
+        "&:active:not(:disabled)": {
           backgroundColor: "#991b1b",
           borderColor: "#991b1b",
         },
@@ -134,7 +137,7 @@ const ButtonStyled = styled("button", {
   },
 });
 
-const ButtonLoading = styled("div", {
+const ButtonLoadingStyled = styled("div", {
   alignItems: "center",
   display: "flex",
   inset: 0,
@@ -143,7 +146,7 @@ const ButtonLoading = styled("div", {
   zIndex: 1,
 });
 
-const LoadingSpinner = styled("div", {
+const ButtonLoadingSpinnerStyled = styled("div", {
   animation: `${pulse} 1.5s ease-in-out infinite`,
   border: "2px solid $border",
   borderRadius: "50%",
@@ -152,11 +155,15 @@ const LoadingSpinner = styled("div", {
   width: "16px",
 });
 
-const IconWrapper = styled("span", {
+const ButtonIconWrapperStyled = styled("span", {
   display: "inline-flex",
 });
 
-export interface ButtonProps extends Omit<ComponentProps<typeof ButtonStyled>, "loading"> {
+export interface ButtonProps<T extends ElementType = "button"> extends Omit<
+  ComponentProps<typeof ButtonStyled>,
+  "loading" | "as"
+> {
+  as?: T;
   children?: ReactNode;
   disabled?: boolean;
   loading?: boolean;
@@ -164,14 +171,15 @@ export interface ButtonProps extends Omit<ComponentProps<typeof ButtonStyled>, "
   iconPosition?: "left" | "right";
 }
 
-export function Button({
+export const Button = <T extends ElementType = "button">({
+  as,
   children,
   disabled = false,
   icon,
   iconPosition = "left",
   loading = false,
   ...props
-}: ButtonProps): ReactNode {
+}: ButtonProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ButtonProps<T>>) => {
   const isDisabled = disabled || loading;
   const showLeftIcon = icon && iconPosition === "left";
   const showRightIcon = icon && iconPosition === "right";
@@ -180,16 +188,21 @@ export function Button({
     <ButtonStyled
       {...props}
       aria-busy={loading || undefined}
+      as={as as any}
       disabled={isDisabled}
       loading={loading}>
       {loading && (
-        <ButtonLoading>
-          <LoadingSpinner />
-        </ButtonLoading>
+        <ButtonLoadingStyled>
+          <ButtonLoadingSpinnerStyled />
+        </ButtonLoadingStyled>
       )}
-      {showLeftIcon && <IconWrapper css={{ marginRight: "$small" }}>{icon}</IconWrapper>}
+      {showLeftIcon && (
+        <ButtonIconWrapperStyled css={{ marginRight: "$small" }}>{icon}</ButtonIconWrapperStyled>
+      )}
       {children}
-      {showRightIcon && <IconWrapper css={{ marginLeft: "$small" }}>{icon}</IconWrapper>}
+      {showRightIcon && (
+        <ButtonIconWrapperStyled css={{ marginLeft: "$small" }}>{icon}</ButtonIconWrapperStyled>
+      )}
     </ButtonStyled>
   );
-}
+};

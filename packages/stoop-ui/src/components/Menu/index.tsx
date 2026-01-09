@@ -225,23 +225,23 @@ export type MenuOption = {
   value: string;
 };
 
-export type MenuProps = {
+export interface MenuProps {
   ariaLabel?: string;
   children?: ReactNode | ((onClose: () => void) => ReactNode);
   initial?: string;
   onSelection?: (value: string, label: string) => void;
   options: MenuOption[];
   trigger: ReactNode;
-};
+}
 
-export function Menu({
+export const Menu = ({
   ariaLabel,
   children,
   initial,
   onSelection,
   options,
   trigger,
-}: MenuProps): ReactNode {
+}: MenuProps) => {
   const reactId = useId();
   const instanceId = `menu-${reactId}`;
 
@@ -381,4 +381,4 @@ export function Menu({
         )}
     </MenuStyled>
   );
-}
+};

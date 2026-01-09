@@ -37,7 +37,7 @@ const CardStyled = styled("div", {
   },
 });
 
-const CardLoadingOverlay = styled("div", {
+const CardLoadingOverlayStyled = styled("div", {
   alignItems: "center",
   display: "flex",
   inset: 0,
@@ -46,20 +46,18 @@ const CardLoadingOverlay = styled("div", {
   zIndex: 1,
 });
 
-export type CardProps = Omit<ComponentProps<typeof CardStyled>, "loading"> & {
+export interface CardProps extends Omit<ComponentProps<typeof CardStyled>, "loading"> {
   children?: ReactNode;
   loading?: boolean;
-};
-
-export function Card({ children, loading = false, ...props }: CardProps): ReactNode {
-  return (
-    <CardStyled loading={loading} {...props}>
-      {children}
-      {loading && (
-        <CardLoadingOverlay>
-          <Spinner />
-        </CardLoadingOverlay>
-      )}
-    </CardStyled>
-  );
 }
+
+export const Card = ({ children, loading = false, ...props }: CardProps) => (
+  <CardStyled loading={loading} {...props}>
+    {children}
+    {loading && (
+      <CardLoadingOverlayStyled>
+        <Spinner />
+      </CardLoadingOverlayStyled>
+    )}
+  </CardStyled>
+);

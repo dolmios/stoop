@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 
 import { styled } from "../../stoop.theme";
 
-export const Stack = styled("div", {
+const StackStyled = styled("div", {
   display: "flex",
   flexDirection: "column",
   variants: {
@@ -152,4 +152,17 @@ export const Stack = styled("div", {
   },
 });
 
-export type StackProps = ComponentProps<typeof Stack>;
+export type StackProps = Omit<ComponentProps<typeof StackStyled>, "as"> & {
+  as?:
+    | "div"
+    | "section"
+    | "header"
+    | "footer"
+    | "main"
+    | "nav"
+    | "aside"
+    | "article"
+    | (string & {});
+};
+
+export const Stack = (props: StackProps) => <StackStyled {...props} />;

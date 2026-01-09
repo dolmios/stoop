@@ -41,8 +41,8 @@ const SpinnerStyled = styled("div", {
   },
 });
 
-export type SpinnerProps = ComponentProps<typeof SpinnerStyled>;
+export interface SpinnerProps extends ComponentProps<typeof SpinnerStyled> {}
 
-export function Spinner({ size = "default", ...props }: SpinnerProps): ReactNode {
-  return <SpinnerStyled size={size} {...props} />;
-}
+export const Spinner = ({ size = "default", ...props }: SpinnerProps) => (
+  <SpinnerStyled size={size} {...props} />
+);

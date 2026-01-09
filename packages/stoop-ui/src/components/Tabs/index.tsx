@@ -4,7 +4,7 @@ import { useCallback, useState, type ReactNode } from "react";
 
 import { styled } from "../../stoop.theme";
 
-const TabsContainer = styled("div", {
+const TabsStyled = styled("div", {
   "&::-webkit-scrollbar": {
     display: "none",
   },
@@ -20,7 +20,7 @@ const TabsContainer = styled("div", {
   width: "100%",
 });
 
-const TabButton = styled("button", {
+const TabsTabStyled = styled("button", {
   "&:active": {
     transform: "none",
   },
@@ -84,19 +84,14 @@ export type TabItem = {
   readonly label: string;
 };
 
-export type TabsProps = {
+export interface TabsProps {
   defaultValue?: string;
   items: TabItem[];
   onTabChange?: (value: string) => void;
   value?: string;
-};
+}
 
-export function Tabs({
-  defaultValue,
-  items,
-  onTabChange,
-  value: controlledValue,
-}: TabsProps): ReactNode {
+export const Tabs = ({ defaultValue, items, onTabChange, value: controlledValue }: TabsProps) => {
   const [internalValue, setInternalValue] = useState(defaultValue || items[0]?.value);
 
   // Use controlled value if provided, otherwise use internal state
@@ -116,15 +111,15 @@ export function Tabs({
   );
 
   return (
-    <TabsContainer>
+    <TabsStyled>
       {items.map((item) => (
-        <TabButton
+        <TabsTabStyled
           key={item.value}
           active={value === item.value}
           onClick={(): void => handleTabClick(item)}>
           {item.label}
-        </TabButton>
+        </TabsTabStyled>
       ))}
-    </TabsContainer>
+    </TabsStyled>
   );
-}
+};

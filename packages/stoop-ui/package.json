@@ -1,6 +1,6 @@
 {
   "name": "stoop-ui",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "UI component library built with stoop",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "main": "./dist/index.js",

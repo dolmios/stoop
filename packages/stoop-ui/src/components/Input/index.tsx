@@ -5,7 +5,7 @@ import { forwardRef, type ComponentProps, type ForwardedRef } from "react";
 import { styled } from "../../stoop.theme";
 import { Spinner } from "../Spinner";
 
-const InputWrapper = styled("div", {
+const InputWrapperStyled = styled("div", {
   display: "flex",
   flexDirection: "column",
   gap: "$smaller",
@@ -13,7 +13,7 @@ const InputWrapper = styled("div", {
   width: "100%",
 });
 
-const InputLabel = styled("label", {
+const InputLabelStyled = styled("label", {
   color: "$text",
   fontSize: "$small",
   fontWeight: "$default",
@@ -86,7 +86,7 @@ const InputStyled = styled("input", {
   width: "100%",
 });
 
-const TextareaStyled = styled("textarea", {
+const InputTextareaStyled = styled("textarea", {
   "&::placeholder": {
     color: "$textSecondary",
     opacity: 0.6,
@@ -155,17 +155,17 @@ const TextareaStyled = styled("textarea", {
   width: "100%",
 });
 
-const ErrorMessage = styled("div", {
+const InputErrorMessageStyled = styled("div", {
   color: "#dc2626",
   fontSize: "$small",
 });
 
-const SuccessMessage = styled("div", {
+const InputSuccessMessageStyled = styled("div", {
   color: "#16a34a",
   fontSize: "$small",
 });
 
-const InputLoadingOverlay = styled("div", {
+const InputLoadingOverlayStyled = styled("div", {
   alignItems: "center",
   display: "flex",
   inset: "0 0 0 0",
@@ -175,10 +175,10 @@ const InputLoadingOverlay = styled("div", {
   zIndex: 1,
 });
 
-export type InputProps = Omit<
+export interface InputProps extends Omit<
   ComponentProps<typeof InputStyled>,
   "error" | "loading" | "success"
-> & {
+> {
   error?: boolean;
   errorMessage?: string;
   label?: string;
@@ -186,7 +186,7 @@ export type InputProps = Omit<
   success?: boolean;
   successMessage?: string;
   textarea?: boolean;
-};
+}
 
 export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   (
@@ -206,8 +206,8 @@ export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputPro
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
     const inputElement = textarea ? (
-      <TextareaStyled
-        {...(props as ComponentProps<typeof TextareaStyled>)}
+      <InputTextareaStyled
+        {...(props as ComponentProps<typeof InputTextareaStyled>)}
         ref={ref as ForwardedRef<HTMLTextAreaElement>}
         error={error}
         id={inputId}
@@ -226,19 +226,21 @@ export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputPro
     );
 
     return (
-      <InputWrapper>
-        {label && <InputLabel htmlFor={inputId}>{label}</InputLabel>}
+      <InputWrapperStyled>
+        {label && <InputLabelStyled htmlFor={inputId}>{label}</InputLabelStyled>}
         <div style={{ position: "relative", width: "100%" }}>
           {inputElement}
           {loading && (
-            <InputLoadingOverlay>
+            <InputLoadingOverlayStyled>
               <Spinner size="small" />
-            </InputLoadingOverlay>
+            </InputLoadingOverlayStyled>
           )}
         </div>
-        {error && errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-        {success && successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-      </InputWrapper>
+        {error && errorMessage && <InputErrorMessageStyled>{errorMessage}</InputErrorMessageStyled>}
+        {success && successMessage && (
+          <InputSuccessMessageStyled>{successMessage}</InputSuccessMessageStyled>
+        )}
+      </InputWrapperStyled>
     );
   },
 );

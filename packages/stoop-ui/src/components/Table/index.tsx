@@ -4,26 +4,26 @@ import type { ComponentProps } from "react";
 
 import { styled } from "../../stoop.theme";
 
-export const Table = styled("table", {
+const TableStyled = styled("table", {
   border: "1px solid $border",
   borderCollapse: "collapse",
   width: "100%",
 });
 
-export const TableHead = styled("thead", {
+const TableHeadStyled = styled("thead", {
   backgroundColor: "$hover",
 });
 
-export const TableBody = styled("tbody", {});
+const TableBodyStyled = styled("tbody", {});
 
-export const TableRow = styled("tr", {
+const TableRowStyled = styled("tr", {
   "&:last-child": {
     borderBottom: "none",
   },
   borderBottom: "1px solid $border",
 });
 
-export const TableHeader = styled("th", {
+const TableHeaderStyled = styled("th", {
   "&:last-child": {
     borderRight: "none",
   },
@@ -33,7 +33,7 @@ export const TableHeader = styled("th", {
   textAlign: "left",
 });
 
-export const TableCell = styled("td", {
+const TableCellStyled = styled("td", {
   "&:last-child": {
     borderRight: "none",
   },
@@ -42,9 +42,16 @@ export const TableCell = styled("td", {
   padding: "$small $medium",
 });
 
-export type TableProps = ComponentProps<typeof Table>;
-export type TableHeadProps = ComponentProps<typeof TableHead>;
-export type TableBodyProps = ComponentProps<typeof TableBody>;
-export type TableRowProps = ComponentProps<typeof TableRow>;
-export type TableHeaderProps = ComponentProps<typeof TableHeader>;
-export type TableCellProps = ComponentProps<typeof TableCell>;
+export interface TableProps extends ComponentProps<typeof TableStyled> {}
+export interface TableHeadProps extends ComponentProps<typeof TableHeadStyled> {}
+export interface TableBodyProps extends ComponentProps<typeof TableBodyStyled> {}
+export interface TableRowProps extends ComponentProps<typeof TableRowStyled> {}
+export interface TableHeaderProps extends ComponentProps<typeof TableHeaderStyled> {}
+export interface TableCellProps extends ComponentProps<typeof TableCellStyled> {}
+
+export const Table = (props: TableProps) => <TableStyled {...props} />;
+export const TableHead = (props: TableHeadProps) => <TableHeadStyled {...props} />;
+export const TableBody = (props: TableBodyProps) => <TableBodyStyled {...props} />;
+export const TableRow = (props: TableRowProps) => <TableRowStyled {...props} />;
+export const TableHeader = (props: TableHeaderProps) => <TableHeaderStyled {...props} />;
+export const TableCell = (props: TableCellProps) => <TableCellStyled {...props} />;
