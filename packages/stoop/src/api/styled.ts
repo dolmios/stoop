@@ -28,8 +28,12 @@ import type {
   ThemeScale,
   UtilityFunction,
   Variants,
-  VariantProps,
 } from "../types";
+
+// Import internal type
+type InternalVariantProps = {
+  [variantName: string]: string | number | boolean | undefined;
+};
 
 import { EMPTY_CSS, STOOP_COMPONENT_SYMBOL } from "../constants";
 import { compileCSS } from "../core/compiler";
@@ -49,7 +53,7 @@ import { hash, sanitizeClassName } from "../utils/theme-utils";
  * @param baseStyles - Base styles to merge with variant styles
  * @returns Merged CSS object
  */
-function applyVariants(variants: Variants, props: VariantProps, baseStyles: CSS): CSS {
+function applyVariants(variants: Variants, props: InternalVariantProps, baseStyles: CSS): CSS {
   const appliedVariantStyles: CSS[] = [];
 
   for (const variantName in variants) {
@@ -425,27 +429,56 @@ export function createStyledFunction(
   themeMap?: Record<string, ThemeScale>,
   themeContext?: Context<ThemeContextValue | null>,
 ): {
-  <DefaultElement extends StylableElement, BaseStyles extends CSSWithVariants>(
+  // Overload 1: When baseStyles has variants property
+  <
+    DefaultElement extends StylableElement,
+    BaseStyles extends CSS & {
+      variants: {
+        [Name in string]: {
+          [Pair in string]: CSS;
+        };
+      };
+    },
+  >(
     defaultElement: DefaultElement,
     baseStyles: BaseStyles,
   ): ReturnType<
-    typeof forwardRef<unknown, StyledComponentProps<DefaultElement, BaseStyles["variants"]>>
+    typeof forwardRef<
+      unknown,
+      StyledComponentProps<
+        DefaultElement,
+        BaseStyles extends { variants: infer V } ? (V extends Variants ? V : {}) : {}
+      >
+    >
   > & {
     selector: StyledComponentRef;
   };
+  // Overload 2: When baseStyles has NO variants or is undefined
   <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
-    baseStyles?: CSS,
+    baseStyles?: CSS & { variants?: never },
   ): ReturnType<typeof forwardRef<unknown, StyledComponentProps<DefaultElement, {}>>> & {
     selector: StyledComponentRef;
   };
 } {
   return function styled<
     DefaultElement extends StylableElement,
-    BaseStyles extends CSS | CSSWithVariants = CSS,
+    BaseStyles extends
+      | CSS
+      | (CSS & {
+          variants: {
+            [Name in string]: {
+              [Pair in string]: CSS;
+            };
+          };
+        }) = CSS,
   >(defaultElement: DefaultElement, baseStyles?: BaseStyles) {
     // Extract variants config from embedded variants only (matching Stitches API)
-    type VariantsConfig = BaseStyles extends CSSWithVariants ? BaseStyles["variants"] : {};
+    type VariantsConfig = BaseStyles extends { variants: infer V }
+      ? V extends Variants
+        ? V
+        : {}
+      : {};
 
     let actualBaseStyles: CSS = (baseStyles || EMPTY_CSS) as CSS;
     let actualVariants: VariantsConfig | undefined;

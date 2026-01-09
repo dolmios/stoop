@@ -203,12 +203,13 @@ export function createStoopBase(config: StoopConfig): {
  */
 export type {
   CSS,
-  Theme,
+  ComponentProps,
+  DefaultTheme,
   StoopConfig,
   StoopInstance,
-  UtilityFunction,
+  Theme,
   ThemeScale,
-  DefaultTheme,
+  UtilityFunction,
 } from "./types";
 
 export function createStoop(config: StoopConfig): StoopInstance {

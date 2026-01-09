@@ -62,6 +62,7 @@ const Button = styled("button", {
 - **Multiple themes** with built-in Provider
 - **Utility functions** for custom CSS transformations
 - **Zero runtime overhead** for theme switching
+- **Zero dependencies** - only React peer dependency
 
 ## Documentation
 

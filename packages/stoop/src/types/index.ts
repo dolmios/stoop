@@ -3,8 +3,140 @@
  * Defines CSS objects, themes, variants, styled components, and instance types.
  */
 
-import type { ComponentType, ElementType, JSX, ReactNode } from "react";
-import type { PolymorphicPropsWithRef } from "react-polymorphic-types";
+import type {
+  ComponentType,
+  ElementType,
+  JSX,
+  ReactNode,
+  ForwardRefExoticComponent,
+  ComponentPropsWithRef,
+  ReactElement,
+} from "react";
+
+// ============================================================================
+// Type Utilities
+// ============================================================================
+
+/**
+ * Remove index signatures from a type, leaving only known properties.
+ * Useful for better autocomplete and type inference.
+ * Inspired by Stitches' RemoveIndex utility.
+ *
+ * @example
+ * ```ts
+ * type MyType = { foo: string; bar: number; [key: string]: unknown };
+ * type Clean = RemoveIndexSignature<MyType>; // { foo: string; bar: number }
+ * ```
+ */
+export type RemoveIndexSignature<T> = {
+  [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+};
+
+/**
+ * Widen literal types to their base types for more flexible prop types.
+ * Allows both literal values and their base types.
+ * Inspired by Stitches' Widen utility.
+ *
+ * **Note:** Currently unused in Stoop - we enforce strict literal types in variants.
+ * Available for future use if more flexible prop types are desired.
+ *
+ * @example
+ * ```ts
+ * type Strict = "sm" | "lg"; // Only accepts "sm" | "lg"
+ * type BoolWiden = Widen<"true" | "false">; // boolean | "true" | "false"
+ * type NumWiden = Widen<"1" | "2">; // number | "1" | "2"
+ * ```
+ */
+export type Widen<T> = T extends "true"
+  ? boolean | T
+  : T extends "false"
+    ? boolean | T
+    : T extends `${number}`
+      ? number | T
+      : T;
+
+/**
+ * Narrowed string type for better type inference in unions.
+ * The intersection with Record<never, never> makes it distinct from plain string.
+ *
+ * @example
+ * ```ts
+ * type Props = { variant: "sm" | "lg" | NarrowString };
+ * // Autocomplete shows "sm" | "lg" but also accepts any string
+ * ```
+ */
+export type NarrowString = string & Record<never, never>;
+
+/**
+ * Returns a string with the given prefix followed by the given values.
+ * Used to generate token names like "$primary" from theme keys.
+ *
+ * @example
+ * ```ts
+ * type Tokens = Prefixed<"$", "primary" | "secondary">; // "$primary" | "$secondary"
+ * ```
+ */
+export type Prefixed<K extends string, T> = `${K}${Extract<T, boolean | number | string>}`;
+
+/**
+ * Generates valid token names for a theme scale.
+ * Creates a union of "$tokenName" strings from the keys of a theme scale.
+ *
+ * @example
+ * ```ts
+ * type Theme = { colors: { primary: string; secondary: string } };
+ * type ColorTokens = TokenByScaleName<"colors", Theme>; // "$primary" | "$secondary"
+ * ```
+ */
+export type TokenByScaleName<
+  ScaleName extends string,
+  Theme extends DefaultTheme,
+> = ScaleName extends keyof Theme
+  ? Theme[ScaleName] extends Record<string, ThemeScaleValue>
+    ? Prefixed<"$", keyof Theme[ScaleName]>
+    : never
+  : never;
+
+/**
+ * Generates valid token names for a CSS property based on themeMap.
+ * Maps the property to a theme scale, then generates tokens for that scale.
+ *
+ * @example
+ * ```ts
+ * type Theme = { colors: { primary: string } };
+ * type ThemeMap = { color: "colors" };
+ * type ColorTokens = TokenByPropertyName<"color", Theme, ThemeMap>; // "$primary"
+ * ```
+ */
+export type TokenByPropertyName<
+  PropertyName extends string,
+  Theme extends DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale>,
+> = PropertyName extends keyof ThemeMap
+  ? TokenByScaleName<ThemeMap[PropertyName], Theme>
+  : never;
+
+/**
+ * Generates all valid tokens from all theme scales.
+ * Creates a union of all "$tokenName" strings from all scales in the theme.
+ *
+ * @example
+ * ```ts
+ * type Theme = { colors: { primary: string }; space: { small: string } };
+ * type AllTokens = AllThemeTokens<Theme>; // "$primary" | "$small"
+ * ```
+ */
+export type AllThemeTokens<Theme extends DefaultTheme> = {
+  [K in keyof Theme]: K extends ThemeScale
+    ? Theme[K] extends Record<string, ThemeScaleValue>
+      ? Prefixed<"$", keyof Theme[K]>
+      : never
+    : never;
+}[keyof Theme];
+
+// ============================================================================
+// CSS Types
+// ============================================================================
 
 export type CSSPropertyValue = string | number;
 
@@ -14,43 +146,113 @@ export interface StyledComponentRef {
   toString(): string;
 }
 
-export interface CSS {
-  [property: string]: CSSPropertyValue | CSS | Variants | unknown[] | undefined;
+/**
+ * CSS style object interface.
+ * Supports nested selectors, media queries, variants, and CSS property values.
+ *
+ * Property values can be:
+ * - Primitives: string | number
+ * - Theme tokens: "$tokenName" strings validated against the theme
+ * - Nested CSS objects: for pseudo-selectors, media queries, nested selectors
+ * - Variants: variant configuration object
+ * - Arrays: for multiple values (e.g., multiple box-shadows, transforms)
+ * - undefined: for optional properties
+ *
+ * **Note on `unknown[]`:** Intentionally permissive to support various CSS patterns:
+ * - Multiple transforms: `["translateX(10px)", "rotate(45deg)"]`
+ * - Multiple box-shadows: `["0 0 10px rgba(0,0,0,0.1)", "inset 0 0 5px white"]`
+ * - Vendor prefix values: `["-webkit-line-clamp", "3"]`
+ *
+ * **Theme Token Validation:**
+ * When Theme and ThemeMap are provided, CSS property values are validated:
+ * - Known properties accept valid theme tokens (e.g., `color: "$primary"`)
+ * - Unknown properties still accept any string (for flexibility)
+ * - Tokens are validated against the theme scales via ThemeMap
+ *
+ * @example
+ * ```ts
+ * const stoop = createStoop({
+ *   theme: { colors: { primary: "#000" } },
+ *   themeMap: { color: "colors" }
+ * });
+ * // color: "$primary" ✅ (valid token)
+ * // color: "$invalid" ❌ (TypeScript error)
+ * ```
+ */
+export interface CSS<
+  Theme extends DefaultTheme = DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
+> {
+  [property: string]:
+    | CSSPropertyValue
+    | (AllThemeTokens<Theme> extends never ? never : AllThemeTokens<Theme>)
+    | CSS<Theme, ThemeMap>
+    | Variants<Theme, ThemeMap>
+    | unknown[]
+    | undefined;
 }
 
 /**
  * Variants type definition.
- * Uses Record to preserve literal types instead of index signature which widens them.
+ * Uses mapped type to preserve literal types instead of Record which widens them.
  * This allows variant values like "primary" | "secondary" to be preserved as literal types
  * rather than being widened to string.
  */
-export type Variants = Record<string, Record<string, CSS>>;
+export type Variants<
+  Theme extends DefaultTheme = DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
+> = {
+  [variantName: string]: {
+    [variantValue: string]: CSS<Theme, ThemeMap>;
+  };
+};
 
-export interface VariantProps {
+/**
+ * Internal type for variant prop values (used by styled implementation).
+ * @internal
+ */
+interface InternalVariantProps {
   [variantName: string]: string | number | boolean | undefined;
 }
 
 export type HTMLElements = keyof JSX.IntrinsicElements;
 export type StylableElement = HTMLElements | ElementType;
 
-export interface StyledBaseProps {
-  css?: CSS;
+export interface StyledBaseProps<
+  Theme extends DefaultTheme = DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
+> {
+  css?: CSS<Theme, ThemeMap>;
 }
 
 /**
  * CSS object that includes variants configuration.
  * Used for styled component definitions that combine base styles with variants.
- * Uses Record<string, Record<string, CSS>> instead of Variants to preserve literal types
- * when variants are defined inline. This prevents TypeScript from widening literal types.
+ * Made generic to preserve exact variant literal types from the input.
  * We exclude variants from the CSS index signature to make it distinct.
  */
-export type CSSWithVariants = {
-  [K in keyof CSS as K extends "variants" ? never : K]: CSS[K];
+export type CSSWithVariants<
+  Theme extends DefaultTheme = DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
+  V extends Variants<Theme, ThemeMap> = Variants<Theme, ThemeMap>,
+> = {
+  [K in keyof CSS<Theme, ThemeMap> as K extends "variants" ? never : K]: CSS<Theme, ThemeMap>[K];
 } & {
-  variants: Record<string, Record<string, CSS>>;
+  variants: V;
 };
 
-export type UtilityFunction = (value: CSSPropertyValue | CSS | undefined) => CSS;
+export type UtilityFunction<
+  Theme extends DefaultTheme = DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
+> = (
+  value: CSSPropertyValue | CSS<Theme, ThemeMap> | undefined,
+) => CSS<Theme, ThemeMap>;
+
+/**
+ * Theme scale value type - restricts values to primitives.
+ * Ensures theme tokens are serializable and valid CSS values.
+ */
+export type ThemeScaleValue = string | number;
 
 /**
  * Theme scale type - represents valid keys from DefaultTheme.
@@ -62,21 +264,22 @@ export type ThemeScale = keyof DefaultTheme;
  * Theme interface - strictly enforces only these 13 approved scales.
  * Custom theme scales are NOT allowed.
  * Media queries are also supported as part of the theme.
+ * All scale values must be strings or numbers (primitives only).
  */
 export interface DefaultTheme {
-  colors?: Record<string, string>;
-  opacities?: Record<string, string | number>;
-  space?: Record<string, string>;
-  radii?: Record<string, string>;
-  sizes?: Record<string, string>;
-  fonts?: Record<string, string>;
-  fontWeights?: Record<string, string | number>;
-  fontSizes?: Record<string, string>;
-  lineHeights?: Record<string, string | number>;
-  letterSpacings?: Record<string, string>;
-  shadows?: Record<string, string>;
-  zIndices?: Record<string, string | number>;
-  transitions?: Record<string, string>;
+  colors?: Record<string, ThemeScaleValue>;
+  opacities?: Record<string, ThemeScaleValue>;
+  space?: Record<string, ThemeScaleValue>;
+  radii?: Record<string, ThemeScaleValue>;
+  sizes?: Record<string, ThemeScaleValue>;
+  fonts?: Record<string, ThemeScaleValue>;
+  fontWeights?: Record<string, ThemeScaleValue>;
+  fontSizes?: Record<string, ThemeScaleValue>;
+  lineHeights?: Record<string, ThemeScaleValue>;
+  letterSpacings?: Record<string, ThemeScaleValue>;
+  shadows?: Record<string, ThemeScaleValue>;
+  zIndices?: Record<string, ThemeScaleValue>;
+  transitions?: Record<string, ThemeScaleValue>;
   media?: Record<string, string>;
 }
 
@@ -96,33 +299,87 @@ export interface StoopConfig {
   globalCss?: CSS;
 }
 
-export type VariantKeys<T extends Variants> = keyof T;
-
 /**
  * Extract the keys from a variant object, preserving literal types.
  * Special handling for boolean variants: if keys are exactly "true" and "false",
  * convert to boolean type. Otherwise, use keyof to preserve literal types.
+ *
+ * **STRICT MODE:** Unlike Stitches, we do NOT widen to allow any string/number.
+ * Only the exact keys defined in the variant are allowed.
+ *
+ * @see VariantPropsFromConfig - Uses this to build variant props
+ * @see Widen - Alternative approach used by Stitches (more permissive)
+ *
+ * @example
+ * ```ts
+ * type BoolVariant = { true: CSS; false: CSS };
+ * type BoolKeys = ExtractVariantKeys<BoolVariant>; // boolean
+ *
+ * type SizeVariant = { sm: CSS; lg: CSS };
+ * type SizeKeys = ExtractVariantKeys<SizeVariant>; // "sm" | "lg"
+ * ```
  */
-type ExtractVariantKeys<T> =
-  T extends Record<string, CSS>
-    ? keyof T extends "true" | "false"
-      ? boolean
-      : keyof T extends "false" | "true"
-        ? boolean
-        : keyof T
-    : never;
+type ExtractVariantKeys<
+  T,
+  Theme extends DefaultTheme = DefaultTheme,
+  ThemeMap extends Record<string, ThemeScale> = Record<string, ThemeScale>,
+> = T extends Record<string, CSS<Theme, ThemeMap>>
+  ? keyof T extends "true" | "false"
+    ? boolean
+    : keyof T
+  : never;
 
+/**
+ * Converts variant configuration to prop types.
+ * All variant props are optional and use exact literal types from the config.
+ *
+ * @see ExtractVariantKeys - Internal utility used for key extraction
+ *
+ * @example
+ * ```ts
+ * type Config = {
+ *   size: { sm: CSS; lg: CSS };
+ *   color: { primary: CSS; secondary: CSS };
+ *   disabled: { true: CSS; false: CSS };
+ * };
+ * type Props = VariantPropsFromConfig<Config>;
+ * // Result: {
+ * //   size?: "sm" | "lg";
+ * //   color?: "primary" | "secondary";
+ * //   disabled?: boolean;
+ * // }
+ * ```
+ */
 export type VariantPropsFromConfig<T extends Variants> = {
-  [K in VariantKeys<T>]?: ExtractVariantKeys<T[K]>;
+  [K in keyof T]?: ExtractVariantKeys<T[K]>;
 };
 
+/**
+ * Base props that all styled components have.
+ * Includes className, css prop, and variant props.
+ */
 type StyledOwnProps<VariantsConfig extends Variants> = StyledBaseProps &
-  (VariantsConfig extends Record<string, never> ? {} : VariantPropsFromConfig<VariantsConfig>);
+  VariantPropsFromConfig<VariantsConfig>;
 
+/**
+ * Merge utility that properly combines types.
+ * Omits conflicting keys from T and adds all of U.
+ */
+type Merge<T, U> = Omit<T, keyof U> & U;
+
+/**
+ * Props for a styled component without the `as` prop polymorphism.
+ * Just the base element props + our styled props.
+ */
 export type StyledComponentProps<
   DefaultElement extends ElementType,
   VariantsConfig extends Variants = {},
-> = PolymorphicPropsWithRef<StyledOwnProps<VariantsConfig>, DefaultElement>;
+> = Merge<
+  DefaultElement extends keyof JSX.IntrinsicElements | ComponentType<any>
+    ? ComponentPropsWithRef<DefaultElement>
+    : {},
+  StyledOwnProps<VariantsConfig>
+>;
 
 export interface ThemeContextValue {
   theme: Theme;
@@ -248,26 +505,80 @@ export interface AutoPreloadResult {
 
 /**
  * Styled component type - the return type of styled()
+ *
+ * Note: We use ComponentType for maximum compatibility with React's type system.
+ * This ensures styled components work seamlessly with React.ComponentProps,
+ * forwardRef, and other React utilities without additional type gymnastics.
  */
-export type StyledComponent<
+/**
+ * Styled component type with proper polymorphic support.
+ * Based on Stitches' approach: uses ForwardRefExoticComponent + call signature overloads
+ * to preserve strict variant types without permissive index signatures.
+ *
+ * This provides:
+ * - Strict variant type checking (no extra variant values accepted)
+ * - Support for `as` prop to change the underlying element
+ * - Proper ref forwarding for both default and `as` elements
+ */
+export interface StyledComponent<
   DefaultElement extends ElementType,
   VariantsConfig extends Variants = {},
-> = ComponentType<StyledComponentProps<DefaultElement, VariantsConfig>> & {
+> extends ForwardRefExoticComponent<
+    StyledComponentProps<DefaultElement, VariantsConfig>
+  > {
+  /**
+   * Call signature without `as` prop - uses default element
+   */
+  (
+    props: StyledComponentProps<DefaultElement, VariantsConfig> & {
+      as?: never;
+    }
+  ): ReactElement | null;
+
+  /**
+   * Call signature with `as` prop - changes element type
+   * Note: ref type is intentionally permissive to avoid conflicts when
+   * using refs from hooks that may not match the exact element type.
+   */
+  <As extends ElementType = DefaultElement>(
+    props: Merge<
+      As extends keyof JSX.IntrinsicElements | ComponentType<unknown>
+        ? Omit<ComponentPropsWithRef<As>, "ref"> & { ref?: unknown }
+        : {},
+      StyledOwnProps<VariantsConfig> & { as?: As }
+    >
+  ): ReactElement | null;
+
   selector: StyledComponentRef;
-};
+}
 
 /**
  * Styled function type - the main styled() function signature
  * Variants must be embedded in the baseStyles object, matching Stitches API.
+ * Overloads are ordered to prefer the variants overload when variants are present.
  */
 export interface StyledFunction {
-  <DefaultElement extends StylableElement, BaseStyles extends CSSWithVariants>(
+  // Overload 1: When baseStyles has variants property
+  <
+    DefaultElement extends StylableElement,
+    BaseStyles extends CSS & {
+      variants: {
+        [Name in string]: {
+          [Pair in string]: CSS;
+        };
+      };
+    },
+  >(
     defaultElement: DefaultElement,
     baseStyles: BaseStyles,
-  ): StyledComponent<DefaultElement, BaseStyles["variants"]>;
+  ): StyledComponent<
+    DefaultElement,
+    BaseStyles extends { variants: infer V } ? (V extends Variants ? V : {}) : {}
+  >;
+  // Overload 2: When baseStyles has NO variants or is undefined
   <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
-    baseStyles?: CSS,
+    baseStyles?: CSS & { variants?: never },
   ): StyledComponent<DefaultElement, {}>;
 }
 
@@ -355,3 +666,32 @@ export interface StoopInstance {
    */
   useTheme: () => ThemeManagementContextValue;
 }
+
+/**
+ * Returns the properties, attributes, and children expected by a component.
+ * Use this to extract prop types from styled components.
+ *
+ * @example
+ * ```ts
+ * const Button = styled('button', { ... });
+ * type ButtonProps = ComponentProps<typeof Button>;
+ * ```
+ */
+export type ComponentProps<Component> = Component extends (...args: any[]) => any
+  ? Parameters<Component>[0]
+  : never;
+
+/**
+ * Returns a type that extracts only the variant props from a styled component.
+ *
+ * @example
+ * ```ts
+ * const Button = styled('button', {
+ *   variants: { size: { sm: {}, lg: {} } }
+ * });
+ * type ButtonVariants = VariantProps<typeof Button>;
+ * // Result: { size?: "sm" | "lg" }
+ * ```
+ */
+export type VariantProps<Component extends { selector: any }> =
+  Component extends StyledComponent<any, infer V> ? VariantPropsFromConfig<V> : never;

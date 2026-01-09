@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-01-09
+
+### Changed
+
+- **BREAKING**: Removed `react-polymorphic-types` dependency - implemented custom polymorphic types based on Stitches approach
+- Improved variant type inference with strict literal type preservation - invalid variant values now caught at compile time
+- `StyledComponent` now uses `ForwardRefExoticComponent` with call signature overloads instead of permissive `ComponentType`
+- Variant props no longer accept arbitrary strings - only defined variant values are allowed
+
+### Added
+
+- `RemoveIndexSignature<T>` utility type for removing index signatures from types
+- `Widen<T>` utility type for widening literal types (available but unused - strict mode preferred)
+- `NarrowString` utility type for better string literal inference
+- `ComponentProps<Component>` utility to extract component props (similar to Stitches)
+- `VariantProps<Component>` utility to extract only variant props from components
+
+### Fixed
+
+- Variant type checking now properly restricts to defined variant values (e.g., `variant="red"` errors if "red" not defined)
+- Removed conditional type in `StyledOwnProps` that was widening variant types
+- React types now properly imported without namespace import
+
 ## [0.5.4] - 2026-01-09
 
 ### Added

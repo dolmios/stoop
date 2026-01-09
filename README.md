@@ -31,6 +31,7 @@ Stoop is a minimalist implementation of Stitches' high-level features. It provid
 - SSR support via `getCssText()`
 - React >=16.8.0 required (Next.js Pages & App Router supported)
 - Automatic prefix (`stoop` by default) for CSS class names and variables
+- **Zero runtime dependencies** - only React peer dependency
 
 ## Installation
 
