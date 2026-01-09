@@ -18,11 +18,13 @@ export interface CSS {
   [property: string]: CSSPropertyValue | CSS | Variants | unknown[] | undefined;
 }
 
-export interface Variants {
-  [variantName: string]: {
-    [variantValue: string]: CSS;
-  };
-}
+/**
+ * Variants type definition.
+ * Uses Record to preserve literal types instead of index signature which widens them.
+ * This allows variant values like "primary" | "secondary" to be preserved as literal types
+ * rather than being widened to string.
+ */
+export type Variants = Record<string, Record<string, CSS>>;
 
 export interface VariantProps {
   [variantName: string]: string | number | boolean | undefined;
@@ -38,13 +40,14 @@ export interface StyledBaseProps {
 /**
  * CSS object that includes variants configuration.
  * Used for styled component definitions that combine base styles with variants.
- * This type explicitly requires the `variants` property to be present and of type Variants.
+ * Uses Record<string, Record<string, CSS>> instead of Variants to preserve literal types
+ * when variants are defined inline. This prevents TypeScript from widening literal types.
  * We exclude variants from the CSS index signature to make it distinct.
  */
 export type CSSWithVariants = {
   [K in keyof CSS as K extends "variants" ? never : K]: CSS[K];
 } & {
-  variants: Variants;
+  variants: Record<string, Record<string, CSS>>;
 };
 
 export type UtilityFunction = (value: CSSPropertyValue | CSS | undefined) => CSS;
@@ -95,17 +98,19 @@ export interface StoopConfig {
 
 export type VariantKeys<T extends Variants> = keyof T;
 
-// Extract the keys from a variant object, preserving literal types when possible
+/**
+ * Extract the keys from a variant object, preserving literal types.
+ * Special handling for boolean variants: if keys are exactly "true" and "false",
+ * convert to boolean type. Otherwise, use keyof to preserve literal types.
+ */
 type ExtractVariantKeys<T> =
-  T extends Record<infer K, CSS>
-    ? K extends string | number | boolean
-      ? K
-      : T extends Record<string, CSS>
-        ? string
-        : never
-    : T extends Record<string, CSS>
-      ? keyof T
-      : never;
+  T extends Record<string, CSS>
+    ? keyof T extends "true" | "false"
+      ? boolean
+      : keyof T extends "false" | "true"
+        ? boolean
+        : keyof T
+    : never;
 
 export type VariantPropsFromConfig<T extends Variants> = {
   [K in VariantKeys<T>]?: ExtractVariantKeys<T[K]>;

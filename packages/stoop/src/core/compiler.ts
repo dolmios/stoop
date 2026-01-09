@@ -108,6 +108,7 @@ function normalizeCSSValue(property: string, value: string | number): string {
     if (requiresUnit(property) && /^-?\d+\.?\d*$/.test(value.trim())) {
       return `${value}px`;
     }
+
     return value;
   }
 
