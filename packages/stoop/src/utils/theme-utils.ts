@@ -121,7 +121,8 @@ export function sanitizeCSSSelector(selector: string): string {
     return cached;
   }
 
-  const sanitized = selector.replace(/[^a-zA-Z0-9\s\-_>+~:.#[\]&@()]/g, "");
+  // Preserve commas for comma-separated selectors (e.g., "a, a:visited")
+  const sanitized = selector.replace(/[^a-zA-Z0-9\s\-_>+~:.#[\]&@(),]/g, "");
 
   const result = !sanitized.trim() || /^[>+~:.#[\]&@()\s]+$/.test(sanitized) ? "" : sanitized;
 

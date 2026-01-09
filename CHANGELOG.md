@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] - 2026-01-09
+
+### Added
+
+- Global CSS from config is now included in `getCssText()` for proper Pages Router SSR support
+- Support for comma-separated CSS selectors (e.g., `"a, a:visited"`, `"input, textarea"`)
+
+### Fixed
+
+- Fixed empty `content` property handling - CSS requires `content: "";` not `content: ;`
+- Fixed array destructuring linter warnings in theme utilities
+- Fixed FOUC (Flash of Unstyled Content) in Next.js Pages Router by ensuring global CSS is in SSR output
+- Preserved commas in CSS selector sanitization for multi-selector rules
+
+## [0.5.3] - 2026-01-08
+
+### Changed
+
+- Minor code cleanup and test improvements
+- Removed unused import in compiler
+
 ## [0.5.2] - 2026-01-07
 
 ### Fixed

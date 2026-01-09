@@ -252,11 +252,25 @@ export function cssObjectToString(
 
         if (sanitizedKey) {
           const parts = sanitizedKey.split("&");
-          const nestedSelector = parts.join(selector);
-          const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
 
-          if (nestedCss) {
-            nestedRulesList.push(nestedCss);
+          // Handle comma-separated selectors: split by comma, apply & replacement to each part, then rejoin
+          if (selector.includes(",")) {
+            const selectorParts = selector.split(",").map((s) => s.trim());
+            const nestedSelectors = selectorParts.map((sel) => parts.join(sel));
+            const nestedSelector = nestedSelectors.join(", ");
+            const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
+
+            if (nestedCss) {
+              nestedRulesList.push(nestedCss);
+            }
+          } else {
+            // Single selector: simple & replacement
+            const nestedSelector = parts.join(selector);
+            const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
+
+            if (nestedCss) {
+              nestedRulesList.push(nestedCss);
+            }
           }
         }
       } else if (key.startsWith(":")) {
@@ -264,6 +278,23 @@ export function cssObjectToString(
 
         if (sanitizedKey) {
           const nestedSelector = `${selector}${sanitizedKey}`;
+          const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
+
+          if (nestedCss) {
+            nestedRulesList.push(nestedCss);
+          }
+        }
+      } else if (key.includes(",")) {
+        // Handle comma-separated selectors (e.g., "a, a:visited")
+        // Split by comma, sanitize each part, then rejoin
+        // This must come before the space/combinator check since comma-separated selectors can contain spaces
+        const parts = key.split(",").map((part) => part.trim());
+        const sanitizedParts = parts
+          .map((part) => sanitizeCSSSelector(part))
+          .filter((part) => part);
+
+        if (sanitizedParts.length > 0) {
+          const nestedSelector = sanitizedParts.join(", ");
           const nestedCss = cssObjectToString(value, nestedSelector, depth + 1, media);
 
           if (nestedCss) {
@@ -301,9 +332,16 @@ export function cssObjectToString(
 
       if (property && (typeof value === "string" || typeof value === "number")) {
         const normalizedValue = normalizeCSSValue(property, value);
-        const escapedValue = escapeCSSValue(normalizedValue);
 
-        cssProperties.push(`${property}: ${escapedValue};`);
+        // Special handling for content property with empty string
+        // CSS requires content: ""; not content: ;
+        if (property === "content" && normalizedValue === "") {
+          cssProperties.push(`${property}: "";`);
+        } else {
+          const escapedValue = escapeCSSValue(normalizedValue);
+
+          cssProperties.push(`${property}: ${escapedValue};`);
+        }
       }
     }
   }
@@ -367,9 +405,16 @@ function extractCSSPropertiesForHash(obj: CSS, media?: Record<string, string>): 
 
       if (property && (typeof value === "string" || typeof value === "number")) {
         const normalizedValue = normalizeCSSValue(property, value);
-        const escapedValue = escapeCSSValue(normalizedValue);
 
-        cssProperties.push(`${property}: ${escapedValue};`);
+        // Special handling for content property with empty string
+        // CSS requires content: ""; not content: ;
+        if (property === "content" && normalizedValue === "") {
+          cssProperties.push(`${property}: "";`);
+        } else {
+          const escapedValue = escapeCSSValue(normalizedValue);
+
+          cssProperties.push(`${property}: ${escapedValue};`);
+        }
       }
     }
   }

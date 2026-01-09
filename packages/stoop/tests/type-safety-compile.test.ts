@@ -157,7 +157,11 @@ const autoInvalid2: AutoInferredButtonProps = { size: "wrong" }; // Should error
 */
 
 // Type assertions to verify literal types are preserved
-type _AssertAutoVariantIsLiteral = AutoVariantType extends "primary" | "secondary" | "danger" | undefined
+type _AssertAutoVariantIsLiteral = AutoVariantType extends
+  | "primary"
+  | "secondary"
+  | "danger"
+  | undefined
   ? true
   : false;
 

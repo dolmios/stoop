@@ -235,7 +235,7 @@ export function tokenToCSSVar(
 
     // Use the already-built index instead of calling findTokenInTheme again
     if (paths && paths.length > 0) {
-      const foundPath = paths[0];
+      const [foundPath] = paths;
       const sanitizedParts = foundPath.map((part) => sanitizeCSSVariableName(part));
       const cssVarName = `--${sanitizedParts.join("-")}`;
 
@@ -258,7 +258,7 @@ export function tokenToCSSVar(
 
     // Use the already-built index instead of calling findTokenInTheme again
     if (paths && paths.length > 0) {
-      const foundPath = paths[0];
+      const [foundPath] = paths;
       const sanitizedParts = foundPath.map((part) => sanitizeCSSVariableName(part));
       const cssVarName = `--${sanitizedParts.join("-")}`;
 

@@ -182,45 +182,20 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ### Basic Setup
 
-In your `pages/_document.tsx`, inject the CSS:
+In your `pages/_document.tsx`, inject the CSS and set the initial theme:
 
 ```typescript
 import { Html, Head, Main, NextScript } from "next/document";
 import { getCssText } from "../theme";
 
 export default function Document() {
-  return (
-    <Html>
-      <Head>
-        <style
-          id="stoop-styles"
-          dangerouslySetInnerHTML={{ __html: getCssText() }}
-        />
-      </Head>
-      <body>
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
-  );
-}
-```
-
-### With Theme Support
-
-```typescript
-import { Html, Head, Main, NextScript } from "next/document";
-import { getCssText } from "../theme";
-
-export default function Document() {
-  // Call with no parameters - includes all themes
   const cssText = getCssText();
 
   return (
-    <Html>
+    <Html data-theme="light" lang="en">
       <Head>
         <style
-          id="stoop-styles"
+          id="stoop"
           dangerouslySetInnerHTML={{ __html: cssText }}
         />
       </Head>
@@ -232,6 +207,95 @@ export default function Document() {
   );
 }
 ```
+
+**Important:** The `data-theme="light"` attribute on `<Html>` is **required** to prevent FOUC. Without it, CSS variables won't apply until the Provider mounts client-side.
+
+### With Theme Support in _app.tsx
+
+Wrap your app with the Provider in `pages/_app.tsx`:
+
+```typescript
+import type { AppProps } from "next/app";
+import { Provider } from "../theme";
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <Provider>
+      <Component {...pageProps} />
+    </Provider>
+  );
+}
+```
+
+The Provider will:
+- Read theme from localStorage on mount
+- Update `data-theme` attribute if different from default
+- Handle theme switching via `useTheme` hook
+
+### Why `data-theme` is Required
+
+Stoop generates CSS with attribute selectors:
+
+```css
+[data-theme="light"] {
+  --colors-primary: #0070f3;
+}
+
+[data-theme="dark"] {
+  --colors-primary: #3291ff;
+}
+```
+
+Without `data-theme` on the HTML element, these selectors don't match and CSS variables are undefined, causing FOUC.
+
+### How It Works
+
+1. **SSR**: HTML renders with `data-theme="light"` → CSS variables apply immediately
+2. **Hydration**: Provider mounts and checks localStorage
+3. **Theme Sync**: If stored theme differs, Provider updates `data-theme` attribute
+4. **Result**: No FOUC, smooth theme transitions
+
+### Advanced: Cookie-Based Theme Detection
+
+For perfect SSR theme matching (no flash even for returning users with dark mode):
+
+```typescript
+// pages/_document.tsx
+import Document, { DocumentContext, Html, Head, Main, NextScript } from "next/document";
+import { getCssText } from "../theme";
+
+class MyDocument extends Document {
+  static async getInitialProps(ctx: DocumentContext) {
+    const initialProps = await Document.getInitialProps(ctx);
+    const theme = ctx.req?.cookies["stoop-theme"] || "light";
+    return { ...initialProps, theme };
+  }
+
+  render() {
+    const { theme } = this.props as { theme: string };
+    const cssText = getCssText();
+
+    return (
+      <Html data-theme={theme} lang="en">
+        <Head>
+          <style
+            id="stoop"
+            dangerouslySetInnerHTML={{ __html: cssText }}
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+export default MyDocument;
+```
+
+This reads the theme from cookies server-side, ensuring perfect SSR/client match.
 
 
 ## Hydration Behavior

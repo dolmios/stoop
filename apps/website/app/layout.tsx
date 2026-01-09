@@ -5,13 +5,13 @@ import localFont from "next/font/local";
 import { cookies } from "next/headers";
 
 import { Breadcrumbs } from "./components/Breadcrumbs";
-import { Wrapper } from "./components/Wrapper";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Navigation } from "./components/Navigation";
 import { Providers } from "./components/Providers";
 import { StructuredData } from "./components/StructuredData";
 import { Styles } from "./components/Styles";
+import { Wrapper } from "./components/Wrapper";
 import "./highlight.css";
 
 const standardFont = localFont({
