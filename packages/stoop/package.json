@@ -25,9 +25,13 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/types/index.d.ts"
+    "./styled": {
+      "types": "./dist/api/styled.d.ts",
+      "default": "./dist/api/styled.js"
+    },
+    "./theme-provider": {
+      "types": "./dist/api/theme-provider.d.ts",
+      "default": "./dist/api/theme-provider.js"
     }
   },
   "files": [
@@ -65,7 +69,7 @@
     "react": ">=16.8.0"
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target browser --jsx=automatic --external react --external react-dom && bunx tsc --project tsconfig.build.json",
+    "build": "bunx tsc --project tsconfig.build.json",
     "lint": "eslint src --fix",
     "prepare": "bun run build",
     "test": "bun test",
