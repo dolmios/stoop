@@ -2,7 +2,7 @@
  * Utility functions for Stoop UI.
  */
 
-import type { CSS, UtilityFunction } from "stoop/types";
+import type { CSS, UtilityFunction } from "stoop";
 
 type CSSPropertyValue = string | number;
 
