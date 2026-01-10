@@ -22,6 +22,8 @@ Each benchmark measures CSS generation performance:
 
 **Limitations:** These benchmarks test CSS generation and component creation only. They do not test DOM rendering, browser layout/paint operations, or browser-based performance.
 
+**Note on Variability:** Microsecond-level measurements can vary significantly between runs due to JavaScript runtime behavior (JIT compilation, garbage collection), system load, and other factors. Results shown are approximate and represent typical performance characteristics. The benchmark suite includes statistical analysis with confidence intervals to help assess result reliability.
+
 ### Statistical Analysis
 
 - Iteration counts: Determined (50-10,000) based on variance
@@ -44,13 +46,13 @@ Benchmarks are reproducible. Run them using the [`stoop-benchmarks` package](htt
 
 | Test | Stoop (ms) | Stitches (ms) | Ratio |
 |------|------------|---------------|-------|
-| Initial Injection | ~0.010 | ~0.003 | Stitches 3-4x faster |
-| Variant Updates | ~0.006 | ~0.005 | Stitches 1.1x faster |
-| CSS Prop Updates | ~0.005 | ~0.004 | Stitches 1.1x faster |
-| Deep Tree (20 levels) | ~0.027 | ~0.049 | Stoop 1.8x faster |
-| Wide Tree (100 siblings) | ~0.106 | ~0.223 | Stoop 2.1x faster |
+| Initial Injection | ~0.007-0.010 | ~0.002-0.003 | Stitches ~3-4x faster |
+| Variant Updates | ~0.005-0.006 | ~0.005-0.006 | Negligible difference |
+| CSS Prop Updates | ~0.004 | ~0.004 | Negligible difference |
+| Deep Tree (20 levels) | ~0.029-0.031 | ~0.065-0.073 | Stoop ~2.2-2.4x faster |
+| Wide Tree (100 siblings) | ~0.108-0.116 | ~0.223-0.253 | Stoop ~2.1-2.2x faster |
 
-Results are approximate averages. Actual results vary by system. Run `bun run benchmark` for full statistical analysis.
+Results are approximate averages from multiple runs. Actual results vary significantly between runs due to microsecond-level measurement variability. Run `bun run benchmark` for full statistical analysis with confidence intervals.
 
 ## React Component Benchmarks
 
@@ -64,9 +66,9 @@ Results are approximate averages. Actual results vary by system. Run `bun run be
 
 | Test | Stoop (ms) | Stitches (ms) | Ratio |
 |------|------------|---------------|-------|
-| CSS Text Generation | ~0.012 | ~0.006 | Stitches 2.0x faster |
-| Multiple Requests | ~0.014 | ~0.034 | Stoop 2.4x faster |
-| Theme Switching | ~0.012 | ~0.033 | Stoop 2.7x faster |
+| CSS Text Generation | ~0.012-0.014 | ~0.004-0.005 | Stitches ~2.4-3.2x faster |
+| Multiple Requests | ~0.013-0.015 | ~0.034-0.036 | Stoop ~2.4-2.7x faster |
+| Theme Switching | ~0.011-0.012 | ~0.031-0.034 | Stoop ~2.6-2.9x faster |
 
 ## Running the Benchmarks
 
