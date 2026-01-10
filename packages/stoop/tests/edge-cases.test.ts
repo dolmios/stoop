@@ -341,6 +341,29 @@ describe("Edge Cases and Error Handling", () => {
       expect(typeof cleanup1).toBe("function");
       expect(typeof cleanup2).toBe("function");
     });
+
+    it("should handle @import statements in global CSS", () => {
+      const stoop = createStoop({ theme: createMockTheme() });
+
+      const css = {
+        "@import": "url('https://fonts.googleapis.com/css2?family=Archivo:wght@600&display=swap')",
+        body: {
+          margin: 0,
+        },
+      };
+
+      stoop.globalCss(css);
+
+      const cssText = stoop.getCssText();
+      expect(cssText).toContain(
+        "@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600&display=swap');",
+      );
+      // @import should come before other CSS rules
+      const importIndex = cssText.indexOf("@import");
+      const bodyIndex = cssText.indexOf("body");
+      expect(importIndex).toBeGreaterThanOrEqual(0);
+      expect(bodyIndex).toBeGreaterThan(importIndex);
+    });
   });
 
   describe("Keyframes Edge Cases", () => {

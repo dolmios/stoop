@@ -477,6 +477,60 @@ describe("Stringification", () => {
       expect(result).toContain("@media");
     });
 
+    it("should handle @import statements correctly", () => {
+      const styles: CSS = {
+        "@import":
+          "url('https://fonts.googleapis.com/css2?family=Archivo:wght@600&family=DM+Sans:wght@400;600&display=swap')",
+        body: {
+          margin: 0,
+        },
+      };
+      const result = cssObjectToString(styles);
+      expect(result).toContain(
+        "@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600&family=DM+Sans:wght@400;600&display=swap');",
+      );
+      // @import should come before other CSS rules
+      const importIndex = result.indexOf("@import");
+      const bodyIndex = result.indexOf("body");
+      expect(importIndex).toBeGreaterThanOrEqual(0);
+      expect(bodyIndex).toBeGreaterThan(importIndex);
+    });
+
+    it("should handle multiple @import statements", () => {
+      const styles: CSS = {
+        "@import": "url('https://fonts.googleapis.com/css2?family=Archivo')",
+        body: {
+          margin: 0,
+        },
+      };
+      const result = cssObjectToString(styles);
+      expect(result).toContain("@import");
+      expect(result).toContain("body");
+    });
+
+    it("should handle @font-face statements correctly", () => {
+      const styles: CSS = {
+        "@font-face": {
+          fontFamily: "MyFont",
+          src: "url('font.woff2') format('woff2')",
+          fontWeight: "400",
+          fontStyle: "normal",
+        },
+        body: {
+          fontFamily: "MyFont",
+        },
+      };
+      const result = cssObjectToString(styles);
+      expect(result).toContain("@font-face");
+      expect(result).toContain("font-family: MyFont");
+      // CSS values are escaped, so quotes become \'
+      expect(result).toContain("src:");
+      expect(result).toContain("font.woff2");
+      expect(result).toContain("font-weight: 400");
+      expect(result).toContain("font-style: normal");
+      expect(result).toContain("body");
+    });
+
     it("should automatically add px to unitless numeric values for dimensional properties", () => {
       const styles: CSS = {
         width: 32,

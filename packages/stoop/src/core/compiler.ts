@@ -192,6 +192,7 @@ export function cssObjectToString(
 
   const cssProperties: string[] = [];
   const nestedRulesList: string[] = [];
+  const importStatements: string[] = [];
 
   // Only sort keys when selector is empty (for hashing/deterministic output)
   // When selector is provided, we don't need deterministic ordering for performance
@@ -199,6 +200,14 @@ export function cssObjectToString(
 
   for (const key of keys) {
     const value = obj[key];
+
+    // Handle @import statements specially - they must be output as raw CSS and come first
+    if (key === "@import" && (typeof value === "string" || typeof value === "number")) {
+      const importValue = typeof value === "string" ? value : String(value);
+
+      importStatements.push(`@import ${importValue};`);
+      continue;
+    }
 
     if (isStyledComponentKey(key, value)) {
       const componentClassName = getClassNameFromKeyOrValue(key, value);
@@ -348,8 +357,17 @@ export function cssObjectToString(
 
   const parts: string[] = [];
 
+  // @import statements must come first in CSS
+  parts.push(...importStatements);
+
   if (cssProperties.length > 0) {
-    parts.push(`${selector} { ${cssProperties.join(" ")} }`);
+    // When selector is empty (e.g., inside @font-face, @keyframes), don't wrap in braces
+    // The at-rule will wrap it
+    if (selector === "") {
+      parts.push(cssProperties.join(" "));
+    } else {
+      parts.push(`${selector} { ${cssProperties.join(" ")} }`);
+    }
   }
 
   parts.push(...nestedRulesList);
