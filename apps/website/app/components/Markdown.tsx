@@ -121,9 +121,8 @@ function MarkdownCode({
   children,
   className,
   ...props
-}: {
+}: ComponentProps<"code"> & {
   children?: ReactNode;
-  className?: string;
 }): ReactNode {
   const isBlock = className?.includes("language-");
 
@@ -171,7 +170,7 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
 
     // Pattern 1: String with parentheses and backticks: "text (`badge`)"
     if (typeof child === "string") {
-      const badgeMatch = child.match(/^(.*?)\s*\(`([^`]+)`\)(.*)$/);
+      const badgeMatch = /^(.*?)\s*\(`([^`]+)`\)(.*)$/.exec(child);
 
       if (badgeMatch) {
         const [, before, badgeText, after] = badgeMatch;
@@ -254,7 +253,7 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
 
     // Pattern 1: String with parentheses and backticks: "text (`badge`)"
     if (typeof child === "string") {
-      const badgeMatch = child.match(/^(.*?)\s*\(`([^`]+)`\)(.*)$/);
+      const badgeMatch = /^(.*?)\s*\(`([^`]+)`\)(.*)$/.exec(child);
 
       if (badgeMatch) {
         const [, before, badgeText, after] = badgeMatch;
@@ -339,20 +338,77 @@ function MarkdownParagraph({ children, ...props }: ComponentProps<"p">): ReactNo
   );
 }
 
+const UnorderedListStyled = styled("ul", {
+  "&:last-child": {
+    marginBottom: 0,
+  },
+  color: "$text",
+  fontFamily: "$body",
+  fontSize: "$default",
+  fontWeight: "$default",
+  lineHeight: 1.4,
+  listStyle: "disc",
+  margin: 0,
+  marginBlock: 0,
+  marginBottom: "$medium",
+  marginTop: 0,
+  paddingLeft: "$large",
+});
+
+const OrderedListStyled = styled("ol", {
+  "&:last-child": {
+    marginBottom: 0,
+  },
+  color: "$text",
+  fontFamily: "$body",
+  fontSize: "$default",
+  fontWeight: "$default",
+  lineHeight: 1.4,
+  listStyle: "decimal",
+  margin: 0,
+  marginBlock: 0,
+  marginBottom: "$medium",
+  marginTop: 0,
+  paddingLeft: "$large",
+});
+
+const ListItemStyled = styled("li", {
+  marginBottom: "$small",
+  marginTop: 0,
+});
+
+function MarkdownUnorderedList({ children, ...props }: ComponentProps<"ul">): ReactNode {
+  return <UnorderedListStyled {...props}>{children}</UnorderedListStyled>;
+}
+
+function MarkdownOrderedList({ children, ...props }: ComponentProps<"ol">): ReactNode {
+  return <OrderedListStyled {...props}>{children}</OrderedListStyled>;
+}
+
+function MarkdownListItem({ children, ...props }: ComponentProps<"li">): ReactNode {
+  return <ListItemStyled {...props}>{children}</ListItemStyled>;
+}
+
+const TableWrapper = styled("div", {
+  marginBottom: "$medium",
+  marginTop: "$medium",
+  maxWidth: "100vw",
+  overflowX: "auto",
+  width: "100%",
+});
+
 function MarkdownTable({ children, ...props }: ComponentProps<"table">): ReactNode {
   return (
-    <StoopTable
-      css={{
-        display: "block",
-        marginBottom: "$medium",
-        marginTop: "$medium",
-        maxWidth: "100%",
-        overflowX: "auto",
-        width: "100%",
-      }}
-      {...props}>
-      {children}
-    </StoopTable>
+    <TableWrapper>
+      <StoopTable
+        css={{
+          minWidth: "100%",
+          width: "100%",
+        }}
+        {...props}>
+        {children}
+      </StoopTable>
+    </TableWrapper>
   );
 }
 
@@ -383,6 +439,8 @@ export const HeadingTwo = MarkdownHeadingTwo;
 export const HeadingThree = MarkdownHeadingThree;
 export const HeadingFour = MarkdownHeadingFour;
 export const Link = MarkdownLink;
+export const ListItem = MarkdownListItem;
+export const OrderedList = MarkdownOrderedList;
 export const Paragraph = MarkdownParagraph;
 export const Table = MarkdownTable;
 export const TableBody = MarkdownTableBody;
@@ -390,6 +448,7 @@ export const TableCell = MarkdownTableCell;
 export const TableHead = MarkdownTableHead;
 export const TableHeader = MarkdownTableHeader;
 export const TableRow = MarkdownTableRow;
+export const UnorderedList = MarkdownUnorderedList;
 
 // Export as namespace object
 export const Markdown = {
@@ -399,6 +458,8 @@ export const Markdown = {
   HeadingThree: MarkdownHeadingThree,
   HeadingTwo: MarkdownHeadingTwo,
   Link: MarkdownLink,
+  ListItem: MarkdownListItem,
+  OrderedList: MarkdownOrderedList,
   Paragraph: MarkdownParagraph,
   Table: MarkdownTable,
   TableBody: MarkdownTableBody,
@@ -406,4 +467,5 @@ export const Markdown = {
   TableHead: MarkdownTableHead,
   TableHeader: MarkdownTableHeader,
   TableRow: MarkdownTableRow,
+  UnorderedList: MarkdownUnorderedList,
 };

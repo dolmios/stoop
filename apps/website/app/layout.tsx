@@ -12,6 +12,7 @@ import { Providers } from "./components/Providers";
 import { StructuredData } from "./components/StructuredData";
 import { Styles } from "./components/Styles";
 import { Wrapper } from "./components/Wrapper";
+
 import "./highlight.css";
 
 const standardFont = localFont({

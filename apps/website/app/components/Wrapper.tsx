@@ -8,7 +8,7 @@ export function Wrapper({ children }: { children: ReactNode }): ReactNode {
   return (
     <Stack
       as="main"
-      bottom="medium"
+      bottom="large"
       css={{
         boxSizing: "border-box",
         margin: "0 auto",

@@ -7,15 +7,9 @@
 ```typescript
 import { getCssText } from "./theme";
 
-// Call with no parameters
+// Get all generated CSS (no parameters needed)
 const cssText = getCssText();
 ```
-
-## Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| theme | `string \| Theme` | **Deprecated** - Parameter is kept for backward compatibility but is ignored. Call `getCssText()` with no parameters. The function includes all themes configured in `themes` config. |
 
 ## Returns
 
@@ -81,8 +75,8 @@ export default function Document() {
 ## Notes
 
 - Call `getCssText()` in your document/layout so styles are available on initial render
-- Includes theme CSS variables for all configured themes
-- The `theme` parameter is deprecated and ignored; all themes are included
+- **No parameters**: The function takes no parameters and returns CSS for all configured themes
+- **Breaking change from v0.5.x**: Previous versions accepted a `theme` parameter, which has been removed. Use the `themes` config instead to enable multi-theme support with CSS variables.
 - Theme variables are included at the top of the CSS output using attribute selectors
 - When `themes` config is provided, all themes are available simultaneously via attribute selectors
 

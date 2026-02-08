@@ -95,7 +95,7 @@ const utils = {
 
     if (breakpoint === "mobile") {
       return {
-        mobile: {
+        "@media (max-width: 768px)": {
           display: "none",
         },
       };
@@ -103,7 +103,7 @@ const utils = {
 
     if (breakpoint === "desktop") {
       return {
-        desktop: {
+        "@media (min-width: 769px)": {
           display: "none",
         },
       };
@@ -112,13 +112,14 @@ const utils = {
     return { display: "none" };
   },
 
-  // Responsive spacing
+  // Responsive spacing using media query shortcuts
+  // (Requires media queries defined in theme config)
   responsivePadding: (value) => ({
     padding: value,
-    mobile: {
+    "@media (max-width: 768px)": {
       padding: "$small",
     },
-    desktop: {
+    "@media (min-width: 769px)": {
       padding: "$large",
     },
   }),
@@ -205,14 +206,18 @@ const utils: Record<string, UtilityFunction> = {
     return { marginTop: val, marginBottom: val };
   },
 
-  // Layout
-  flex: (value) => ({ display: "flex" }),
-  grid: (value) => ({ display: "grid" }),
+  // Layout utilities (value parameter unused - these are boolean flags)
+  flex: () => ({ display: "flex" }),
+  grid: () => ({ display: "grid" }),
 
   // Visibility
   hidden: (value) => {
     if (value === "mobile") {
-      return { mobile: { display: "none" } };
+      return {
+        "@media (max-width: 768px)": {
+          display: "none",
+        },
+      };
     }
     return { display: "none" };
   },
@@ -232,7 +237,7 @@ const Card = styled("div", {
   px: "$medium",
   py: "$large",
   mx: "auto",
-  flex: true,
+  flex: undefined,  // Layout utility - no value needed
 });
 ```
 

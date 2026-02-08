@@ -8,6 +8,8 @@ import {
   HeadingThree,
   HeadingFour,
   Link,
+  ListItem,
+  OrderedList,
   Paragraph,
   Table,
   TableBody,
@@ -15,6 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  UnorderedList,
 } from "./app/components/Markdown";
 
 const components: MDXComponents = {
@@ -25,6 +28,8 @@ const components: MDXComponents = {
   h3: HeadingThree,
   h4: HeadingFour,
   Icon,
+  li: ListItem,
+  ol: OrderedList,
   p: Paragraph,
   table: Table,
   tbody: TableBody,
@@ -32,6 +37,7 @@ const components: MDXComponents = {
   th: TableHeader,
   thead: TableHead,
   tr: TableRow,
+  ul: UnorderedList,
 };
 
 export function useMDXComponents(componentsOverride: MDXComponents = {}): MDXComponents {

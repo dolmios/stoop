@@ -16,19 +16,50 @@ const Button = styled("button", {
 });
 ```
 
-## Shorthand vs Explicit
+## Shorthand vs Explicit Syntax
 
-Use shorthand (property-aware resolution) or explicit scale specification:
+Stoop supports two token formats. **Shorthand is recommended** for cleaner, more maintainable code:
 
 ```typescript
-// Shorthand (resolves to correct scale)
-padding: "$medium"  // → space.medium
-color: "$text"      // → colors.text
+// Shorthand (RECOMMENDED - property-aware resolution)
+padding: "$medium"  // → space.medium (automatically resolved)
+color: "$text"      // → colors.text (automatically resolved)
 
-// Explicit
-padding: "$space.medium"
-color: "$colors.text"
+// Explicit (use only when needed)
+padding: "$space.medium"  // Explicitly specifies scale
+color: "$colors.text"     // Explicitly specifies scale
 ```
+
+### When to Use Shorthand
+
+**Use shorthand in most cases** - it's cleaner and leverages property-aware resolution:
+
+```typescript
+const Button = styled("button", {
+  backgroundColor: "$primary",  // ✓ Clean, automatically maps to colors
+  color: "$text",               // ✓ Clean, automatically maps to colors
+  padding: "$medium",           // ✓ Clean, automatically maps to space
+  fontSize: "$large",           // ✓ Clean, automatically maps to fontSizes
+});
+```
+
+### When to Use Explicit Syntax
+
+Use explicit syntax **only when**:
+
+1. **Token name exists in multiple scales** and you need disambiguation:
+   ```typescript
+   // If both colors.medium and space.medium exist:
+   padding: "$space.medium"  // Explicitly choose space scale
+   ```
+
+2. **Property-aware resolution doesn't map correctly** (rare):
+   ```typescript
+   // For custom properties without default mapping
+   customProperty: "$colors.primary"
+   ```
+
+3. **You want to be extra clear** for code readability in complex scenarios
 
 ## CSS Variables
 
