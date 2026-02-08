@@ -36,9 +36,10 @@ export function Header(): ReactElement {
         }}>
         <Text
           as="h5"
+          bottom="none"
           css={{
             fontWeight: "$bold",
-            margin: 0,
+            marginTop: 0,
             whiteSpace: "nowrap",
           }}>
           Stoop
