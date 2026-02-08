@@ -9,6 +9,8 @@
  * and MUST have "use client" directive for Next.js App Router compatibility.
  */
 
+import type { ComponentType, Context, JSX } from "react";
+
 import {
   createContext,
   useCallback,
@@ -17,9 +19,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type ComponentType,
-  type Context,
-  type JSX,
 } from "react";
 
 import type {

@@ -362,11 +362,13 @@ type Merge<T, U> = Omit<T, keyof U> & U;
  */
 export type StyledComponentProps<
   DefaultElement extends ElementType,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   VariantsConfig extends Variants = {},
 > = Merge<
   DefaultElement extends keyof JSX.IntrinsicElements | ComponentType<unknown>
     ? ComponentPropsWithRef<DefaultElement>
-    : {},
+    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+      {},
   StyledOwnProps<VariantsConfig>
 >;
 
@@ -511,6 +513,7 @@ export interface AutoPreloadResult {
  */
 export interface StyledComponent<
   DefaultElement extends ElementType,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   VariantsConfig extends Variants = {},
 > extends ForwardRefExoticComponent<StyledComponentProps<DefaultElement, VariantsConfig>> {
   /**
@@ -531,7 +534,8 @@ export interface StyledComponent<
     props: Merge<
       As extends keyof JSX.IntrinsicElements | ComponentType<unknown>
         ? Omit<ComponentPropsWithRef<As>, "ref"> & { ref?: unknown }
-        : {},
+        : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+          {},
       StyledOwnProps<VariantsConfig> & { as?: As }
     >,
   ): ReactElement | null;
@@ -560,12 +564,14 @@ export interface StyledFunction {
     baseStyles: BaseStyles,
   ): StyledComponent<
     DefaultElement,
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     BaseStyles extends { variants: infer V } ? (V extends Variants ? V : {}) : {}
   >;
   // Overload 2: When baseStyles has NO variants or is undefined
   <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
     baseStyles?: CSS & { variants?: never },
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ): StyledComponent<DefaultElement, {}>;
 }
 

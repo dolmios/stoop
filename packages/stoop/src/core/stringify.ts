@@ -5,6 +5,7 @@
  */
 
 import { SANITIZE_CACHE_SIZE_LIMIT } from "../constants";
+
 import { LRUCache } from "./cache";
 
 const propertyNameCache = new LRUCache<string, string>(SANITIZE_CACHE_SIZE_LIMIT);
@@ -97,7 +98,7 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
       return result;
     }
 
-    const match = normalized.match(/^[Mm]oz(.+)$/i);
+    const match = /^[Mm]oz(.+)$/i.exec(normalized);
 
     if (match && match[1]) {
       const [, rest] = match;
@@ -123,7 +124,7 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
       return result;
     }
 
-    const match = normalized.match(/^[Ww]ebkit(.+)$/i);
+    const match = /^[Ww]ebkit(.+)$/i.exec(normalized);
 
     if (match && match[1]) {
       const [, rest] = match;
@@ -149,7 +150,7 @@ export function sanitizeCSSPropertyName(propertyName: string): string {
       return result;
     }
 
-    const match = normalized.match(/^[Mm]s(.+)$/i);
+    const match = /^[Mm]s(.+)$/i.exec(normalized);
 
     if (match && match[1]) {
       const [, rest] = match;

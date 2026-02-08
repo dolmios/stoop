@@ -9,15 +9,9 @@
  * and MUST have "use client" directive for Next.js App Router compatibility.
  */
 
-import {
-  useMemo,
-  forwardRef,
-  createElement,
-  useContext,
-  createContext,
-  type ElementType,
-  type Context,
-} from "react";
+import type { ElementType, Context } from "react";
+
+import { useMemo, forwardRef, createElement, useContext, createContext } from "react";
 
 import type {
   CSS,
@@ -449,6 +443,7 @@ export function createStyledFunction(
       unknown,
       StyledComponentProps<
         DefaultElement,
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         BaseStyles extends { variants: infer V } ? (V extends Variants ? V : {}) : {}
       >
     >
@@ -459,7 +454,10 @@ export function createStyledFunction(
   <DefaultElement extends StylableElement>(
     defaultElement: DefaultElement,
     baseStyles?: CSS & { variants?: never },
-  ): ReturnType<typeof forwardRef<unknown, StyledComponentProps<DefaultElement, {}>>> & {
+  ): ReturnType<
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    typeof forwardRef<unknown, StyledComponentProps<DefaultElement, {}>>
+  > & {
     selector: StyledComponentRef;
   };
 } {
@@ -476,13 +474,11 @@ export function createStyledFunction(
         }) = CSS,
   >(defaultElement: DefaultElement, baseStyles?: BaseStyles) {
     // Extract variants config from embedded variants only (matching Stitches API)
-    type VariantsConfig = BaseStyles extends { variants: infer V }
-      ? V extends Variants
-        ? V
-        : {}
-      : {};
+    type VariantsConfig =
+      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+      BaseStyles extends { variants: infer V } ? (V extends Variants ? V : {}) : {};
 
-    let actualBaseStyles: CSS = (baseStyles || EMPTY_CSS) as CSS;
+    let actualBaseStyles: CSS = baseStyles || EMPTY_CSS;
     let actualVariants: VariantsConfig | undefined;
 
     // Extract variants if embedded in baseStyles
@@ -535,7 +531,7 @@ export function createStyledFunction(
         const cssObject: CSS = useMemo(
           () =>
             cssStyles && typeof cssStyles === "object" && cssStyles !== null
-              ? (cssStyles as CSS)
+              ? cssStyles
               : EMPTY_CSS,
           [cssStyles],
         );

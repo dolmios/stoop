@@ -67,7 +67,7 @@ export function isStyledComponentRef(value: unknown): value is StyledComponentRe
     value !== null &&
     "__isStoopStyled" in value &&
     "__stoopClassName" in value &&
-    (value as StyledComponentRef).__isStoopStyled === true
+    (value as StyledComponentRef).__isStoopStyled
   );
 }
 

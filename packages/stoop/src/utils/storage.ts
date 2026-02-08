@@ -6,6 +6,7 @@
 import type { StorageOptions, StorageResult } from "../types";
 
 import { DEFAULT_COOKIE_MAX_AGE, DEFAULT_COOKIE_PATH } from "../constants";
+
 import { isBrowser } from "./helpers";
 
 // ============================================================================

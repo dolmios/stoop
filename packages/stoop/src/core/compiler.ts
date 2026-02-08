@@ -17,6 +17,7 @@ import {
   sanitizeMediaQuery,
   sanitizePrefix,
 } from "../utils/theme-utils";
+
 import { classNameCache, cssStringCache } from "./cache";
 import { sanitizeCSSPropertyName } from "./stringify";
 
