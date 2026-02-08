@@ -1,4 +1,5 @@
-import { type JSX } from "react";
+import type { JSX } from "react";
+
 import { Stack, Menu, Button, Text } from "stoop-ui";
 
 export default function MenuDemo(): JSX.Element {

@@ -1,4 +1,5 @@
-import { type JSX } from "react";
+import type { JSX } from "react";
+
 import {
   Stack,
   Table,

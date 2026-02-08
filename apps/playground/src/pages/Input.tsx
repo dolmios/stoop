@@ -1,4 +1,6 @@
-import { useState, type ChangeEvent, type JSX } from "react";
+import type { ChangeEvent, JSX } from "react";
+
+import { useState } from "react";
 import { Stack, Input, Text } from "stoop-ui";
 
 export default function InputDemo(): JSX.Element {

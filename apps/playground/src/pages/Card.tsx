@@ -1,4 +1,5 @@
-import { type JSX } from "react";
+import type { JSX } from "react";
+
 import { Stack, Card, Text } from "stoop-ui";
 
 export default function CardDemo(): JSX.Element {

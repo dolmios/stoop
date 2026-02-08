@@ -1,4 +1,6 @@
-import { useState, type JSX } from "react";
+import type { JSX } from "react";
+
+import { useState } from "react";
 import { Stack, Tabs } from "stoop-ui";
 
 import BadgeDemo from "./pages/Badge";

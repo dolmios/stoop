@@ -1,4 +1,6 @@
-import { useState, type JSX } from "react";
+import type { JSX } from "react";
+
+import { useState } from "react";
 import { Stack, Tabs, Text } from "stoop-ui";
 
 export default function TabsDemo(): JSX.Element {
