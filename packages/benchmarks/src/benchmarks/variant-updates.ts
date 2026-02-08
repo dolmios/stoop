@@ -2,8 +2,10 @@ import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
+import type { BenchmarkResult } from "../utils";
+
 import { sharedTheme } from "../shared-theme";
-import { measureTime, type BenchmarkResult } from "../utils";
+import { measureTime } from "../utils";
 
 export function benchmarkVariantUpdates(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
   // Create fresh instances for isolation
@@ -17,18 +19,18 @@ export function benchmarkVariantUpdates(): { stoop: BenchmarkResult; stitches: B
   const ButtonStoop = stoop.styled(
     "button",
     {
-      backgroundColor: "$colors.primary",
-      padding: "$space.medium",
+      backgroundColor: "$primary",
+      padding: "$medium",
     },
     {
       size: {
-        large: { fontSize: "18px", padding: "$space.large" },
-        medium: { fontSize: "14px", padding: "$space.medium" },
-        small: { fontSize: "12px", padding: "$space.small" },
+        large: { fontSize: "18px", padding: "$large" },
+        medium: { fontSize: "14px", padding: "$medium" },
+        small: { fontSize: "12px", padding: "$small" },
       },
       variant: {
-        primary: { backgroundColor: "$colors.primary" },
-        secondary: { backgroundColor: "$colors.secondary" },
+        primary: { backgroundColor: "$primary" },
+        secondary: { backgroundColor: "$secondary" },
       },
     },
   );

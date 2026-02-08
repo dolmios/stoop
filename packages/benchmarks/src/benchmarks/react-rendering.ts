@@ -1,9 +1,12 @@
+/* eslint-disable react/no-children-prop */
 import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
+import type { BenchmarkResult } from "../utils";
+
 import { sharedTheme } from "../shared-theme";
-import { measureTime, type BenchmarkResult } from "../utils";
+import { measureTime } from "../utils";
 
 /**
  * React rendering benchmarks that test component creation and CSS generation together.
@@ -24,10 +27,10 @@ export function benchmarkReactRendering(): {
 
   // Create styled components
   const BoxStoop = stoop.styled("div", {
-    backgroundColor: "$colors.background",
-    color: "$colors.text",
-    margin: "$space.small",
-    padding: "$space.medium",
+    backgroundColor: "$background",
+    color: "$text",
+    margin: "$small",
+    padding: "$medium",
   });
 
   const BoxStitches = stitches.styled("div", {
@@ -41,20 +44,20 @@ export function benchmarkReactRendering(): {
   const ButtonStoop = stoop.styled(
     "button",
     {
-      backgroundColor: "$colors.primary",
+      backgroundColor: "$primary",
       borderRadius: "4px",
       color: "white",
-      padding: "$space.small",
+      padding: "$small",
     },
     {
       size: {
-        large: { fontSize: "18px", padding: "$space.large" },
-        medium: { fontSize: "14px", padding: "$space.medium" },
-        small: { fontSize: "12px", padding: "$space.small" },
+        large: { fontSize: "18px", padding: "$large" },
+        medium: { fontSize: "14px", padding: "$medium" },
+        small: { fontSize: "12px", padding: "$small" },
       },
       variant: {
-        primary: { backgroundColor: "$colors.primary" },
-        secondary: { backgroundColor: "$colors.secondary" },
+        primary: { backgroundColor: "$primary" },
+        secondary: { backgroundColor: "$secondary" },
       },
     },
   );

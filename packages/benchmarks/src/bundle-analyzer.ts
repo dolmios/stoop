@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 /* eslint-disable no-console */
-import { $ } from "bun";
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
 import { join } from "path";
+
+import { $ } from "bun";
 
 export interface BundleAnalysis {
   library: "stoop" | "stitches";

@@ -2,8 +2,10 @@ import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
+import type { BenchmarkResult } from "../utils";
+
 import { sharedTheme } from "../shared-theme";
-import { measureTime, type BenchmarkResult } from "../utils";
+import { measureTime } from "../utils";
 
 /**
  * SSR-specific benchmarks that test server-side rendering scenarios.
@@ -27,9 +29,9 @@ export function benchmarkSSR(): {
     });
 
     const BoxStoop = stoop.styled("div", {
-      backgroundColor: "$colors.background",
-      color: "$colors.text",
-      padding: "$space.medium",
+      backgroundColor: "$background",
+      color: "$text",
+      padding: "$medium",
     });
 
     const BoxStitches = stitches.styled("div", {
@@ -45,7 +47,7 @@ export function benchmarkSSR(): {
       (): void => {
         // Simulate SSR: create components and extract CSS
         createElement(BoxStoop, {});
-        createElement(BoxStoop, { css: { margin: "$space.small" } });
+        createElement(BoxStoop, { css: { margin: "$small" } });
         // Extract CSS text (simulating getCssText() call)
         stoop.getCssText();
       },
@@ -91,8 +93,8 @@ export function benchmarkSSR(): {
         // Simulate a new request: create fresh instance
         const stoop = createStoop({ theme: sharedTheme });
         const Box = stoop.styled("div", {
-          backgroundColor: "$colors.background",
-          padding: "$space.medium",
+          backgroundColor: "$background",
+          padding: "$medium",
         });
 
         createElement(Box, {});
@@ -147,8 +149,8 @@ export function benchmarkSSR(): {
 
     // Create components for theme switching test
     stoop.styled("div", {
-      backgroundColor: "$colors.background",
-      color: "$colors.text",
+      backgroundColor: "$background",
+      color: "$text",
     });
 
     stitches.styled("div", {
@@ -178,8 +180,8 @@ export function benchmarkSSR(): {
         // Simulate theme switching by creating new instance with different theme
         const stoopWithTheme = createStoop({ theme: alternateTheme });
         const Box = stoopWithTheme.styled("div", {
-          backgroundColor: "$colors.background",
-          color: "$colors.text",
+          backgroundColor: "$background",
+          color: "$text",
         });
 
         createElement(Box, {});

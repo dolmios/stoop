@@ -1,8 +1,10 @@
 import { createStitches } from "@stitches/react";
 import { createStoop } from "stoop";
 
+import type { BenchmarkResult } from "../utils";
+
 import { sharedTheme } from "../shared-theme";
-import { measureTime, type BenchmarkResult } from "../utils";
+import { measureTime } from "../utils";
 
 export function benchmarkInitialInjection(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
   // Create fresh instances for each run to ensure isolation
@@ -18,11 +20,11 @@ export function benchmarkInitialInjection(): { stoop: BenchmarkResult; stitches:
     "stoop",
     () => {
       stoop.css({
-        backgroundColor: "$colors.background",
-        boxShadow: "$shadows.medium",
-        color: "$colors.primary",
-        margin: "$space.small",
-        padding: "$space.medium",
+        backgroundColor: "$background",
+        boxShadow: "$medium",
+        color: "$primary",
+        margin: "$small",
+        padding: "$medium",
       });
     },
     1000,

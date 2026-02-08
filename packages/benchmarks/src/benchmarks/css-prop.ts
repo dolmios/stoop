@@ -2,8 +2,10 @@ import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
+import type { BenchmarkResult } from "../utils";
+
 import { sharedTheme } from "../shared-theme";
-import { measureTime, type BenchmarkResult } from "../utils";
+import { measureTime } from "../utils";
 
 export function benchmarkCssProp(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
   // Create fresh instances for isolation
@@ -14,9 +16,9 @@ export function benchmarkCssProp(): { stoop: BenchmarkResult; stitches: Benchmar
   });
 
   const ButtonStoop = stoop.styled("button", {
-    backgroundColor: "$colors.background",
-    color: "$colors.text",
-    padding: "$space.medium",
+    backgroundColor: "$background",
+    color: "$text",
+    padding: "$medium",
   });
 
   const ButtonStitches = stitches.styled("button", {
@@ -33,24 +35,24 @@ export function benchmarkCssProp(): { stoop: BenchmarkResult; stitches: Benchmar
     () => {
       // Test simple override
       createElement(ButtonStoop, {
-        css: { color: "$colors.primary" },
+        css: { color: "$primary" },
       });
       // Test multiple property override
       createElement(ButtonStoop, {
-        css: { backgroundColor: "$colors.secondary", padding: "$space.large" },
+        css: { backgroundColor: "$secondary", padding: "$large" },
       });
       // Test complex merge with nested properties
       createElement(ButtonStoop, {
         css: {
-          boxShadow: "$shadows.medium",
-          color: "$colors.primary",
-          margin: "$space.small",
-          padding: "$space.large",
+          boxShadow: "$medium",
+          color: "$primary",
+          margin: "$small",
+          padding: "$large",
         },
       });
       // Test caching (same CSS object)
       createElement(ButtonStoop, {
-        css: { color: "$colors.primary" },
+        css: { color: "$primary" },
       });
     },
     500,

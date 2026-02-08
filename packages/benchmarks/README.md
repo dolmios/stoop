@@ -106,7 +106,7 @@ Exports bundle analysis data in formats suitable for website consumption.
 - **Identical Themes**: Both libraries use identical theme configurations
 - **Equivalent Operations**: Both test equivalent operations with similar complexity
 - **Same Methodology**: Identical measurement approach, iteration counts, and statistical analysis
-- **API Differences**: Accounted for (Stitches `$primary` vs Stoop `$colors.primary`)
+- **Consistent Token Syntax**: Both libraries use their recommended shorthand token syntax (`$primary`, `$medium`, etc.)
 - **Validation**: Automatic checks ensure:
   - Similar iteration counts between libraries
   - Statistical significance of differences
@@ -127,6 +127,23 @@ Results may vary based on:
 - Runtime version (Bun/Node.js)
 - CPU architecture
 - Background processes
+
+## Bundle Size Analysis
+
+In addition to runtime performance, bundle size is an important consideration. Run bundle analysis to compare:
+
+```sh
+bun run analyze:bundle
+```
+
+**Note on Bundle Size**: Stoop's bundle is approximately 47-48% larger than Stitches when comparing minified+gzipped production bundles. This trade-off comes from:
+
+- Additional property-aware token resolution logic
+- Enhanced theme management capabilities
+- Built-in multi-theme support with CSS variables
+- More comprehensive type inference system
+
+For most applications, this difference (a few KB gzipped) is negligible compared to the developer experience improvements and type safety benefits. However, if bundle size is a critical constraint for your project, you should run the bundle analyzer and evaluate the trade-off for your specific use case.
 
 ## Development
 

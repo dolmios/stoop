@@ -2,8 +2,10 @@ import { createStitches } from "@stitches/react";
 import { createElement } from "react";
 import { createStoop } from "stoop";
 
+import type { BenchmarkResult } from "../utils";
+
 import { sharedTheme } from "../shared-theme";
-import { measureTime, type BenchmarkResult } from "../utils";
+import { measureTime } from "../utils";
 
 export function benchmarkDeepTree(): { stoop: BenchmarkResult; stitches: BenchmarkResult } {
   // Create fresh instances for isolation
@@ -24,10 +26,10 @@ export function benchmarkDeepTree(): { stoop: BenchmarkResult; stitches: Benchma
       for (let i = 0; i < 20; i++) {
         components.push(
           stoop.styled("div", {
-            backgroundColor: i % 2 === 0 ? "$colors.background" : "$colors.hover",
-            color: "$colors.text",
+            backgroundColor: i % 2 === 0 ? "$background" : "$hover",
+            color: "$text",
             marginTop: `${i}px`,
-            padding: "$space.small",
+            padding: "$small",
           }),
         );
       }
