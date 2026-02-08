@@ -27,7 +27,7 @@ const TextStyled = styled("p", {
         "&:first-child": {
           marginTop: 0,
         },
-        fontFamily: "$mono",
+        fontFamily: "$heading",
         fontSize: "$h1",
         fontWeight: "$bold",
         lineHeight: 1.2,
@@ -91,7 +91,7 @@ const TextStyled = styled("p", {
 });
 
 export interface TextProps extends Omit<ComponentProps<typeof TextStyled>, "as" | "variant"> {
-  as?: ComponentProps<typeof TextStyled>["variant"] | (string & {});
+  as?: ComponentProps<typeof TextStyled>["variant"] | "ul" | "ol" | "li" | (string & {});
   variant?: ComponentProps<typeof TextStyled>["variant"];
 }
 

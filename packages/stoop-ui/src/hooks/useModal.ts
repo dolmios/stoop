@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import type { RefObject } from "react";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface UseModalReturn {
   handleClick: () => void;

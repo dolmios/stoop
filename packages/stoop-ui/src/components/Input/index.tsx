@@ -1,6 +1,8 @@
 "use client";
 
-import { forwardRef, type ComponentProps, type ForwardedRef } from "react";
+import type { ComponentProps, ForwardedRef } from "react";
+
+import { forwardRef, useId } from "react";
 
 import { styled } from "../../stoop.theme";
 import { Spinner } from "../Spinner";
@@ -53,13 +55,13 @@ const InputStyled = styled("input", {
       false: {},
       true: {
         "&:focus": {
-          borderBottomColor: "#dc2626",
-          borderColor: "#dc2626",
+          borderBottomColor: "$error",
+          borderColor: "$error",
           boxShadow: "$subtle, 0 0 0 2px rgba(220, 38, 38, 0.1)",
         },
-        borderBottomColor: "#b91c1c",
-        borderColor: "#dc2626",
-        borderTopColor: "#ef4444",
+        borderBottomColor: "$errorDark",
+        borderColor: "$error",
+        borderTopColor: "$errorLight",
       },
     },
     loading: {
@@ -73,13 +75,13 @@ const InputStyled = styled("input", {
       false: {},
       true: {
         "&:focus": {
-          borderBottomColor: "#16a34a",
-          borderColor: "#16a34a",
+          borderBottomColor: "$success",
+          borderColor: "$success",
           boxShadow: "$subtle, 0 0 0 2px rgba(22, 163, 74, 0.1)",
         },
-        borderBottomColor: "#15803d",
-        borderColor: "#16a34a",
-        borderTopColor: "#22c55e",
+        borderBottomColor: "$successDark",
+        borderColor: "$success",
+        borderTopColor: "$successLight",
       },
     },
   },
@@ -122,13 +124,13 @@ const InputTextareaStyled = styled("textarea", {
       false: {},
       true: {
         "&:focus": {
-          borderBottomColor: "#dc2626",
-          borderColor: "#dc2626",
+          borderBottomColor: "$error",
+          borderColor: "$error",
           boxShadow: "$subtle, 0 0 0 2px rgba(220, 38, 38, 0.1)",
         },
-        borderBottomColor: "#b91c1c",
-        borderColor: "#dc2626",
-        borderTopColor: "#ef4444",
+        borderBottomColor: "$errorDark",
+        borderColor: "$error",
+        borderTopColor: "$errorLight",
       },
     },
     loading: {
@@ -142,13 +144,13 @@ const InputTextareaStyled = styled("textarea", {
       false: {},
       true: {
         "&:focus": {
-          borderBottomColor: "#16a34a",
-          borderColor: "#16a34a",
+          borderBottomColor: "$success",
+          borderColor: "$success",
           boxShadow: "$subtle, 0 0 0 2px rgba(22, 163, 74, 0.1)",
         },
-        borderBottomColor: "#15803d",
-        borderColor: "#16a34a",
-        borderTopColor: "#22c55e",
+        borderBottomColor: "$successDark",
+        borderColor: "$success",
+        borderTopColor: "$successLight",
       },
     },
   },
@@ -156,12 +158,12 @@ const InputTextareaStyled = styled("textarea", {
 });
 
 const InputErrorMessageStyled = styled("div", {
-  color: "#dc2626",
+  color: "$error",
   fontSize: "$small",
 });
 
 const InputSuccessMessageStyled = styled("div", {
-  color: "#16a34a",
+  color: "$success",
   fontSize: "$small",
 });
 
@@ -203,7 +205,8 @@ export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputPro
     },
     ref,
   ) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const reactId = useId();
+    const inputId = id || reactId;
 
     const inputElement = textarea ? (
       <InputTextareaStyled

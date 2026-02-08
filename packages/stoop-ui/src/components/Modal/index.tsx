@@ -1,6 +1,8 @@
 "use client";
 
-import { useId, type JSX, type MouseEvent, type ReactNode } from "react";
+import type { JSX, MouseEvent, ReactNode } from "react";
+
+import { useId } from "react";
 import { createPortal } from "react-dom";
 
 import { useEventListener } from "../../hooks/useEventListener";
@@ -217,11 +219,13 @@ const ModalFooterStyled = styled("div", {
 
 export interface ModalProps {
   children?: ReactNode | ((onClose: () => void) => ReactNode);
+  closeButton?: ReactNode;
   disabled?: boolean;
   footer?: ReactNode | ((onClose: () => void) => ReactNode);
   isOpen?: boolean;
   mode?: "dialog" | "drawer";
   onClose?: () => void;
+  showCloseButton?: boolean;
   small?: boolean;
   title?: ReactNode;
   trigger?: ReactNode;
@@ -229,11 +233,13 @@ export interface ModalProps {
 
 export const Modal = ({
   children,
+  closeButton,
   disabled,
   footer,
   isOpen,
   mode = "dialog",
   onClose,
+  showCloseButton = true,
   small,
   title,
   trigger,
@@ -293,9 +299,12 @@ export const Modal = ({
                   ) : (
                     <div id={titleId}>{title}</div>
                   )}
-                  <ButtonComponent size="small" variant="minimal" onClick={() => handleClose()}>
-                    Close
-                  </ButtonComponent>
+                  {showCloseButton &&
+                    (closeButton || (
+                      <ButtonComponent size="small" variant="minimal" onClick={() => handleClose()}>
+                        Close
+                      </ButtonComponent>
+                    ))}
                 </ModalHeaderStyled>
               )}
 

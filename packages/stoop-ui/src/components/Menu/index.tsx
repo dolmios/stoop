@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useId, useState, type JSX, type MouseEvent, type ReactNode } from "react";
+import type { JSX, MouseEvent, ReactNode } from "react";
+
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useEventListener } from "../../hooks/useEventListener";

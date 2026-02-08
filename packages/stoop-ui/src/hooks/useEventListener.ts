@@ -1,4 +1,6 @@
-import { useEffect, useRef, type RefObject } from "react";
+import type { RefObject } from "react";
+
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 export function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
@@ -8,6 +10,10 @@ export function useEventListener<K extends keyof WindowEventMap>(
 ): void {
   const savedHandler = useRef(handler);
 
+  useLayoutEffect(() => {
+    savedHandler.current = handler;
+  }, [handler]);
+
   useEffect(() => {
     const eventListener = ((event: WindowEventMap[K]) =>
       savedHandler.current(event)) as EventListener;
@@ -16,11 +22,10 @@ export function useEventListener<K extends keyof WindowEventMap>(
 
     if (!targetElement) return;
 
-    savedHandler.current = handler;
     targetElement.addEventListener(eventName, eventListener, options);
 
     return (): void => {
       targetElement.removeEventListener(eventName, eventListener, options);
     };
-  }, [eventName, handler, options, element]);
+  }, [eventName, options, element]);
 }

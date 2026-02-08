@@ -1,6 +1,8 @@
 "use client";
 
-import { useCallback, useState, type ComponentProps, type JSX, type ReactNode } from "react";
+import type { ComponentProps, JSX, ReactNode } from "react";
+
+import { useCallback, useState } from "react";
 
 import { styled } from "../../stoop.theme";
 
@@ -29,7 +31,6 @@ function extractText(children: ReactNode): string {
 const CodeStyled = styled("code", {
   backgroundColor: "$hover",
   borderRadius: "$small",
-  fontFamily: "$mono",
   fontSize: "$small",
   padding: "2px 6px",
 });
@@ -95,11 +96,12 @@ const CodeCopyButtonStyled = styled("button", {
 });
 
 export interface CodeProps extends ComponentProps<typeof CodeStyled> {
-  children?: ReactNode;
   block?: boolean;
+  children?: ReactNode;
+  fontFamily?: string;
 }
 
-export const Code = ({ block, children, ...props }: CodeProps): JSX.Element => {
+export const Code = ({ block, children, fontFamily, ...props }: CodeProps): JSX.Element => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async (): Promise<void> => {
@@ -110,10 +112,12 @@ export const Code = ({ block, children, ...props }: CodeProps): JSX.Element => {
     setTimeout(() => setCopied(false), 2000);
   }, [children]);
 
+  const fontFamilyStyle = fontFamily ? { fontFamily } : undefined;
+
   if (block) {
     return (
       <CodeBlockContainerStyled>
-        <CodeBlockStyled>
+        <CodeBlockStyled css={fontFamilyStyle}>
           <CodeBlockCodeStyled {...props}>{children}</CodeBlockCodeStyled>
         </CodeBlockStyled>
         <CodeCopyButtonStyled type="button" onClick={handleCopy}>
@@ -123,5 +127,9 @@ export const Code = ({ block, children, ...props }: CodeProps): JSX.Element => {
     );
   }
 
-  return <CodeStyled {...props}>{children}</CodeStyled>;
+  return (
+    <CodeStyled css={fontFamilyStyle} {...props}>
+      {children}
+    </CodeStyled>
+  );
 };

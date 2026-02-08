@@ -5,9 +5,10 @@
  * This theme cannot be customized by users.
  *
  * Font Configuration:
- * - Uses CSS variables for fonts: --font-standard and --font-monaspace
+ * - Uses CSS variables for fonts: --font-standard (body/heading), --font-monaspace (code)
  * - Consumers must provide these CSS variables themselves (fonts cannot be bundled)
  * - Fallback fonts are provided if CSS variables are not defined
+ * - Monospace font is only used for code blocks, never for headings or body text
  *
  * Example usage in Next.js:
  * ```tsx
@@ -16,7 +17,12 @@
  *   src: [{ path: "./fonts/standard.woff2" }]
  * });
  *
- * <html className={standardFont.variable}>
+ * const monoFont = localFont({
+ *   variable: "--font-monaspace",
+ *   src: [{ path: "./fonts/mono.woff2" }]
+ * });
+ *
+ * <html className={`${standardFont.variable} ${monoFont.variable}`}>
  *   <ThemeProvider>...</ThemeProvider>
  * </html>
  * ```
@@ -34,8 +40,17 @@ const lightTheme = {
     borderEmphasis: "#c4c0b8",
     borderLight: "#f0ede8",
     borderStrong: "#d4d1cb",
+    danger: "#ef4444",
+    dangerActive: "#991b1b",
+    dangerHover: "#dc2626",
+    error: "#dc2626",
+    errorDark: "#b91c1c",
+    errorLight: "#ef4444",
     hover: "#f0ede8",
     overlay: "rgba(0, 0, 0, 0.4)",
+    success: "#16a34a",
+    successDark: "#15803d",
+    successLight: "#22c55e",
     surface: "#ffffff",
     surfaceHover: "#faf9f6",
     surfaceLight: "#faf9f6",
@@ -45,7 +60,7 @@ const lightTheme = {
   fonts: {
     body: "var(--font-standard, system-ui, -apple-system, sans-serif)",
     heading: "var(--font-standard, system-ui, -apple-system, sans-serif)",
-    mono: "var(--font-monaspace, ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace)",
+    mono: "var(--font-monaspace, ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace)",
   },
   fontSizes: {
     default: "16px",
@@ -114,8 +129,17 @@ const darkTheme = {
     borderEmphasis: "#404040",
     borderLight: "#2a2a2a",
     borderStrong: "#404040",
+    danger: "#ef4444",
+    dangerActive: "#991b1b",
+    dangerHover: "#dc2626",
+    error: "#dc2626",
+    errorDark: "#b91c1c",
+    errorLight: "#ef4444",
     hover: "#2a2a2a",
     overlay: "rgba(0, 0, 0, 0.6)",
+    success: "#16a34a",
+    successDark: "#15803d",
+    successLight: "#22c55e",
     surface: "#242424",
     surfaceHover: "#2a2a2a",
     surfaceLight: "#1f1f1f",
@@ -123,6 +147,42 @@ const darkTheme = {
     textSecondary: "#999999",
   },
 };
+
+// Shared animation keyframes
+export const animations = {
+  fadeIn: {
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+  },
+  fadeInUp: {
+    from: { opacity: 0, transform: "translateY(4px)" },
+    to: { opacity: 1, transform: "translateY(0)" },
+  },
+  fadeOut: {
+    from: { opacity: 1 },
+    to: { opacity: 0 },
+  },
+  fadeOutDown: {
+    from: { opacity: 1, transform: "translateY(0)" },
+    to: { opacity: 0, transform: "translateY(4px)" },
+  },
+  pulse: {
+    "0%, 100%": { opacity: 1 },
+    "50%": { opacity: 0.5 },
+  },
+  slideInScale: {
+    from: { opacity: 0, transform: "scale(0.95) translateY(-10px)" },
+    to: { opacity: 1, transform: "scale(1) translateY(0)" },
+  },
+  slideOutScale: {
+    from: { opacity: 1, transform: "scale(1) translateY(0)" },
+    to: { opacity: 0, transform: "scale(0.95) translateY(-10px)" },
+  },
+  spin: {
+    "0%": { transform: "rotate(0deg)" },
+    "100%": { transform: "rotate(360deg)" },
+  },
+} as const;
 
 const globalCssConfig = {
   "*": {
@@ -162,15 +222,10 @@ const globalCssConfig = {
     fontWeight: "$default",
     lineHeight: 1.6,
     margin: 0,
-    maxWidth: "100%",
     minHeight: "100vh",
     minWidth: 0,
-    MozOsxFontSmoothing: "grayscale",
-    overflowX: "hidden",
     padding: 0,
     transition: "$default",
-    WebkitFontSmoothing: "antialiased",
-    width: "100%",
   },
   button: {
     "&:focus-visible": {
@@ -238,7 +293,6 @@ const globalCssConfig = {
     fontWeight: "$default",
   },
   pre: {
-    fontFamily: "$mono",
     margin: 0,
   },
   "pre code": {

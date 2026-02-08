@@ -4,7 +4,7 @@
  * Automatically applies global styles/reset.
  */
 
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Provider, useTheme as useStoopTheme } from "./stoop.theme";
 

@@ -1,6 +1,8 @@
 "use client";
 
-import { useCallback, useState, type JSX } from "react";
+import type { JSX } from "react";
+
+import { useCallback, useState } from "react";
 
 import { styled } from "../../stoop.theme";
 

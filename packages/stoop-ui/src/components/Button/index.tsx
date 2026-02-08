@@ -99,17 +99,17 @@ const ButtonStyled = styled("button", {
     variant: {
       danger: {
         "&:active": {
-          backgroundColor: "#991b1b",
-          borderColor: "#991b1b",
+          backgroundColor: "$dangerActive",
+          borderColor: "$dangerActive",
         },
         "&:hover": {
-          backgroundColor: "#dc2626",
-          borderColor: "#dc2626",
+          backgroundColor: "$dangerHover",
+          borderColor: "$dangerHover",
           boxShadow: "$default",
         },
-        backgroundColor: "#ef4444",
-        borderColor: "#ef4444",
-        color: "#ffffff",
+        backgroundColor: "$danger",
+        borderColor: "$danger",
+        color: "$surface",
       },
       minimal: {
         "&:hover": {

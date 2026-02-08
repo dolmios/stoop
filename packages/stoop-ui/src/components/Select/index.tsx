@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useId, useState, type JSX, type MouseEvent, type ReactNode } from "react";
+import type { JSX, MouseEvent, ReactNode } from "react";
+
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useEventListener } from "../../hooks/useEventListener";
@@ -77,17 +79,17 @@ const SelectTriggerStyled = styled("button", {
     error: {
       false: {},
       true: {
-        borderBottomColor: "#b91c1c",
-        borderColor: "#dc2626",
-        borderTopColor: "#ef4444",
+        borderBottomColor: "$errorDark",
+        borderColor: "$error",
+        borderTopColor: "$errorLight",
       },
     },
     success: {
       false: {},
       true: {
-        borderBottomColor: "#15803d",
-        borderColor: "#16a34a",
-        borderTopColor: "#22c55e",
+        borderBottomColor: "$successDark",
+        borderColor: "$success",
+        borderTopColor: "$successLight",
       },
     },
   },
@@ -230,12 +232,12 @@ const SelectWrapperStyled = styled("div", {
 });
 
 const SelectErrorMessageStyled = styled("div", {
-  color: "#dc2626",
+  color: "$error",
   fontSize: "$small",
 });
 
 const SelectSuccessMessageStyled = styled("div", {
-  color: "#16a34a",
+  color: "$success",
   fontSize: "$small",
 });
 

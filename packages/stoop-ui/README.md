@@ -39,6 +39,8 @@ function App() {
 - **Input** - Form input component
 - **Menu** - Dropdown menu component
 - **Modal** - Dialog/modal component
+- **Select** - Select dropdown component for forms
+- **Spinner** - Loading spinner component
 - **Stack** - Layout component for vertical/horizontal stacking
 - **Table** - Table component with head, body, rows, cells
 - **Tabs** - Tab navigation component

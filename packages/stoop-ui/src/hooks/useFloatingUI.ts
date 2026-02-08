@@ -1,3 +1,6 @@
+import type { Strategy, ComputePositionReturn } from "@floating-ui/dom";
+import type { RefObject } from "react";
+
 import {
   computePosition,
   offset,
@@ -6,10 +9,8 @@ import {
   size,
   autoUpdate,
   limitShift,
-  type Strategy,
-  type ComputePositionReturn,
 } from "@floating-ui/dom";
-import { useState, useRef, useEffect, type RefObject } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export interface UseFloatingUIReturn<
   TTrigger extends HTMLElement = HTMLElement,

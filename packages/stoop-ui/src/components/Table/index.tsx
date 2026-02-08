@@ -42,12 +42,12 @@ const TableCellStyled = styled("td", {
   padding: "$small $medium",
 });
 
-export interface TableProps extends ComponentProps<typeof TableStyled> {}
-export interface TableHeadProps extends ComponentProps<typeof TableHeadStyled> {}
-export interface TableBodyProps extends ComponentProps<typeof TableBodyStyled> {}
-export interface TableRowProps extends ComponentProps<typeof TableRowStyled> {}
-export interface TableHeaderProps extends ComponentProps<typeof TableHeaderStyled> {}
-export interface TableCellProps extends ComponentProps<typeof TableCellStyled> {}
+export type TableProps = ComponentProps<typeof TableStyled>;
+export type TableHeadProps = ComponentProps<typeof TableHeadStyled>;
+export type TableBodyProps = ComponentProps<typeof TableBodyStyled>;
+export type TableRowProps = ComponentProps<typeof TableRowStyled>;
+export type TableHeaderProps = ComponentProps<typeof TableHeaderStyled>;
+export type TableCellProps = ComponentProps<typeof TableCellStyled>;
 
 export const Table = (props: TableProps): JSX.Element => <TableStyled {...props} />;
 export const TableHead = (props: TableHeadProps): JSX.Element => <TableHeadStyled {...props} />;

@@ -12,7 +12,7 @@ export { getCssText } from "./stoop.theme";
 // Export client-only APIs (these require "use client" directive in consuming files)
 // Note: These come from stoop.theme.ts which has "use client" directive
 // globalCss is NOT exported - it's automatically handled by ThemeProvider
-export { styled, keyframes } from "./stoop.theme";
+export { styled, keyframes, animations } from "./stoop.theme";
 
 // Export hooks
 export { useEventListener } from "./hooks/useEventListener";
