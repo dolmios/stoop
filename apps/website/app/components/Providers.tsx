@@ -2,7 +2,7 @@
 
 import type { ReactElement, ReactNode } from "react";
 
-import { IconContext } from "@phosphor-icons/react";
+import { IconContext, type IconProps } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { ThemeProvider } from "stoop-ui";
 
@@ -20,7 +20,7 @@ export function Providers({
   children: ReactNode;
   initialTheme: string;
 }): ReactElement {
-  const iconContextValue = useMemo(
+  const iconContextValue = useMemo<IconProps>(
     () => ({
       color: "currentColor",
       size: 20,
