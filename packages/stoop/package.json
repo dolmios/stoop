@@ -1,7 +1,7 @@
 {
   "name": "stoop",
   "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "author": "Jackson Dolman <mail@dolmios.com>",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,10 +14,10 @@
   },
   "homepage": "https://github.com/dolmios/stoop#readme",
   "devDependencies": {
-    "@types/node": "^25.0.3",
-    "@types/react": "^19.2.7",
+    "@types/node": "^25.2.2",
+    "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
-    "bun-types": "^1.3.5",
+    "bun-types": "^1.3.9",
     "typescript": "^5.9.3"
   },
   "exports": {
