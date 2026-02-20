@@ -1,8 +1,9 @@
 "use client";
 
+import type { IconProps } from "@phosphor-icons/react";
 import type { ReactElement, ReactNode } from "react";
 
-import { IconContext, type IconProps } from "@phosphor-icons/react";
+import { IconContext } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { ThemeProvider } from "stoop-ui";
 

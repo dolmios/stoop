@@ -3,8 +3,7 @@
 import type { ComponentProps, JSX, ReactNode } from "react";
 
 import { useCallback, useState } from "react";
-
-import { styled } from "../../stoop.theme";
+import { styled } from "stoop";
 
 function extractText(children: ReactNode): string {
   if (typeof children === "string") {

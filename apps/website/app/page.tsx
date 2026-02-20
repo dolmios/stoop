@@ -33,7 +33,8 @@ export default function HomePage(): ReactNode {
       />
       <Stack align="center" gap="medium">
         <Stack align="center" direction="row" gap="small">
-          <Badge variant="secondary">CSS-in-JS Library</Badge>
+          <Badge variant="secondary">Build-time CSS-in-JS</Badge>
+          <Badge variant="secondary">SWC-powered</Badge>
           <Badge variant="secondary">Beta</Badge>
         </Stack>
         <Text
@@ -54,9 +55,7 @@ export default function HomePage(): ReactNode {
             margin: 0,
             maxWidth: "600px",
           }}>
-          A Stitches-like CSS-in-JS library with CSS variables for instant theme switching, built-in
-          multi-theme support, and Next.js App Router integration. Type-safe, performant, and
-          actively maintained.
+          Build-time CSS-in-JS with Stitches ergonomics. Zero runtime. SWC-powered.
         </Text>
         <Stack align="center" css={{ marginTop: "$medium", maxWidth: "700px" }} gap="small">
           <Text
@@ -66,8 +65,9 @@ export default function HomePage(): ReactNode {
               margin: 0,
               textAlign: "center",
             }}>
-            Key features: CSS variables for instant theme switching • Built-in multi-theme Provider
-            • Full Next.js App Router support • Same API as Stitches with modern improvements
+            Key features: SWC plugin transforms styled() calls at build time • Zero runtime overhead
+            • Stitches-compatible API • Full Next.js App Router support • Type-safe variants and
+            themes
           </Text>
         </Stack>
       </Stack>
@@ -86,7 +86,7 @@ export default function HomePage(): ReactNode {
         </Button>
       </Stack>
       <Stack css={{ marginTop: "$large", maxWidth: "400px", width: "100%" }}>
-        <Code block>npm install stoop</Code>
+        <Code block>npm install stoop stoop-ui</Code>
       </Stack>
       <Stack align="center" css={{ marginTop: "$large", maxWidth: "600px" }} gap="small">
         <Text
@@ -96,7 +96,7 @@ export default function HomePage(): ReactNode {
             margin: 0,
             textAlign: "center",
           }}>
-          Migrating from Stitches? See our{" "}
+          Migrating from Stitches or the runtime stoop package? See our{" "}
           <Link
             href="/migration"
             style={{
@@ -106,7 +106,7 @@ export default function HomePage(): ReactNode {
             }}>
             migration guide
           </Link>
-          . Actively maintained with modern improvements.
+          .
         </Text>
       </Stack>
     </Stack>

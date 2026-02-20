@@ -2,7 +2,7 @@
 
 import type { ComponentProps, JSX } from "react";
 
-import { keyframes, styled } from "../../stoop.theme";
+import { keyframes, styled } from "stoop";
 
 const spin = keyframes({
   "0%": {

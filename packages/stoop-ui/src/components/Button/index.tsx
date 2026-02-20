@@ -8,7 +8,7 @@ import type {
   ReactElement,
 } from "react";
 
-import { styled, keyframes } from "../../stoop.theme";
+import { styled, keyframes } from "stoop";
 
 const pulse = keyframes({
   "0%, 100%": {

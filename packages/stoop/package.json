@@ -1,85 +1,69 @@
 {
   "name": "stoop",
-  "description": "CSS-in-JS library with type inference, theme creation, and variants support.",
-  "version": "0.6.3",
+  "version": "0.1.0",
+  "description": "Build-time CSS-in-JS with Stitches ergonomics. Zero runtime. SWC-powered.",
   "author": "Jackson Dolman <mail@dolmios.com>",
+  "license": "MIT",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dolmios/stoop.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dolmios/stoop/issues"
-  },
-  "homepage": "https://github.com/dolmios/stoop#readme",
-  "devDependencies": {
-    "@types/node": "^25.2.2",
-    "@types/react": "^19.2.13",
-    "@types/react-dom": "^19.2.3",
-    "bun-types": "^1.3.9",
-    "typescript": "^5.9.3"
-  },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "./ssr": {
-      "types": "./dist/create-stoop-ssr.d.ts",
-      "default": "./dist/create-stoop-ssr.js"
+    "./next": {
+      "import": "./dist/integrations/next.js",
+      "types": "./dist/integrations/next.d.ts"
     },
-    "./styled": {
-      "types": "./dist/api/styled.d.ts",
-      "default": "./dist/api/styled.js"
+    "./vite": {
+      "import": "./dist/integrations/vite.js",
+      "types": "./dist/integrations/vite.d.ts"
     },
-    "./theme-provider": {
-      "types": "./dist/api/theme-provider.d.ts",
-      "default": "./dist/api/theme-provider.js"
-    }
+    "./config": {
+      "import": "./dist/config.js",
+      "types": "./dist/config.d.ts"
+    },
+    "./plugin": "./compiler/target/wasm32-wasip1/release/stoop_swc_compiler.wasm"
   },
   "files": [
-    "dist"
+    "dist",
+    "compiler/target/wasm32-wasip1/release/*.wasm"
   ],
-  "keywords": [
-    "css variables",
-    "css-in-ts",
-    "css-in-ts alternative",
-    "css-in-js",
-    "css-in-js alternative",
-    "emotion",
-    "emotion alternative",
-    "lightweight",
-    "minimal",
-    "next.js",
-    "nextjs",
-    "performance",
-    "react",
-    "react styling",
-    "stitches",
-    "stitches alternative",
-    "stitches-alternative",
-    "styled-components",
-    "styled-components alternative",
-    "styling",
-    "theme",
-    "theme switching",
-    "type-safe",
-    "typescript",
-    "variants"
-  ],
-  "license": "MIT",
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
   "scripts": {
-    "build": "bunx tsc --project tsconfig.build.json",
-    "lint": "eslint src --fix",
-    "prepare": "bun run build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage",
-    "test:watch": "bun test --watch"
+    "build:compiler": "cd compiler && cargo build --target wasm32-wasip1 --release",
+    "build:ts": "tsc",
+    "build": "bun run build:compiler && bun run build:ts",
+    "test:compiler": "cd compiler && cargo test",
+    "test:ts": "vitest run",
+    "test": "bun run test:compiler && bun run test:ts",
+    "dev": "tsc --watch"
   },
-  "sideEffects": false,
-  "type": "module"
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "jiti": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.13",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "react": "^19.2.4",
+    "next": "^16.0.0",
+    "vite": "^6.0.0"
+  },
+  "keywords": [
+    "css-in-js",
+    "swc",
+    "swc-plugin",
+    "build-time",
+    "zero-runtime",
+    "atomic-css",
+    "stitches-alternative",
+    "typescript",
+    "react",
+    "nextjs",
+    "design-system"
+  ]
 }

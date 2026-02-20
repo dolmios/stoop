@@ -4,11 +4,11 @@ import type { JSX, MouseEvent, ReactNode } from "react";
 
 import { useId } from "react";
 import { createPortal } from "react-dom";
+import { keyframes, styled } from "stoop";
 
 import { useEventListener } from "../../hooks/useEventListener";
 import { useModal } from "../../hooks/useModal";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { keyframes, styled } from "../../stoop.theme";
 import { Button as ButtonComponent } from "../Button";
 
 const fadeIn = keyframes({

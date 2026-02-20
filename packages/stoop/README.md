@@ -1,131 +1,148 @@
-# stoop
+# stoop-swc
 
-A lightweight, type-safe CSS-in-JS library for React with theme support, variants, and SSR capabilities.
-
-## Installation
-
-```sh
-npm install stoop
-# or
-bun add stoop
-# or
-yarn add stoop
-```
-
-## Quick Start
-
-```tsx
-// stoop.theme.ts
-import { createStoop } from "stoop";
-
-const stoop = createStoop({
-  theme: {
-    colors: {
-      primary: "#0070f3",
-      background: "#ffffff",
-      text: "#000000",
-    },
-    space: {
-      small: "8px",
-      medium: "16px",
-      large: "24px",
-    },
-  },
-  themes: {
-    light: {
-      /* ... */
-    },
-    dark: {
-      /* ... */
-    },
-  },
-});
-
-export const { styled, css, Provider, useTheme } = stoop;
-
-// Usage
-const Button = styled("button", {
-  padding: "$medium",
-  backgroundColor: "$primary",
-  color: "$text",
-});
-
-<Button>Click me</Button>;
-```
+Build-time CSS-in-JS library using Rust SWC plugin. Compiles `styled()` components at build time, generating static CSS files with <2KB runtime.
 
 ## Features
 
-- **Type-safe theming** with TypeScript inference
-- **CSS variables** for instant theme switching
-- **Variant system** for component variations
-- **SSR support** via `getCssText()`
-- **Multiple themes** with built-in Provider
-- **Utility functions** for custom CSS transformations
-- **Zero runtime overhead** for theme switching
-- **Zero dependencies** - only React peer dependency
+- **Zero Runtime Overhead**: <2KB runtime bundle (only variant selection logic)
+- **Build-Time Compilation**: All CSS generation happens via Rust SWC plugin
+- **Framework Agnostic**: Works anywhere SWC works (Next.js, Vite, Remix)
+- **Type-Safe**: Full TypeScript inference for variants and themes
+- **CSS Variables**: Theme switching without recompilation
 
-## Documentation
+## Installation
 
-📚 **[Full Documentation →](https://stoop.dolmios.com)**
-
-- [Installation](https://stoop.dolmios.com/installation)
-- [Theme Setup](https://stoop.dolmios.com/theme-setup)
-- [Creating Components](https://stoop.dolmios.com/creating-components)
-- [SSR Guide](https://stoop.dolmios.com/ssr)
-- [API Reference](https://stoop.dolmios.com/api)
-
-For internal architecture details, see [ARCHITECTURE.md](./ARCHITECTURE.md) (developer-only).
-
-## API Overview
-
-### `createStoop(config)`
-
-Creates a Stoop instance. Returns: `styled`, `css`, `createTheme`, `globalCss`, `keyframes`, `getCssText`, `warmCache`, `preloadTheme`, `theme`, `config`. If `themes` config is provided, also returns `Provider` and `useTheme`.
-
-### Theme Tokens
-
-Use `$` prefix for theme tokens. Shorthand `$token` uses property-aware resolution (preferred); explicit `$scale.token` specifies the scale.
-
-```tsx
-{
-  color: "$primary",           // Shorthand (preferred, property-aware)
-  padding: "$medium",         // Property-aware → space scale
-  fontSize: "$fontSizes.small", // Explicit scale
-}
+```bash
+npm install stoop-swc
 ```
 
-### Variants
+**Note**: The compiler export (`stoop-swc/compiler`) is platform-specific. The package.json currently exports a macOS-specific binary (`.dylib`). For Linux (`.so`) or Windows (`.dll`), you'll need to build the compiler locally or use platform-specific builds. The runtime export (`stoop-swc/runtime`) works on all platforms.
 
-Variants create component variations via props:
+## Quick Start
 
-```tsx
-const Button = styled("button", {
-  variants: {
-    variant: {
-      primary: { backgroundColor: "$primary" },
-      secondary: { backgroundColor: "$secondary" },
+### 1. Create Theme Configuration
+
+Create `styled.config.ts` in your project root:
+
+```typescript
+export default {
+  theme: {
+    colors: {
+      primary: "#0070f3",
+      secondary: "#666",
     },
-    size: {
-      small: { padding: "$small" },
-      large: { padding: "$large" },
+    space: {
+      sm: "8px",
+      md: "16px",
+      lg: "24px",
     },
+  },
+  themes: {
+    dark: {
+      colors: {
+        primary: "#3b82f6",
+      },
+    },
+  },
+};
+```
+
+### 2. Configure Next.js
+
+Update `next.config.mjs`:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    swcPlugins: [["stoop-swc/compiler", {}]],
+  },
+};
+
+export default nextConfig;
+```
+
+### 3. Use in Components
+
+```typescript
+import { styled } from 'stoop-swc/runtime';
+
+const Button = styled('button', {
+  padding: '$md',
+  backgroundColor: '$primary',
+  color: 'white',
+}, {
+  size: {
+    sm: { padding: '$sm' },
+    lg: { padding: '$lg' },
   },
 });
 
-<Button variant="primary" size="small" />;
+// Usage
+<Button size="sm">Click me</Button>
 ```
+
+### 4. Import Generated CSS
+
+In your root layout or `_app.tsx`:
+
+```typescript
+import "../.stoop/styles.css";
+```
+
+## API
+
+### `styled(element, baseStyles?, variants?)`
+
+Creates a styled component. Must be compiled by the SWC plugin.
+
+### `ThemeProvider`
+
+Provides theme context for theme switching.
+
+```typescript
+import { ThemeProvider } from 'stoop-swc/runtime';
+
+<ThemeProvider defaultTheme="light">
+  <App />
+</ThemeProvider>
+```
+
+### `useTheme()`
+
+Hook to access and change theme.
+
+```typescript
+import { useTheme } from "stoop-swc/runtime";
+
+const { theme, setTheme } = useTheme();
+```
+
+## Configuration
+
+See `docs/api-reference.md` for full configuration options.
+
+## Migration from stoop
+
+See `docs/migration.md` for migration guide.
 
 ## Development
 
 ```sh
-# Build
+# Build Rust compiler
+bun run build:rust
+
+# Build runtime
+bun run build:runtime
+
+# Build both
 bun run build
 
-# Test
-bun run test
+# Test Rust compiler
+bun run test:rust
 
-# Watch mode
-bun run test:watch
+# Test runtime
+bun run test:runtime
 ```
 
 ## License

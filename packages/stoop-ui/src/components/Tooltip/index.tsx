@@ -4,10 +4,10 @@ import type { JSX, ReactNode } from "react";
 
 import { useCallback, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
+import { keyframes, styled } from "stoop";
 
 import { useFloatingUI } from "../../hooks/useFloatingUI";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { keyframes, styled } from "../../stoop.theme";
 
 const fadeInUp = keyframes({
   from: {

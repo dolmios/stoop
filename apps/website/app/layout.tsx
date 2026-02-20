@@ -54,41 +54,42 @@ export const metadata: Metadata = {
     canonical: baseUrl,
   },
   description:
-    "CSS-in-JS library with type inference, theme creation, and variants support. Similar to Stitches, built for modern React. Currently in active development (beta).",
+    "Build-time CSS-in-JS with Stitches ergonomics. Zero runtime overhead. SWC plugin transforms styled() calls at compile time — type-safe, variant-driven, and built for modern React.",
   keywords: [
-    "css in js",
+    "build-time css in js",
+    "swc plugin",
+    "zero runtime css",
     "stitches replacement",
     "stitches alternative",
     "css in js library",
     "react styling",
     "type-safe css",
+    "stoop",
   ],
   openGraph: {
-    description:
-      "CSS-in-JS library with type inference, theme creation, and variants support. Similar to Stitches (beta)",
+    description: "Build-time CSS-in-JS with Stitches ergonomics. Zero runtime. SWC-powered. (beta)",
     images: [
       {
-        alt: "Stoop - CSS-in-JS Library",
+        alt: "Stoop - Build-time CSS-in-JS",
         height: 630,
         url: ogImage,
         width: 1200,
       },
     ],
     siteName: "Stoop",
-    title: "Stoop - CSS-in-JS Library",
+    title: "Stoop - Build-time CSS-in-JS",
     type: "website",
     url: baseUrl,
   },
   title: {
-    default: "Stoop - CSS-in-JS Library",
+    default: "Stoop - Build-time CSS-in-JS",
     template: "%s | Stoop",
   },
   twitter: {
     card: "summary_large_image",
-    description:
-      "CSS-in-JS library with type inference, theme creation, and variants support. Similar to Stitches (beta)",
+    description: "Build-time CSS-in-JS with Stitches ergonomics. Zero runtime. SWC-powered. (beta)",
     images: [ogImage],
-    title: "Stoop - CSS-in-JS Library",
+    title: "Stoop - Build-time CSS-in-JS",
   },
 };
 

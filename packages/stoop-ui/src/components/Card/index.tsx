@@ -2,7 +2,8 @@
 
 import type { ComponentProps, JSX, ReactNode } from "react";
 
-import { styled } from "../../stoop.theme";
+import { styled } from "stoop";
+
 import { Spinner } from "../Spinner";
 
 const CardStyled = styled("div", {

@@ -1,29 +1,29 @@
-/**
- * Main entry point for Stoop
- * Re-exports createStoop and all types
- */
-
-export { createStoop } from "./create-stoop";
+export { styled } from "./styled";
+export { css } from "./css";
+export { globalCss } from "./global-css";
+export { keyframes } from "./keyframes";
+export { ThemeProvider, useTheme } from "./provider";
+export { clsx } from "./classnames";
+export { createSelector } from "./selector";
+export { defineConfig } from "./config";
 
 export type {
   CSS,
-  ComponentProps,
-  DefaultTheme,
-  StoopConfig,
-  StoopInstance,
-  Theme,
-  ThemeScale,
-  UtilityFunction,
-  VariantProps,
-  StyledComponent,
-  StyledFunction,
-  // Function interface types
   CSSFunction,
+  CompoundVariantDefinition,
+  ExtractVariants,
   GlobalCSSFunction,
   KeyframesFunction,
-  CreateThemeFunction,
-  // Provider types
-  ProviderProps,
-  ThemeManagementContextValue,
+  StyledComponent,
+  StyledComponentRef,
+  StyledConfig,
+  StyledFunction,
   ThemeContextValue,
+  ThemeProviderProps,
+  VariantDefinitions,
+  VariantProps,
+  VariantPropsOf,
+  VariantValue,
 } from "./types";
+
+export type { StoopConfig, StoopTheme } from "./config";

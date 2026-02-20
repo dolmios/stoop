@@ -2,7 +2,7 @@
 
 import type { ComponentProps, JSX } from "react";
 
-import { styled } from "../../stoop.theme";
+import { styled } from "stoop";
 
 const TextStyled = styled("p", {
   "&:last-child": {
@@ -91,6 +91,7 @@ const TextStyled = styled("p", {
 });
 
 export interface TextProps extends Omit<ComponentProps<typeof TextStyled>, "as" | "variant"> {
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   as?: ComponentProps<typeof TextStyled>["variant"] | "ul" | "ol" | "li" | (string & {});
   variant?: ComponentProps<typeof TextStyled>["variant"];
 }
@@ -98,9 +99,8 @@ export interface TextProps extends Omit<ComponentProps<typeof TextStyled>, "as" 
 export const Text = (props: TextProps): JSX.Element => {
   const { as, variant, ...rest } = props;
 
-  const effectiveVariant = (
-    as && ["h1", "h2", "h3", "h4", "h5", "h6", "small", "strong"].includes(as) ? as : variant
-  ) as ComponentProps<typeof TextStyled>["variant"];
+  const effectiveVariant =
+    as && ["h1", "h2", "h3", "h4", "h5", "h6", "small", "strong"].includes(as) ? as : variant;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <TextStyled as={as as any} variant={effectiveVariant} {...rest} />;

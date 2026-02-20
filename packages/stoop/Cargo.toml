@@ -1,0 +1,19 @@
+[workspace]
+members = ["compiler"]
+resolver = "2"
+
+[workspace.dependencies]
+swc_core = { version = "*", features = [
+    "ecma_ast",
+    "ecma_visit",
+    "ecma_plugin_transform",
+    "ecma_utils",
+    "ecma_parser",
+    "ecma_codegen",
+] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+lto = true
+opt-level = 3

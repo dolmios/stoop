@@ -3,8 +3,7 @@
 import type { JSX } from "react";
 
 import { useCallback, useState } from "react";
-
-import { styled } from "../../stoop.theme";
+import { styled } from "stoop";
 
 const TabsStyled = styled("div", {
   "&::-webkit-scrollbar": {

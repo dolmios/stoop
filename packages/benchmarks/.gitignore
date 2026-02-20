@@ -1,7 +1,0 @@
-# Build output
-dist/
-.bundle-analysis/
-
-# Temporary files
-*.tmp
-*.temp

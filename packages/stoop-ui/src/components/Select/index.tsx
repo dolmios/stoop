@@ -4,11 +4,11 @@ import type { JSX, MouseEvent, ReactNode } from "react";
 
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
+import { keyframes, styled } from "stoop";
 
 import { useEventListener } from "../../hooks/useEventListener";
 import { useFloatingUI } from "../../hooks/useFloatingUI";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { keyframes, styled } from "../../stoop.theme";
 
 const fadeInUp = keyframes({
   from: {

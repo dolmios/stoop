@@ -3,11 +3,11 @@
 import type { ComponentProps, ReactNode } from "react";
 
 import NextLink from "next/link";
+import { styled } from "stoop";
 import {
   Badge,
   Code as StoopCode,
   Stack,
-  styled,
   Table as StoopTable,
   TableBody as StoopTableBody,
   TableCell as StoopTableCell,

@@ -2,7 +2,7 @@
 
 import type { ComponentProps, JSX } from "react";
 
-import { styled } from "../../stoop.theme";
+import { styled } from "stoop";
 
 const StackStyled = styled("div", {
   display: "flex",

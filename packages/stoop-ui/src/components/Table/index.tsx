@@ -2,7 +2,7 @@
 
 import type { ComponentProps, JSX } from "react";
 
-import { styled } from "../../stoop.theme";
+import { styled } from "stoop";
 
 const TableStyled = styled("table", {
   border: "1px solid $border",

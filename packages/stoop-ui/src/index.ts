@@ -1,52 +1,25 @@
-"use client";
-/**
- * stoop-ui - UI component library built with stoop
- */
+// Components
+export { Badge } from "./components/Badge";
+export { Button } from "./components/Button";
+export { Card } from "./components/Card";
+export { Code } from "./components/Code";
+export { Input } from "./components/Input";
+export { Menu, type MenuProps, type MenuOption as MenuItem } from "./components/Menu";
+export { Modal, type ModalProps } from "./components/Modal";
+export { Select, type SelectProps, type SelectOption } from "./components/Select";
+export { Spinner } from "./components/Spinner";
+export { Stack } from "./components/Stack";
+export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./components/Table";
+export { Tabs, type TabItem } from "./components/Tabs";
+export { Text } from "./components/Text";
+export { Tooltip, type TooltipProps } from "./components/Tooltip";
 
-// Export ThemeProvider and useTheme - consumers should wrap their app with ThemeProvider
-export { ThemeProvider, useTheme, type ThemeProviderProps } from "./ThemeProvider";
+// Theme
+export { ThemeProvider, useTheme } from "stoop";
+export { theme, animations } from "./theme.config";
 
-// Export SSR utilities (server-safe)
-export { getCssText } from "./stoop.theme";
-
-// Export client-only APIs (these require "use client" directive in consuming files)
-// Note: These come from stoop.theme.ts which has "use client" directive
-// globalCss is NOT exported - it's automatically handled by ThemeProvider
-export { styled, keyframes, animations } from "./stoop.theme";
-
-// Export hooks
+// Hooks
 export { useEventListener } from "./hooks/useEventListener";
 export { useFloatingUI } from "./hooks/useFloatingUI";
 export { useModal } from "./hooks/useModal";
 export { useOutsideClick } from "./hooks/useOutsideClick";
-export type { UseFloatingUIReturn } from "./hooks/useFloatingUI";
-export type { UseModalReturn } from "./hooks/useModal";
-
-// Export components
-export { Badge, type BadgeProps } from "./components/Badge";
-export { Button, type ButtonProps } from "./components/Button";
-export { Card, type CardProps } from "./components/Card";
-export { Code, type CodeProps } from "./components/Code";
-export { Input, type InputProps } from "./components/Input";
-export { Menu, type MenuProps, type MenuOption } from "./components/Menu";
-export { Modal, type ModalProps } from "./components/Modal";
-export { Select, type SelectProps, type SelectOption } from "./components/Select";
-export { Spinner, type SpinnerProps } from "./components/Spinner";
-export { Stack, type StackProps } from "./components/Stack";
-export {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableHeader,
-  TableCell,
-  type TableProps,
-  type TableHeadProps,
-  type TableBodyProps,
-  type TableRowProps,
-  type TableHeaderProps,
-  type TableCellProps,
-} from "./components/Table";
-export { Tabs, type TabsProps, type TabItem } from "./components/Tabs";
-export { Text, type TextProps } from "./components/Text";
-export { Tooltip, type TooltipProps } from "./components/Tooltip";

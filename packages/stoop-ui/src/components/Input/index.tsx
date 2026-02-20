@@ -3,8 +3,8 @@
 import type { ComponentProps, ForwardedRef } from "react";
 
 import { forwardRef, useId } from "react";
+import { styled } from "stoop";
 
-import { styled } from "../../stoop.theme";
 import { Spinner } from "../Spinner";
 
 const InputWrapperStyled = styled("div", {
