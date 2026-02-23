@@ -1,6 +1,6 @@
 import { createJiti } from "jiti";
 
-import type { StoopConfig, StoopTheme } from "../config";
+import type { StoopConfig, StoopTheme } from "../config.js";
 
 const CONFIG_FILES = ["stoop.config.ts", "stoop.config.js", "stoop.config.mjs", "stoop.config.mts"];
 
@@ -21,8 +21,15 @@ export async function loadConfig(root: string, configFile?: string): Promise<Sto
       const config = (mod as any).default || mod;
 
       return config as StoopConfig;
-    } catch {
-      continue;
+    } catch (e) {
+      // Only continue to next file if the file doesn't exist.
+      // Re-throw if the file exists but has import/parse errors.
+      const msg = e instanceof Error ? e.message : String(e);
+
+      if (msg.includes("Cannot find module") || msg.includes("ENOENT")) {
+        continue;
+      }
+      throw new Error(`[stoop] Error loading config "${file}": ${msg}`);
     }
   }
 

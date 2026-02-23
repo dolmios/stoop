@@ -1,4 +1,4 @@
-import type { StyledFunction } from "./types";
+import type { StyledFunction } from "./types.js";
 
 export const styled: StyledFunction = (() => {
   throw new Error(

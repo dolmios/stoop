@@ -1,4 +1,4 @@
-import { CSSAggregator } from "./css-aggregator";
+import { CSSAggregator } from "./css-aggregator.js";
 
 interface Compiler {
   hooks: {
@@ -42,6 +42,19 @@ const STOOP_CSS_RE = /const __stoop_css__\s*=\s*'([^']*)'/;
 /**
  * Webpack plugin that extracts __stoop_css__ metadata from compiled modules
  * and aggregates it into a single CSS file.
+ *
+ * **Known limitation:** The CSS asset is emitted via `compilation.emitAsset`,
+ * which writes the file to the output directory but does NOT add it to the
+ * chunk graph. This means plugins that traverse chunks (e.g., HtmlWebpackPlugin)
+ * will not automatically discover or inject this CSS file.
+ *
+ * To include the generated CSS in your HTML, either:
+ * 1. Manually add a `<link rel="stylesheet" href="/stoop/styles.css">` tag, or
+ * 2. Use a separate webpack loader / plugin to inject the CSS reference, or
+ * 3. Import the generated CSS file from your entry point after the build.
+ *
+ * The `outputPath` option controls where the file is emitted relative to the
+ * webpack output directory (defaults to `"stoop/styles.css"`).
  */
 export class StoopWebpackPlugin {
   private outputPath: string;

@@ -3,7 +3,7 @@
  * Used in nested selectors like `&${Button.selector}`.
  */
 
-import type { StyledComponentRef } from "./types";
+import type { StyledComponentRef } from "./types.js";
 
 export function createSelector(className: string): StyledComponentRef {
   return {

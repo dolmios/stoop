@@ -24,14 +24,14 @@
       "import": "./dist/config.js",
       "types": "./dist/config.d.ts"
     },
-    "./plugin": "./compiler/target/wasm32-wasip1/release/stoop_swc_compiler.wasm"
+    "./plugin": "./target/wasm32-wasip1/release/stoop_compiler.wasm"
   },
   "files": [
     "dist",
-    "compiler/target/wasm32-wasip1/release/*.wasm"
+    "target/wasm32-wasip1/release/*.wasm"
   ],
   "scripts": {
-    "build:compiler": "cd compiler && cargo build --target wasm32-wasip1 --release",
+    "build:compiler": "cargo build --target wasm32-wasip1 --release",
     "build:ts": "tsc",
     "build": "bun run build:compiler && bun run build:ts",
     "test:compiler": "cd compiler && cargo test",

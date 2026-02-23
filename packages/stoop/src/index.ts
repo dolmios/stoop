@@ -1,11 +1,11 @@
-export { styled } from "./styled";
-export { css } from "./css";
-export { globalCss } from "./global-css";
-export { keyframes } from "./keyframes";
-export { ThemeProvider, useTheme } from "./provider";
-export { clsx } from "./classnames";
-export { createSelector } from "./selector";
-export { defineConfig } from "./config";
+export { styled } from "./styled.js";
+export { css } from "./css.js";
+export { globalCss } from "./global-css.js";
+export { keyframes } from "./keyframes.js";
+export { ThemeProvider, useTheme } from "./provider.js";
+export { clsx } from "./classnames.js";
+export { createSelector } from "./selector.js";
+export { defineConfig } from "./config.js";
 
 export type {
   CSS,
@@ -24,6 +24,6 @@ export type {
   VariantProps,
   VariantPropsOf,
   VariantValue,
-} from "./types";
+} from "./types.js";
 
-export type { StoopConfig, StoopTheme } from "./config";
+export type { StoopConfig, StoopTheme } from "./config.js";

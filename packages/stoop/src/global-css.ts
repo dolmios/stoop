@@ -1,6 +1,10 @@
-import type { GlobalCSSFunction } from "./types";
+import type { GlobalCSSFunction } from "./types.js";
 
-export const globalCss: GlobalCSSFunction = (() => {
-  throw new Error("[stoop] globalCss() must be compiled by the SWC plugin.");
+/**
+ * Runtime stub for globalCss().
+ * No-op at runtime — the SWC plugin extracts global styles at build time.
+ */
+export const globalCss: GlobalCSSFunction = ((_styles: Record<string, unknown>) => {
+  // No-op at runtime
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }) as any;

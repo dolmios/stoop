@@ -1,4 +1,4 @@
-import type { StoopConfig, StoopTheme } from "../config";
+import type { StoopConfig, StoopTheme } from "../config.js";
 
 const SCALE_NAMES: Record<keyof StoopTheme, string> = {
   colors: "colors",

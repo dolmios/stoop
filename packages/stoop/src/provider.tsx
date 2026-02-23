@@ -2,7 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useState, useEffect, useMemo } from "react";
 
-import type { ThemeContextValue, ThemeProviderProps } from "./types";
+import type { ThemeContextValue, ThemeProviderProps } from "./types.js";
 
 export type { ThemeContextValue, ThemeProviderProps };
 
@@ -25,15 +25,18 @@ export function ThemeProvider({
     }
   });
 
-  const setTheme = useCallback((newTheme: string): void => {
-    setThemeState(newTheme);
+  const setTheme = useCallback(
+    (newTheme: string): void => {
+      setThemeState(newTheme);
 
-    try {
-      localStorage.setItem(storageKey, newTheme);
-    } catch {
-      // localStorage not available
-    }
-  }, [storageKey]);
+      try {
+        localStorage.setItem(storageKey, newTheme);
+      } catch {
+        // localStorage not available
+      }
+    },
+    [storageKey],
+  );
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);

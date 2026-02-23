@@ -102,7 +102,7 @@ export type VariantProps<C> = C extends StyledComponent<any, infer V> ? VariantP
 // ---------------------------------------------------------------------------
 // StyledComponent
 // ---------------------------------------------------------------------------
- 
+
 export type StyledComponent<
   E extends ElementType,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
