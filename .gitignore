@@ -10,6 +10,9 @@ pnpm-lock.yaml
 dist/
 out/
 .next/
+.stoop/
+.swc/
+target/
 
 # TypeScript
 *.tsbuildinfo
