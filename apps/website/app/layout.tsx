@@ -10,9 +10,9 @@ import { Header } from "./components/Header";
 import { Navigation } from "./components/Navigation";
 import { Providers } from "./components/Providers";
 import { StructuredData } from "./components/StructuredData";
-import { Styles } from "./components/Styles";
 import { Wrapper } from "./components/Wrapper";
 
+import "stoop-ui/styles.css";
 import "./highlight.css";
 
 const standardFont = localFont({
@@ -116,7 +116,6 @@ export default async function RootLayout({
       suppressHydrationWarning>
       <body suppressHydrationWarning>
         <StructuredData />
-        <Styles initialTheme={initialTheme} />
         <Providers initialTheme={initialTheme}>
           <Header />
           <Navigation />

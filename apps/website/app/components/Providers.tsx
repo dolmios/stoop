@@ -31,7 +31,7 @@ export function Providers({
   );
 
   return (
-    <ThemeProvider cookieKey="stoop-theme" defaultTheme={initialTheme} storageKey="stoop-theme">
+    <ThemeProvider defaultTheme={initialTheme} storageKey="stoop-theme">
       <IconContext.Provider value={iconContextValue}>{children}</IconContext.Provider>
     </ThemeProvider>
   );

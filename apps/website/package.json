@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "bun run build:deps && next build",
-    "build:deps": "cd ../../packages/stoop && bun run build && cd ../stoop && bun run build:ts",
+    "build:deps": "cd ../../packages/stoop && bun run build:ts && cd ../stoop-ui && bun run build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
   },
@@ -16,8 +16,6 @@
     "next": "16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "stoop": "workspace:*",
-    "stoop": "workspace:*",
     "stoop-ui": "workspace:*"
   },
   "devDependencies": {

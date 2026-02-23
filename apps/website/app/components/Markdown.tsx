@@ -3,10 +3,21 @@
 import type { ComponentProps, ReactNode } from "react";
 
 import NextLink from "next/link";
-import { styled } from "stoop";
 import {
   Badge,
   Code as StoopCode,
+  ProseHeading,
+  ProseHeading2,
+  ProseHeading3,
+  ProseHeading4,
+  ProseHeadingWrapper2,
+  ProseHeadingWrapper3,
+  ProseLink,
+  ProseLinkWrapper,
+  ProseListItem,
+  ProseOrderedList,
+  ProseTableWrapper,
+  ProseUnorderedList,
   Stack,
   Table as StoopTable,
   TableBody as StoopTableBody,
@@ -17,103 +28,23 @@ import {
   Text,
 } from "stoop-ui";
 
-// Simple Heading component
-const Heading = styled("h1", {
-  fontWeight: "$bold",
-  lineHeight: "$tight",
-  marginBottom: "$medium",
-  marginTop: "$large",
-});
-
-const Heading2 = styled("h2", {
-  fontWeight: "$bold",
-  lineHeight: "$tight",
-  marginBottom: "$medium",
-  marginTop: "$large",
-});
-
-const Heading3 = styled("h3", {
-  fontWeight: "$bold",
-  lineHeight: "$tight",
-  marginBottom: "$small",
-  marginTop: "$medium",
-});
-
-const Heading4 = styled("h4", {
-  fontWeight: "$bold",
-  lineHeight: "$tight",
-  marginBottom: "$small",
-  marginTop: "$medium",
-});
-
-// Heading wrapper for badges - styled h2/h3 with flex layout
-const HeadingWrapper2 = styled("h2", {
-  alignItems: "center",
-  display: "inline-flex",
-  fontWeight: "$bold",
-  gap: "$small",
-  lineHeight: "$tight",
-  marginBottom: "$medium",
-  marginTop: "$large",
-});
-
-const HeadingWrapper3 = styled("h3", {
-  alignItems: "center",
-  display: "inline-flex",
-  fontWeight: "$bold",
-  gap: "$small",
-  lineHeight: "$tight",
-  marginBottom: "$small",
-  marginTop: "$medium",
-});
-
-// Styled link component with border-bottom (using Text styling)
-const LinkText = styled("a", {
-  "&:hover": {
-    borderBottomColor: "currentColor",
-    opacity: "$opacities.hover",
-  },
-  borderBottom: "1px solid currentColor",
-  color: "inherit",
-  display: "inline",
-  textDecoration: "none",
-  transition: "$transitions.default",
-});
-
-// Styled wrapper for Next.js Link
-const LinkWrapper = styled("span", {
-  "& a": {
-    "&:hover": {
-      borderBottomColor: "currentColor",
-      opacity: "$opacities.hover",
-    },
-    borderBottom: "1px solid currentColor",
-    color: "inherit",
-    textDecoration: "none",
-    transition: "$transitions.default",
-  },
-  display: "inline",
-});
-
 function MarkdownLink({ children, href, ...props }: ComponentProps<"a">): ReactNode {
-  // Check if it's an internal link (starts with /)
   const isInternal = href?.startsWith("/");
 
   if (isInternal && href) {
     return (
-      <LinkWrapper>
+      <ProseLinkWrapper>
         <NextLink href={href} {...props}>
           {children}
         </NextLink>
-      </LinkWrapper>
+      </ProseLinkWrapper>
     );
   }
 
-  // External link or anchor link
   return (
-    <LinkText href={href} {...props}>
+    <ProseLink href={href} {...props}>
       {children}
-    </LinkText>
+    </ProseLink>
   );
 }
 
@@ -151,14 +82,13 @@ function MarkdownCode({
 
 function MarkdownHeadingOne({ children, id, ...props }: ComponentProps<"h1">): ReactNode {
   return (
-    <Heading as="h1" id={id} {...props}>
+    <ProseHeading as="h1" id={id} {...props}>
       {children}
-    </Heading>
+    </ProseHeading>
   );
 }
 
 function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): ReactNode {
-  // Check if children contain badges or need special handling
   const childrenArray = Array.isArray(children) ? children : [children];
   const processedChildren: ReactNode[] = [];
   let i = 0;
@@ -168,7 +98,6 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
     const child = childrenArray[i];
     const nextChild = childrenArray[i + 1];
 
-    // Pattern 1: String with parentheses and backticks: "text (`badge`)"
     if (typeof child === "string") {
       const badgeMatch = /^(.*?)\s*\(`([^`]+)`\)(.*)$/.exec(child);
 
@@ -191,8 +120,6 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
       }
     }
 
-    // Pattern 2: Check for code element wrapped in parentheses pattern
-    // MDX might parse as: ["text (", <code>badge</code>, ")"]
     if (
       typeof child === "string" &&
       child.trim().endsWith("(") &&
@@ -216,7 +143,7 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
         </Badge>,
       );
       hasBadges = true;
-      i += 3; // Skip the code element and closing paren
+      i += 3;
       continue;
     }
 
@@ -224,24 +151,22 @@ function MarkdownHeadingTwo({ children, id, ...props }: ComponentProps<"h2">): R
     i++;
   }
 
-  // If we found badges, wrap in flex container
   if (hasBadges) {
     return (
-      <HeadingWrapper2 id={id} {...props}>
+      <ProseHeadingWrapper2 id={id} {...props}>
         {processedChildren}
-      </HeadingWrapper2>
+      </ProseHeadingWrapper2>
     );
   }
 
   return (
-    <Heading2 as="h2" id={id} {...props}>
+    <ProseHeading2 as="h2" id={id} {...props}>
       {children}
-    </Heading2>
+    </ProseHeading2>
   );
 }
 
 function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">): ReactNode {
-  // Check if children contain badges or need special handling
   const childrenArray = Array.isArray(children) ? children : [children];
   const processedChildren: ReactNode[] = [];
   let i = 0;
@@ -251,7 +176,6 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
     const child = childrenArray[i];
     const nextChild = childrenArray[i + 1];
 
-    // Pattern 1: String with parentheses and backticks: "text (`badge`)"
     if (typeof child === "string") {
       const badgeMatch = /^(.*?)\s*\(`([^`]+)`\)(.*)$/.exec(child);
 
@@ -274,7 +198,6 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
       }
     }
 
-    // Pattern 2: Check for code element wrapped in parentheses pattern
     if (
       typeof child === "string" &&
       child.trim().endsWith("(") &&
@@ -298,7 +221,7 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
         </Badge>,
       );
       hasBadges = true;
-      i += 3; // Skip the code element and closing paren
+      i += 3;
       continue;
     }
 
@@ -306,27 +229,26 @@ function MarkdownHeadingThree({ children, id, ...props }: ComponentProps<"h3">):
     i++;
   }
 
-  // If we found badges, wrap in flex container
   if (hasBadges) {
     return (
-      <HeadingWrapper3 id={id} {...props}>
+      <ProseHeadingWrapper3 id={id} {...props}>
         {processedChildren}
-      </HeadingWrapper3>
+      </ProseHeadingWrapper3>
     );
   }
 
   return (
-    <Heading3 as="h3" id={id} {...props}>
+    <ProseHeading3 as="h3" id={id} {...props}>
       {children}
-    </Heading3>
+    </ProseHeading3>
   );
 }
 
 function MarkdownHeadingFour({ children, id, ...props }: ComponentProps<"h4">): ReactNode {
   return (
-    <Heading4 as="h4" id={id} {...props}>
+    <ProseHeading4 as="h4" id={id} {...props}>
       {children}
-    </Heading4>
+    </ProseHeading4>
   );
 }
 
@@ -338,68 +260,21 @@ function MarkdownParagraph({ children, ...props }: ComponentProps<"p">): ReactNo
   );
 }
 
-const UnorderedListStyled = styled("ul", {
-  "&:last-child": {
-    marginBottom: 0,
-  },
-  color: "$text",
-  fontFamily: "$body",
-  fontSize: "$default",
-  fontWeight: "$default",
-  lineHeight: 1.4,
-  listStyle: "disc",
-  margin: 0,
-  marginBlock: 0,
-  marginBottom: "$medium",
-  marginTop: 0,
-  paddingLeft: "$large",
-});
-
-const OrderedListStyled = styled("ol", {
-  "&:last-child": {
-    marginBottom: 0,
-  },
-  color: "$text",
-  fontFamily: "$body",
-  fontSize: "$default",
-  fontWeight: "$default",
-  lineHeight: 1.4,
-  listStyle: "decimal",
-  margin: 0,
-  marginBlock: 0,
-  marginBottom: "$medium",
-  marginTop: 0,
-  paddingLeft: "$large",
-});
-
-const ListItemStyled = styled("li", {
-  marginBottom: "$small",
-  marginTop: 0,
-});
-
 function MarkdownUnorderedList({ children, ...props }: ComponentProps<"ul">): ReactNode {
-  return <UnorderedListStyled {...props}>{children}</UnorderedListStyled>;
+  return <ProseUnorderedList {...props}>{children}</ProseUnorderedList>;
 }
 
 function MarkdownOrderedList({ children, ...props }: ComponentProps<"ol">): ReactNode {
-  return <OrderedListStyled {...props}>{children}</OrderedListStyled>;
+  return <ProseOrderedList {...props}>{children}</ProseOrderedList>;
 }
 
 function MarkdownListItem({ children, ...props }: ComponentProps<"li">): ReactNode {
-  return <ListItemStyled {...props}>{children}</ListItemStyled>;
+  return <ProseListItem {...props}>{children}</ProseListItem>;
 }
-
-const TableWrapper = styled("div", {
-  marginBottom: "$medium",
-  marginTop: "$medium",
-  maxWidth: "100vw",
-  overflowX: "auto",
-  width: "100%",
-});
 
 function MarkdownTable({ children, ...props }: ComponentProps<"table">): ReactNode {
   return (
-    <TableWrapper>
+    <ProseTableWrapper>
       <StoopTable
         css={{
           minWidth: "100%",
@@ -408,7 +283,7 @@ function MarkdownTable({ children, ...props }: ComponentProps<"table">): ReactNo
         {...props}>
         {children}
       </StoopTable>
-    </TableWrapper>
+    </ProseTableWrapper>
   );
 }
 
@@ -432,7 +307,6 @@ function MarkdownTableRow({ children, ...props }: ComponentProps<"tr">): ReactNo
   return <StoopTableRow {...props}>{children}</StoopTableRow>;
 }
 
-// Export individual components
 export const Code = MarkdownCode;
 export const HeadingOne = MarkdownHeadingOne;
 export const HeadingTwo = MarkdownHeadingTwo;
@@ -450,7 +324,6 @@ export const TableHeader = MarkdownTableHeader;
 export const TableRow = MarkdownTableRow;
 export const UnorderedList = MarkdownUnorderedList;
 
-// Export as namespace object
 export const Markdown = {
   Code: MarkdownCode,
   HeadingFour: MarkdownHeadingFour,

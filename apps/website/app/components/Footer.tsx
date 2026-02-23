@@ -12,7 +12,8 @@ import { Moon, Sun } from "../../lib/icons";
  * @returns Footer element
  */
 export function Footer(): ReactElement {
-  const { themeName, toggleTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
+  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   return (
     <Stack
@@ -38,10 +39,10 @@ export function Footer(): ReactElement {
       </Text>
 
       <Button
-        icon={themeName === "light" ? <Moon size={16} /> : <Sun size={16} />}
+        icon={theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
         size="small"
         onClick={toggleTheme}>
-        {themeName === "light" ? "Dark" : "Light"}
+        {theme === "light" ? "Dark" : "Light"}
       </Button>
     </Stack>
   );

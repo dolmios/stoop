@@ -1,4 +1,4 @@
 // Website-specific type definitions
-// Types are imported directly from the main 'stoop' package
+// Types are imported from stoop-ui which re-exports them
 
-export type { Theme } from "stoop";
+export type { StoopTheme as Theme } from "stoop-ui";

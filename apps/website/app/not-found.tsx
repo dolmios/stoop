@@ -15,10 +15,6 @@ export default function NotFound(): JSX.Element {
         flex: 1,
         justifyContent: "center",
         minHeight: "90vh",
-        mobile: {
-          paddingLeft: "$small",
-          paddingRight: "$small",
-        },
       }}
       direction="column"
       gap="large"

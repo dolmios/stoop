@@ -4,7 +4,9 @@
  * shorthand properties into full CSS objects.
  */
 
-import type { CSS, UtilityFunction } from "stoop";
+type CSS = Record<string, unknown>;
+
+type UtilityFunction = (value: string | number | CSS | undefined) => CSS;
 
 type CSSPropertyValue = string | number;
 

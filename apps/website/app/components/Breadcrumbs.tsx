@@ -120,11 +120,12 @@ export function Breadcrumbs(): ReactElement | null {
                   cursor: "default",
                 }}
                 disabled
+                icon={null}
                 size="small">
                 {crumb.label}
               </Button>
             ) : (
-              <Button as={Link} href={crumb.href} size="small">
+              <Button as={Link} href={crumb.href} icon={null} size="small">
                 {crumb.label}
               </Button>
             )}
