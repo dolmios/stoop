@@ -83,7 +83,20 @@ export class CSSAggregator {
       return a.css.localeCompare(b.css);
     });
 
-    return entries.map((e) => e.css).join("\n");
+    return entries
+      .map((e) => e.css)
+      .filter((rule) => {
+        // Filter out malformed rules (e.g. empty nested selectors from compiler bugs)
+        // A valid rule must have at least one property:value pair inside braces
+        const inner = /\{([^}]*)\}/.exec(rule)?.[1]?.trim();
+
+        if (!inner) return false;
+        // Check it's not just a nested selector with no properties (e.g. "&:focus-visible:")
+        if (/^&[^{]*:$/.test(inner)) return false;
+
+        return true;
+      })
+      .join("\n");
   }
 
   /**

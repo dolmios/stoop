@@ -1,9 +1,12 @@
 import { writeFileSync, mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import { resolve } from "node:path";
 
-import { loadConfig, serializeForPlugin } from "./config-loader";
-import { CSSAggregator } from "./css-aggregator";
-import { generateThemeCSS } from "./theme-generator";
+import { loadConfig, serializeForPlugin } from "./config-loader.js";
+import { CSSAggregator } from "./css-aggregator.js";
+import { generateThemeCSS } from "./theme-generator.js";
+
+const require = createRequire(import.meta.url);
 
 /**
  * Returns the SWC plugin tuple for @vitejs/plugin-react-swc.
@@ -41,6 +44,8 @@ interface TransformResult {
 interface VitePlugin {
   name: string;
   configResolved?: (config: { root: string }) => void | Promise<void>;
+  resolveId?: (id: string) => string | null;
+  load?: (id: string) => string | null;
   transform?: (code: string, id: string) => TransformResult | null;
   generateBundle?: () => void;
 }
@@ -57,10 +62,25 @@ interface VitePlugin {
  * });
  * ```
  */
+const VIRTUAL_CSS_ID = "virtual:stoop/styles.css";
+const RESOLVED_VIRTUAL_CSS_ID = "\0" + VIRTUAL_CSS_ID;
+
 export function stoop(options?: { configFile?: string }): VitePlugin {
   const aggregator = new CSSAggregator();
   let root = process.cwd();
   let outputDir = ".stoop";
+  let themeCSS = "";
+
+  /** Build the full CSS string from theme + aggregated component CSS. */
+  function getFullCSS(): string {
+    const componentCSS = aggregator.isEmpty() ? "" : aggregator.flush();
+    const parts: string[] = [];
+
+    if (themeCSS) parts.push(themeCSS);
+    if (componentCSS) parts.push(componentCSS);
+
+    return parts.join("\n\n");
+  }
 
   return {
     async configResolved(config): Promise<void> {
@@ -70,13 +90,7 @@ export function stoop(options?: { configFile?: string }): VitePlugin {
         const stoopConfig = await loadConfig(root, options?.configFile);
 
         outputDir = stoopConfig.output?.dir ?? ".stoop";
-
-        // Generate theme CSS
-        const themeCSS = generateThemeCSS(stoopConfig);
-        const outDir = resolve(root, outputDir);
-
-        mkdirSync(outDir, { recursive: true });
-        writeFileSync(resolve(outDir, "theme.css"), themeCSS);
+        themeCSS = generateThemeCSS(stoopConfig);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn("[stoop] Failed to load config:", e);
@@ -84,8 +98,9 @@ export function stoop(options?: { configFile?: string }): VitePlugin {
     },
 
     generateBundle(): void {
-      if (!aggregator.isEmpty()) {
-        const css = aggregator.flush();
+      const css = getFullCSS();
+
+      if (css) {
         const outDir = resolve(root, outputDir);
 
         mkdirSync(outDir, { recursive: true });
@@ -93,15 +108,36 @@ export function stoop(options?: { configFile?: string }): VitePlugin {
       }
     },
 
+    /**
+     * Serve the aggregated CSS as a virtual module during dev.
+     * In dev mode, `generateBundle` does not fire, so this hook provides
+     * the CSS content when the virtual module is requested.
+     */
+    load(id): string | null {
+      if (id === RESOLVED_VIRTUAL_CSS_ID) {
+        return getFullCSS();
+      }
+
+      return null;
+    },
+
     name: "stoop",
 
+    /**
+     * Resolve the virtual CSS module so it can be imported as:
+     *   import "virtual:stoop/styles.css";
+     * Works in both dev server and production build.
+     */
+    resolveId(id): string | null {
+      if (id === VIRTUAL_CSS_ID) {
+        return RESOLVED_VIRTUAL_CSS_ID;
+      }
+
+      return null;
+    },
+
     transform(code, id): TransformResult | null {
-      if (
-        !id.endsWith(".ts") &&
-        !id.endsWith(".tsx") &&
-        !id.endsWith(".js") &&
-        !id.endsWith(".jsx")
-      ) {
+      if (!/\.(m|c)?(t|j)sx?$/.test(id)) {
         return null;
       }
 
