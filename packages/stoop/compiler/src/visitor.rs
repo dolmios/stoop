@@ -21,17 +21,20 @@ pub struct StoopVisitor {
     generator: CSSGenerator,
     transformer: ComponentTransformer,
     emitter: CSSEmitter,
+    prefix: String,
     needs_react_imports: bool,
     needs_clsx_import: bool,
 }
 
 impl StoopVisitor {
     pub fn new(config: StoopConfig) -> Self {
+        let prefix = config.prefix.clone();
         Self {
             extractor: StyleExtractor::new(&config),
             generator: CSSGenerator::new(&config),
             transformer: ComponentTransformer::new(&config),
             emitter: CSSEmitter::new(),
+            prefix,
             styled_identifiers: vec!["styled".to_string()],
             css_identifiers: vec!["css".to_string()],
             global_css_identifiers: vec!["globalCss".to_string()],
@@ -82,16 +85,28 @@ impl StoopVisitor {
             })));
         }
 
-        // Check if stoop imports exist
-        let has_runtime_import = module.body.iter().any(|item| {
+        // Check if clsx and createSelector are already imported from stoop
+        let has_runtime_helpers = module.body.iter().any(|item| {
             if let ModuleItem::ModuleDecl(ModuleDecl::Import(import)) = item {
-                import.src.value == "stoop"
-            } else {
-                false
+                if import.src.value == "stoop" {
+                    return import.specifiers.iter().any(|spec| {
+                        if let ImportSpecifier::Named(named) = spec {
+                            let name = match &named.imported {
+                                Some(ModuleExportName::Ident(id)) => id.sym.to_string(),
+                                None => named.local.sym.to_string(),
+                                _ => return false,
+                            };
+                            name == "clsx" || name == "createSelector"
+                        } else {
+                            false
+                        }
+                    });
+                }
             }
+            false
         });
 
-        if self.needs_clsx_import && !has_runtime_import {
+        if self.needs_clsx_import && !has_runtime_helpers {
             // Create new stoop import with clsx and createSelector
             imports_to_add.push(ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
                 span: DUMMY_SP,
@@ -247,7 +262,7 @@ impl StoopVisitor {
 
         for (prop, value) in &styles {
             let kebab_prop = to_kebab_case(prop);
-            let class_name = hash_atomic(&kebab_prop, value, "");
+            let class_name = hash_atomic(&kebab_prop, value, "", &self.prefix);
             let rule = AtomicRule {
                 class_name: class_name.clone(),
                 property: kebab_prop,
@@ -338,7 +353,7 @@ impl StoopVisitor {
             }
         }
 
-        let animation_name = hash_string(&keyframe_body);
+        let animation_name = hash_string(&keyframe_body, &self.prefix);
         self.emitter.register_keyframes(&animation_name, &keyframe_body);
 
         Some(Expr::Lit(Lit::Str(Str {
