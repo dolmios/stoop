@@ -9,6 +9,7 @@ use crate::types::{
 
 pub struct CSSGenerator {
     token_resolver: TokenResolver,
+    prefix: String,
 }
 
 /// Dedup registry key: "property:value:context" where context encodes pseudo/at_rule.
@@ -26,6 +27,7 @@ impl CSSGenerator {
     pub fn new(config: &StoopConfig) -> Self {
         Self {
             token_resolver: TokenResolver::new(&config.theme),
+            prefix: config.prefix.clone(),
         }
     }
 
@@ -33,7 +35,7 @@ impl CSSGenerator {
         let mut registry: HashMap<String, AtomicRule> = HashMap::new();
 
         // Generate selector class from component name
-        let selector_class = hash_string(&extraction.component_name);
+        let selector_class = hash_string(&extraction.component_name, &self.prefix);
 
         // --- Base styles ---
         let base_classes = self.process_styles(
@@ -67,7 +69,28 @@ impl CSSGenerator {
 
             for value_name in sorted_value_names {
                 let styles = &variant_values[value_name];
-                let rules = self.process_styles(styles, None, None, &mut registry);
+
+                // Split styles into flat properties and nested selector properties.
+                // Nested selector keys are encoded as "selector@@property" by the extractor.
+                let mut flat_styles: HashMap<String, StyleValue> = HashMap::new();
+                let mut nested_styles: HashMap<String, HashMap<String, StyleValue>> = HashMap::new();
+
+                for (key, value) in styles {
+                    if let Some(idx) = key.find("@@") {
+                        let selector = &key[..idx];
+                        let prop = &key[idx + 2..];
+                        nested_styles
+                            .entry(selector.to_string())
+                            .or_default()
+                            .insert(prop.to_string(), value.clone());
+                    } else {
+                        flat_styles.insert(key.clone(), value.clone());
+                    }
+                }
+
+                let mut rules = self.process_styles(&flat_styles, None, None, &mut registry);
+                let nested_rules = self.process_nested_selectors(&nested_styles, &mut registry);
+                rules.extend(nested_rules);
                 value_map.insert(value_name.clone(), rules);
             }
 
@@ -117,7 +140,7 @@ impl CSSGenerator {
             let resolved_value = self.resolve_style_value(value, prop);
 
             let context = self.build_context(&pseudo, &at_rule);
-            let class_name = hash_atomic(&kebab_prop, &resolved_value, &context);
+            let class_name = hash_atomic(&kebab_prop, &resolved_value, &context, &self.prefix);
 
             let priority = match (&pseudo, &at_rule) {
                 (Some(_), Some(_)) => 3,

@@ -9,6 +9,10 @@ use stoop_compiler::visitor::StoopVisitor;
 use stoop_compiler::config::StoopConfig;
 
 pub fn transform(code: &str) -> String {
+    transform_with_config(code, StoopConfig::default())
+}
+
+pub fn transform_with_config(code: &str, config: StoopConfig) -> String {
     GLOBALS.set(&Default::default(), || {
         let cm = Lrc::new(SourceMap::default());
         let fm = cm.new_source_file(
@@ -30,7 +34,6 @@ pub fn transform(code: &str) -> String {
             &mut vec![],
         ).expect("Failed to parse");
 
-        let config = StoopConfig::default();
         let mut visitor = StoopVisitor::new(config);
 
         module.visit_mut_with(&mut visitor);

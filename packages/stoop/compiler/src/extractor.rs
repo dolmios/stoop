@@ -201,6 +201,27 @@ impl StyleExtractor {
                                             if let PropOrSpread::Prop(sp) = style_prop {
                                                 if let Prop::KeyValue(skv) = &**sp {
                                                     let style_key = self.extract_prop_key(&skv.key);
+
+                                                    // Handle nested selectors within variants
+                                                    // e.g. "&:focus-visible": { outline: "none" }
+                                                    if style_key.starts_with('&') || style_key.starts_with(':') || style_key.starts_with('@') {
+                                                        if let Expr::Object(nested_obj) = &*skv.value {
+                                                            for nested_prop in &nested_obj.props {
+                                                                if let PropOrSpread::Prop(np) = nested_prop {
+                                                                    if let Prop::KeyValue(nkv) = &**np {
+                                                                        let nested_key = self.extract_prop_key(&nkv.key);
+                                                                        let nested_value = self.extract_style_value(&nkv.value);
+                                                                        // Encode the nested selector into the key
+                                                                        // so the generator can reconstruct it
+                                                                        let combined_key = format!("{}@@{}", style_key, nested_key);
+                                                                        styles.insert(combined_key, nested_value);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        continue;
+                                                    }
+
                                                     let style_value = self.extract_style_value(&skv.value);
                                                     styles.insert(style_key, style_value);
                                                 }
@@ -386,7 +407,7 @@ impl StyleExtractor {
                 // Wtf8Atom -> &Wtf8, need to use lossy conversion
                 let value: String = String::from_utf8_lossy(s.value.as_bytes()).into_owned();
 
-                if value.starts_with('$') {
+                if value.starts_with('$') && !value.contains(' ') && value.matches('$').count() == 1 {
                     StyleValue::Token(value)
                 } else if value.contains('$') {
                     self.extract_compound_value(&value)

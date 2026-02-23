@@ -713,6 +713,46 @@ fn test_token_resolution_explicit_path() {
 }
 
 #[test]
+fn test_compound_token_resolution_with_theme() {
+    use std::collections::HashMap;
+    use stoop_compiler::config::{StoopConfig, Theme};
+
+    let mut space = HashMap::new();
+    space.insert("smaller".to_string(), "4px".to_string());
+    space.insert("small".to_string(), "8px".to_string());
+    space.insert("medium".to_string(), "16px".to_string());
+
+    let config = StoopConfig {
+        theme: Theme {
+            space: Some(space),
+            ..Theme::default()
+        },
+        ..StoopConfig::default()
+    };
+
+    let input = r#"
+        import { styled } from "stoop";
+        const Box = styled("div", {
+            padding: "$smaller $medium",
+        });
+    "#;
+    let output = test_utils::transform_with_config(input, config);
+
+    // Should resolve each token individually to var(--space-smaller) and var(--space-medium)
+    assert!(
+        output.contains("var(--space-smaller)") && output.contains("var(--space-medium)"),
+        "Expected compound tokens resolved to var(--space-smaller) var(--space-medium), got:\n{}",
+        output
+    );
+    // Should NOT contain the raw token
+    assert!(
+        !output.contains("$smaller"),
+        "Raw token $smaller should be resolved:\n{}",
+        output
+    );
+}
+
+#[test]
 fn test_token_resolution_shorthand_fallback() {
     // $primary without a theme definition should resolve to var(--primary)
     let input = r#"
