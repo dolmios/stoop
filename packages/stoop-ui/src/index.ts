@@ -13,10 +13,28 @@ export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 export { Tabs, type TabItem } from "./components/Tabs";
 export { Text } from "./components/Text";
 export { Tooltip, type TooltipProps } from "./components/Tooltip";
+export {
+  ProseHeading,
+  ProseHeading2,
+  ProseHeading3,
+  ProseHeading4,
+  ProseHeadingWrapper2,
+  ProseHeadingWrapper3,
+  ProseLink,
+  ProseLinkWrapper,
+  ProseUnorderedList,
+  ProseOrderedList,
+  ProseListItem,
+  ProseTableWrapper,
+} from "./components/Prose";
+
+// Global styles (CSS reset) — processed at build time, included in styles.css
+import "./globals";
 
 // Theme
 export { ThemeProvider, useTheme } from "stoop";
-export { theme, animations } from "./theme.config";
+export { default as theme, animations } from "./theme.config";
+export type { CSS, StoopConfig, StoopTheme } from "stoop";
 
 // Hooks
 export { useEventListener } from "./hooks/useEventListener";

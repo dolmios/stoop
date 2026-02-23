@@ -91,7 +91,6 @@ const TextStyled = styled("p", {
 });
 
 export interface TextProps extends Omit<ComponentProps<typeof TextStyled>, "as" | "variant"> {
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   as?: ComponentProps<typeof TextStyled>["variant"] | "ul" | "ol" | "li" | (string & {});
   variant?: ComponentProps<typeof TextStyled>["variant"];
 }

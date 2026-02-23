@@ -22,24 +22,25 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun run scripts/build.ts",
+    "build": "vite build && tsc --emitDeclarationOnly --noCheck",
     "dev": "tsc --watch"
   },
   "peerDependencies": {
-    "stoop": "workspace:*",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.5"
+    "@floating-ui/dom": "^1.7.5",
+    "stoop": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
-    "stoop": "workspace:*",
+    "@vitejs/plugin-react-swc": "^4.2.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
   "keywords": [
     "react",

@@ -51,7 +51,7 @@ export const animations = {
   spin,
 } as const;
 
-const theme = defineConfig({
+export const theme = defineConfig({
   media: {
     desktop: "@media (min-width: 1025px)",
     mobile: "@media (max-width: 768px)",
